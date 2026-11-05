@@ -11,7 +11,6 @@
 <meta name="robots" content="noindex, nofollow">
 <title>NQ QUANT v5.0</title>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -156,7 +155,7 @@ input[type=time]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.7;
 .btn-monthly{background:rgba(245,158,11,.15);color:var(--gold);border:1px solid rgba(245,158,11,.3);padding:3px 10px;border-radius:4px;cursor:pointer;font-size:.7rem;}
 
 /* ANALYTICS PAGES */
-#page-analytics,#page-lsanalytics,#page-monthly{flex-direction:column;overflow:hidden;}
+#page-monthly{flex-direction:column;overflow:hidden;}
 .analytics-wrapper{padding:18px 20px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;flex:1;min-height:0;}
 
 .range-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--panel);padding:11px 16px;border-radius:10px;border:1px solid var(--border);}
@@ -212,6 +211,119 @@ input[type=time]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.7;
 input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.7;cursor:pointer;}
 input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1;}
 #toast{position:fixed;bottom:20px;right:20px;padding:10px 18px;border-radius:8px;font-weight:700;font-size:.85rem;z-index:9999;display:none;}
+/* ══ 績效統計／問題診斷／排行榜 ══ */
+#page-ana{flex-direction:column;overflow:hidden;}
+.ana-top{flex-shrink:0;background:var(--panel);border-bottom:1px solid var(--border);padding:9px 20px;display:flex;flex-direction:column;gap:7px;}
+.ana-filter{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.ana-filter .lbl{font-size:.74rem;color:#94a3b8;font-family:var(--fm);margin-left:2px;}
+.ana-filter .sep{color:var(--border);margin:0 3px;}
+.ana-filter input[type=date]{background:var(--card);padding:4px 8px;font-size:.78rem;}
+.ana-demo{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.78rem;color:#fde68a;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);border-radius:7px;padding:6px 12px;}
+.ana-demo button{margin-left:auto;background:rgba(245,158,11,.18);color:#fde68a;border:1px solid rgba(245,158,11,.5);padding:3px 12px;border-radius:5px;cursor:pointer;font:inherit;font-weight:700;}
+.ana-demo.real{color:#94a3b8;background:transparent;border-color:var(--border);}
+.ana-demo.real button{background:transparent;color:#94a3b8;border-color:var(--border);}
+#ana-body{flex:1;min-height:0;overflow-y:auto;padding:16px 20px 40px;display:flex;flex-direction:column;gap:14px;}
+.ana-empty{color:#94a3b8;text-align:center;padding:70px 20px;font-size:.95rem;line-height:1.8;}
+.ana-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
+.ana-head h2{font-size:1.2rem;font-weight:900;}
+.ana-head span{font-family:var(--fm);font-size:.78rem;color:#94a3b8;}
+.up{color:var(--success);} .dn{color:var(--danger);} .gd{color:var(--gold);} .mt{color:#94a3b8;}
+.ana-hero{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+.ana-hero>div{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 18px;}
+.ana-hero .l{font-size:.78rem;color:#94a3b8;font-weight:700;}
+.ana-hero .v{font-family:var(--fm);font-size:2rem;font-weight:700;line-height:1.25;}
+.ana-hero .s{font-size:.72rem;color:#94a3b8;font-family:var(--fm);}
+.ana-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:8px;}
+.ana-grid>div{background:var(--panel);border:1px solid var(--border);border-radius:9px;padding:9px 12px;}
+.ana-grid .l{font-size:.72rem;color:#94a3b8;}
+.ana-grid .v{font-family:var(--fm);font-size:1.05rem;font-weight:700;margin-top:2px;}
+.ana-sec{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:13px 16px;min-width:0;}
+.ana-sec>h3,.ana-h3{font-size:.92rem;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.ana-sec h3 small,.ana-h3 small{font-weight:400;font-size:.72rem;color:#94a3b8;}
+.ana-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+.ana-slot{width:100%;position:relative;min-width:0;}
+.ana-slot svg{display:block;width:100%;}
+.ana-ax{font-size:11px;fill:#94a3b8;font-family:var(--fm);}
+.ana-tl{font-size:12px;fill:#e2e8f0;font-weight:700;}
+[data-tip]{cursor:default;} [data-t],[data-d],[data-g]{cursor:pointer;}
+.ana-hit{fill:transparent;} .ana-hit:hover{fill:rgba(255,255,255,.07);}
+#ana-tip{position:fixed;z-index:1200;display:none;max-width:340px;background:#1a2640;border:1px solid var(--accent);border-radius:7px;padding:7px 11px;color:#e2e8f0;font-size:.76rem;line-height:1.55;pointer-events:none;white-space:pre-line;}
+.ana-tog{margin-left:auto;display:inline-flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;font-weight:700;}
+.ana-tog button{background:transparent;border:none;color:#94a3b8;padding:4px 11px;font:inherit;font-size:.72rem;cursor:pointer;}
+.ana-tog button.on{background:rgba(0,212,255,.15);color:var(--accent);}
+.ana-tbl{width:100%;border-collapse:collapse;font-size:.82rem;}
+.ana-tbl th{font-size:.72rem;color:#94a3b8;font-weight:700;padding:6px 8px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap;}
+.ana-tbl td{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.05);text-align:right;font-family:var(--fm);white-space:nowrap;}
+.ana-tbl th:first-child,.ana-tbl td:first-child{text-align:left;font-family:var(--fs);}
+.ana-tbl tr[data-g]:hover td{background:rgba(255,255,255,.04);}
+.ana-tbl tr.hl td{background:rgba(244,63,94,.1);}
+.ana-tbl .bar{width:30%;min-width:90px;padding-left:12px;padding-right:12px;}
+.ana-bar{position:relative;height:12px;}
+.ana-bar:before{content:'';position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:rgba(255,255,255,.25);}
+.ana-bar i{position:absolute;top:0;bottom:0;border-radius:2px;}
+.ana-scroll{overflow-x:auto;}
+.dg-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:15px 17px;display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:16px;scroll-margin-top:10px;}
+.dg-card h3{font-size:1.05rem;font-weight:900;margin-bottom:3px;}
+.dg-how{font-size:.8rem;color:#94a3b8;line-height:1.6;margin-bottom:10px;}
+.dg-sub{font-size:.8rem;font-weight:800;color:#cbd5e1;margin:12px 0 4px;}
+.dg-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:4px 18px;}
+.dg-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:8px;margin-bottom:6px;}
+.dg-kpis>div{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 11px;}
+.dg-kpis span{display:block;font-size:.72rem;color:#94a3b8;}
+.dg-kpis b{display:block;font-family:var(--fm);font-size:1.15rem;margin:1px 0;}
+.dg-kpis em{font-style:normal;font-size:.7rem;color:#94a3b8;}
+.dg-notes{display:flex;flex-direction:column;gap:7px;}
+.dg-note{font-size:.82rem;line-height:1.6;padding:8px 11px;border-radius:7px;border-left:3px solid #64748b;background:rgba(255,255,255,.03);}
+.dg-note.bad{border-color:var(--danger);background:rgba(244,63,94,.07);}
+.dg-note.good{border-color:var(--success);background:rgba(16,185,129,.07);}
+.dg-note.tip{border-color:var(--gold);background:rgba(245,158,11,.07);}
+.dg-sum{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+.dg-sum ol,.dg-sum ul{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.dg-sum li{font-size:.88rem;line-height:1.6;padding:8px 11px;border-radius:7px;background:var(--bg);border:1px solid var(--border);}
+.dg-sum li[data-go]{cursor:pointer;} .dg-sum li[data-go]:hover{border-color:var(--gold);}
+.rg-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;}
+.rg-tile{background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:9px 12px;cursor:pointer;min-width:0;}
+.rg-tile:hover{border-color:var(--gold);}
+.rg-tile .l{font-size:.75rem;color:#94a3b8;font-weight:700;}
+.rg-tile .v{font-family:var(--fm);font-size:1.3rem;font-weight:700;margin:2px 0;}
+.rg-tile .s{font-size:.7rem;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rg-row{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:14px;}
+.ana-chip{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.06);}
+.ana-cover{font-size:.8rem;color:#94a3b8;padding:18px;text-align:center;line-height:1.7;}
+.day-row{display:grid;grid-template-columns:110px 70px 70px 1fr;gap:8px;align-items:center;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.05);font-family:var(--fm);font-size:.82rem;cursor:pointer;}
+.day-row:hover{background:rgba(255,255,255,.04);}
+.day-row b{text-align:right;}
+#ana-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1100;align-items:center;justify-content:center;padding:18px;}
+#ana-modal .box{background:var(--panel);border:1px solid var(--accent);border-radius:12px;width:min(760px,100%);max-height:88vh;display:flex;flex-direction:column;}
+#ana-modal .hd{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);font-weight:800;}
+#ana-modal .hd button{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:4px 12px;cursor:pointer;font:inherit;font-size:.78rem;}
+#ana-modal .hd .x{margin-left:auto;}
+#ana-modal .bd{overflow-y:auto;padding:14px 16px;}
+#ana-modal .card-del-btn,#ana-modal .card-edit-btn{display:none;}
+@media(max-width:1200px){.dg-card{grid-template-columns:minmax(0,1fr);}.rg-row{grid-template-columns:minmax(0,1fr);}}
+@media(max-width:900px){
+  #top-nav{padding:0 10px;}.nav-logo{display:none;}.nav-tabs{overflow-x:auto;}.nav-tab{white-space:nowrap;padding:6px 11px;}
+  .ana-hero{grid-template-columns:repeat(2,minmax(0,1fr));}.ana-hero .v{font-size:1.45rem;}
+  .ana-two,.dg-sum{grid-template-columns:minmax(0,1fr);}.dg-cols{grid-template-columns:minmax(0,1fr);}
+  #ana-body{padding:12px 12px 40px;}.ana-top{padding:8px 12px;}
+}
+#ana-body .xh-info{background:rgba(250,204,21,.08);border:1px solid rgba(250,204,21,.3);border-radius:8px;padding:0 10px;font-size:.72rem;color:#cbd5e1;margin-bottom:8px;font-weight:600;height:40px;display:flex;align-items:center;gap:5px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;}
+#ana-body .xh-info.active{color:#fff;border-color:rgba(250,204,21,.55);}
+.xh-info .st{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.08);border-radius:6px;padding:4px 8px;flex:none;}
+.xh-info .st em{font-style:normal;font-size:.6rem;font-weight:700;color:#d1d5db;}.xh-info .st b{font-size:.8rem;font-weight:800;font-variant-numeric:tabular-nums;}
+.xh-legend{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:.72rem;color:#94a3b8;margin-bottom:6px;}
+.xh-legend i{display:inline-block;border-radius:2px;margin-right:4px;vertical-align:middle;}
+.xh-sub{font-size:.74rem;color:#94a3b8;font-weight:700;margin:2px 0 0 60px;}
+.dg-bar{position:sticky;top:-16px;z-index:5;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:7px 12px;font-size:.8rem;}
+.dg-bar .ana-tog{margin-left:0;}.dg-bar small{color:#94a3b8;font-size:.74rem;}
+.dg-chart{margin-top:10px;}.dg-chart .ana-h3{font-size:.84rem;margin-bottom:4px;}
+.dg-det{margin-top:8px;}.dg-det summary{cursor:pointer;font-size:.76rem;color:var(--accent);font-weight:700;padding:3px 0;list-style-position:inside;}
+.hm-grid{display:grid;gap:2px;font-family:var(--fm);font-size:.72rem;}
+.hm-h{text-align:center;color:#94a3b8;padding-bottom:2px;}.hm-d{color:#cbd5e1;display:flex;align-items:center;font-family:var(--fs);}
+.hm-c{height:32px;border-radius:4px;background:rgba(255,255,255,.025);display:flex;align-items:center;justify-content:center;color:#e2e8f0;}
+.hm-c.on{cursor:pointer;}.hm-c.on:hover{outline:2px solid #fff;}
+.ana-tog button{white-space:nowrap;}
+@media(max-width:900px){.dg-bar{position:static;}}
 </style>
 </head>
 <body>
@@ -220,8 +332,9 @@ input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1;}
   <div class="nav-logo">✦ 阿華の交易紀錄</div>
   <div class="nav-tabs">
     <div class="nav-tab active" onclick="switchPage('record')">📋 交易記錄</div>
-    <div class="nav-tab" onclick="switchPage('analytics')">📊 總體績效分析</div>
-    <div class="nav-tab" onclick="switchPage('lsanalytics')">⚔️ 多空績效個別分析</div>
+    <div class="nav-tab" onclick="switchPage('stats')">📊 績效統計</div>
+    <div class="nav-tab" onclick="switchPage('diag')">🩺 問題診斷</div>
+    <div class="nav-tab" onclick="switchPage('ranking')">🏆 排行榜</div>
     <div class="nav-tab" onclick="switchPage('review')">📓 檢討整理</div>
     <div class="nav-tab" onclick="switchPage('monthly')">📅 月績效比拚</div>
   </div>
@@ -346,218 +459,13 @@ input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1;}
   </div>
 </div>
 
-<!-- ══ ANALYTICS PAGE ══ -->
-<div class="page" id="page-analytics">
-  <div class="analytics-wrapper">
-    <div class="range-bar">
-      <span style="font-size:.78rem;color:var(--muted);font-family:var(--fm);">時間範圍</span>
-      <button class="range-btn" onclick="setRange('1m')">本月</button>
-      <button class="range-btn" onclick="setRange('3m')">近3月</button>
-      <button class="range-btn" onclick="setRange('6m')">近6月</button>
-      <button class="range-btn active" onclick="setRange('all')">全部</button>
-      <span style="color:var(--border);margin:0 4px;">│</span>
-      <div id="custom-range">
-        <input type="date" id="range-from">
-        <span style="color:var(--muted);font-size:.8rem;">～</span>
-        <input type="date" id="range-to">
-        <button class="range-btn" onclick="setRange('custom')">套用</button>
-      </div>
-      <span style="color:var(--border);margin:0 4px;">│</span>
-      <span style="font-size:.78rem;color:var(--muted);font-family:var(--fm);">商品</span>
-      <button class="range-btn commodity-btn active" onclick="setCommodity('all')">全部</button>
-      <button class="range-btn commodity-btn" onclick="setCommodity('TX')" style="color:#a78bfa;">台指</button>
-      <button class="range-btn commodity-btn" onclick="setCommodity('CL')" style="color:#fb923c;">原油</button>
-      <button class="range-btn commodity-btn" onclick="setCommodity('MNQ')" style="color:#00d4ff;">MNQ</button>
-    </div>
-    <div class="kpi-row" id="kpi-row"></div>
-    <div id="pnl-ratio-bar" style="display:none;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px 16px;">
-      <div style="text-align:center;margin-bottom:5px;">
-        <span id="pnl-ratio-label" style="font-family:var(--fm);font-size:.82rem;font-weight:700;color:var(--text);"></span>
-      </div>
-      <div style="height:10px;border-radius:5px;overflow:hidden;display:flex;">
-        <div id="pnl-ratio-green" style="background:var(--success);transition:width .4s ease;"></div>
-        <div id="pnl-ratio-red" style="background:var(--danger);flex:1;"></div>
-      </div>
-      <div style="display:flex;justify-content:center;gap:24px;margin-top:6px;">
-        <span id="pnl-ratio-win" style="font-family:var(--fm);font-size:.76rem;color:var(--success);font-weight:700;"></span>
-        <span id="pnl-ratio-loss" style="font-family:var(--fm);font-size:.76rem;color:var(--danger);font-weight:700;"></span>
-      </div>
-    </div>
-    <div class="chart-grid-1">
-      <div class="chart-card">
-        <div class="chart-title"><span class="icon">📈</span>累積損益曲線（逐筆）
-          <div class="tooltip-wrap"><div class="tip-icon">?</div><div class="tip-popup">每一筆交易後的累積損益，能更真實看出策略穩定性。</div></div>
-        </div>
-        <div style="height:195px;position:relative;"><canvas id="chart-equity" role="img" aria-label="累積損益曲線">累積損益走勢</canvas></div>
-      </div>
-    </div>
-    <div class="chart-grid-1">
-      <div class="chart-card">
-        <div class="chart-title"><span class="icon">📊</span>損益分布直方圖
-          <div class="tooltip-wrap"><div class="tip-icon">?</div><div class="tip-popup">各損益區間出現頻率，觀察盈虧分布是否對稱，或存在長尾虧損。</div></div>
-        </div>
-        <div style="height:195px;position:relative;"><canvas id="chart-histogram" role="img" aria-label="損益分布直方圖">各損益區間筆數</canvas></div>
-      </div>
-    </div>
-    <div class="chart-grid-1">
-      <div class="chart-card">
-        <div class="chart-title"><span class="icon">🌡️</span>星期×時段 熱力圖
-          <div class="tooltip-wrap"><div class="tip-icon">?</div><div class="tip-popup">診斷不同時段策略表現，找出高勝率黃金時段，或容易失控的疲勞時段。</div></div>
-        </div>
-        <div class="hm-wrap"><div id="heatmap-container"></div></div>
-      </div>
-    </div>
-    <div class="chart-grid-1">
-      <div class="chart-card">
-        <div class="chart-title"><span class="icon">🫧</span>泡泡圖：時間×損益×口數</div>
-        <div style="height:240px;position:relative;"><canvas id="chart-bubble" role="img" aria-label="泡泡圖">時間損益口數關係</canvas></div>
-      </div>
-    </div>
-    <div class="chart-grid-1">
-      <div class="chart-card">
-        <div class="chart-title"><span class="icon">📆</span>持單時間進步曲線
-          <div class="tooltip-wrap"><div class="tip-icon">?</div><div class="tip-popup">每筆交易的持倉時間（秒），綠線=獲利，紅線=虧損。觀察你是否進步：獲利單越來越長，虧損單越來越短。</div></div>
-        </div>
-        <div style="height:260px;position:relative;"><canvas id="chart-dur-trend"></canvas></div>
-      </div>
-    </div>
-    <div class="chart-grid-1">
-      <div class="chart-card">
-        <div class="chart-title"><span class="icon">🕐</span>持單時間 × 口數 × 損益 三維關係
-          <div class="tooltip-wrap"><div class="tip-icon">?</div><div class="tip-popup">X軸=持倉秒數，Y軸=損益，泡泡大小=口數。</div></div>
-        </div>
-        <div style="height:280px;position:relative;"><canvas id="chart-dur-3d"></canvas></div>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 220px;gap:14px;align-items:stretch;">
-      <div class="chart-card" style="display:flex;flex-direction:column;">
-        <div class="chart-title"><span class="icon">🎯</span>MAE / MFE 持倉風險效率分析
-          <div class="tooltip-wrap"><div class="tip-icon">?</div><div class="tip-popup">綠色柱＝MFE持倉最大獲利；紅色柱＝MAE最大虧損；菱形♦＝實際出場損益。</div></div>
-        </div>
-        <div id="mae-mfe-no-data" style="display:none;color:var(--muted);font-size:.82rem;padding:20px;text-align:center;">尚無含 MAE/MFE 資料的交易</div>
-        <div style="flex:1;min-height:280px;position:relative;"><canvas id="chart-maemfe" role="img" aria-label="MAE MFE 圖">MAE MFE 分析</canvas></div>
-      </div>
-      <div class="chart-card" style="display:flex;flex-direction:column;gap:8px;">
-        <div class="chart-title"><span class="icon">📐</span>效率統計</div>
-        <div id="maemfe-stats-body" style="display:flex;flex-direction:column;gap:7px;flex:1;overflow-y:auto;">
-          <div style="color:var(--muted);font-size:.75rem;text-align:center;padding-top:20px;">尚無資料</div>
-        </div>
-      </div>
-    </div>
+<!-- ══ 績效統計／問題診斷／排行榜（共用同一組篩選）══ -->
+<div class="page" id="page-ana">
+  <div class="ana-top">
+    <div class="ana-filter" id="ana-filter"></div>
+    <div id="ana-demo-bar"></div>
   </div>
-</div>
-
-<!-- ══ LS ANALYTICS PAGE ══ -->
-<div class="page" id="page-lsanalytics">
-  <div class="analytics-wrapper">
-    <div class="range-bar">
-      <span style="font-size:.78rem;color:var(--muted);font-family:var(--fm);">時間範圍</span>
-      <button class="range-btn ls-range-btn" onclick="setLsRange('1m')">本月</button>
-      <button class="range-btn ls-range-btn" onclick="setLsRange('3m')">近3月</button>
-      <button class="range-btn ls-range-btn" onclick="setLsRange('6m')">近6月</button>
-      <button class="range-btn ls-range-btn active" onclick="setLsRange('all')">全部</button>
-      <span style="color:var(--border);margin:0 4px;">│</span>
-      <div id="ls-custom-range">
-        <input type="date" id="ls-range-from">
-        <span style="color:var(--muted);font-size:.8rem;">～</span>
-        <input type="date" id="ls-range-to">
-        <button class="range-btn ls-range-btn" onclick="setLsRange('custom')">套用</button>
-      </div>
-      <span style="color:var(--border);margin:0 4px;">│</span>
-      <span style="font-size:.78rem;color:var(--muted);font-family:var(--fm);">商品</span>
-      <button class="range-btn ls-commodity-btn active" onclick="setLsCommodity('all')">全部</button>
-      <button class="range-btn ls-commodity-btn" onclick="setLsCommodity('TX')" style="color:#a78bfa;">台指</button>
-      <button class="range-btn ls-commodity-btn" onclick="setLsCommodity('CL')" style="color:#fb923c;">原油</button>
-      <button class="range-btn ls-commodity-btn" onclick="setLsCommodity('MNQ')" style="color:#00d4ff;">MNQ</button>
-    </div>
-    <div class="kpi-row" id="ls-kpi-row"></div>
-    <div class="chart-card" id="ls-compare-section">
-      <div class="chart-title"><span class="icon">⚔️</span>多空單全面對比
-        <div class="tooltip-wrap"><div class="tip-icon">?</div><div class="tip-popup">左側=做多，右側=做空。橫條越長代表該指標該方向越佔優勢。每筆交易為單位計算。</div></div>
-      </div>
-      <div id="ls-compare-body"><div style="color:var(--muted);font-size:.82rem;text-align:center;padding:20px;">尚無足夠資料</div></div>
-    </div>
-    <div class="chart-grid-2">
-      <div class="chart-card">
-        <div class="chart-title" style="color:#f87171;">📈 做多 累積損益</div>
-        <div style="height:200px;position:relative;"><canvas id="ls-equity-long"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title" style="color:#34d399;">📉 做空 累積損益</div>
-        <div style="height:200px;position:relative;"><canvas id="ls-equity-short"></canvas></div>
-      </div>
-    </div>
-    <div class="chart-grid-1">
-      <div class="chart-card" id="ls-butterfly-card">
-        <div class="chart-title"><span class="icon">🎯</span><span id="butterfly-title">多空點數分布蝴蝶圖</span>
-          <div style="display:flex;align-items:center;gap:14px;margin-left:auto;font-family:var(--fm);font-size:.68rem;">
-            <span style="color:#34d399;">▲ 獲利</span>
-            <span style="color:#f87171;">▼ 虧損</span>
-            <span style="color:#94a3b8;">滑鼠懸停可查看明細</span>
-          </div>
-        </div>
-        <div id="ls-butterfly-wrap" style="position:relative;width:100%;"></div>
-      </div>
-    </div>
-    <div class="chart-grid-2">
-      <div class="chart-card">
-        <div class="chart-title" style="color:#f87171;">🌡️ 做多 星期×時段熱力圖</div>
-        <div class="hm-wrap"><div id="ls-heatmap-long"></div></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title" style="color:#34d399;">🌡️ 做空 星期×時段熱力圖</div>
-        <div class="hm-wrap"><div id="ls-heatmap-short"></div></div>
-      </div>
-    </div>
-    <div class="chart-grid-2">
-      <div class="chart-card">
-        <div class="chart-title" style="color:#f87171;">📆 做多 持單時間進步曲線</div>
-        <div style="height:240px;position:relative;"><canvas id="ls-dur-trend-long"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title" style="color:#34d399;">📆 做空 持單時間進步曲線</div>
-        <div style="height:240px;position:relative;"><canvas id="ls-dur-trend-short"></canvas></div>
-      </div>
-    </div>
-    <div class="chart-grid-2">
-      <div class="chart-card">
-        <div class="chart-title" style="color:#f87171;">🕐 做多 時間×口數×損益</div>
-        <div style="height:260px;position:relative;"><canvas id="ls-dur3d-long"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title" style="color:#34d399;">🕐 做空 時間×口數×損益</div>
-        <div style="height:260px;position:relative;"><canvas id="ls-dur3d-short"></canvas></div>
-      </div>
-    </div>
-    <div class="chart-grid-2">
-      <div style="display:flex;flex-direction:column;gap:14px;">
-        <div class="chart-card">
-          <div class="chart-title" style="color:#f87171;">🎯 做多 MAE / MFE 分析</div>
-          <div id="ls-maemfe-no-data-long" style="display:none;color:var(--muted);font-size:.82rem;padding:10px;text-align:center;">尚無資料</div>
-          <div style="height:240px;position:relative;"><canvas id="ls-maemfe-long"></canvas></div>
-        </div>
-        <div class="chart-card">
-          <div class="chart-title" style="color:#f87171;"><span class="icon">📐</span>做多 效率統計</div>
-          <div id="ls-maemfe-stats-long" style="display:flex;flex-direction:column;gap:7px;">
-            <div style="color:var(--muted);font-size:.75rem;text-align:center;padding-top:10px;">尚無資料</div>
-          </div>
-        </div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:14px;">
-        <div class="chart-card">
-          <div class="chart-title" style="color:#34d399;">🎯 做空 MAE / MFE 分析</div>
-          <div id="ls-maemfe-no-data-short" style="display:none;color:var(--muted);font-size:.82rem;padding:10px;text-align:center;">尚無資料</div>
-          <div style="height:240px;position:relative;"><canvas id="ls-maemfe-short"></canvas></div>
-        </div>
-        <div class="chart-card">
-          <div class="chart-title" style="color:#34d399;"><span class="icon">📐</span>做空 效率統計</div>
-          <div id="ls-maemfe-stats-short" style="display:flex;flex-direction:column;gap:7px;">
-            <div style="color:var(--muted);font-size:.75rem;text-align:center;padding-top:10px;">尚無資料</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div id="ana-body"></div>
 </div>
 
 <!-- ══ REVIEW PAGE ══ -->
@@ -654,6 +562,8 @@ input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1;}
     <div id="monthly-list-view" class="monthly-review-container" style="display:none;"></div>
   </div>
 </div>
+<div id="ana-tip"></div>
+<div id="ana-modal"><div class="box"><div class="hd"><span></span><button id="ana-modal-go">到當天交易記錄</button><button class="x" onclick="anaCloseModal()">關閉</button></div><div class="bd"></div></div></div>
 <div id="toast"></div>
 
 <script>
@@ -661,10 +571,9 @@ const SK='nq_trades_v3',RK='nq_reviews_v3',FN='nq_quant_v4.json';
 let tradesData=JSON.parse(localStorage.getItem(SK)||'{}');
 let reviewData=JSON.parse(localStorage.getItem(RK)||'{}');
 let selDate=new Date().toLocaleDateString('sv');
-let cal,aC={},curRange='all',rFrom='',rTo='';
-let lsCurRange='all',lsRFrom='',lsRTo='';
+let cal;
 let monthlyYear=new Date().getFullYear();
-let curCommodity='all',lsCurCommodity='all',monthlyCommodity='all';
+let monthlyCommodity='all';
 
 /* ══════════ 商品設定 ══════════
    pv = 每點價值（每口），step = 蝴蝶圖點數區間 */
@@ -684,18 +593,6 @@ function comBadge(c){const i=comInfo(c);return `<span class="com-badge" style="c
 function typeBadge(t){return t.tradeType==='swing'?'<span class="type-badge swing">留倉</span>':'<span class="type-badge">當沖</span>';}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
-function setCommodity(c){
-  curCommodity=c;
-  document.querySelectorAll('.commodity-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.commodity-btn')[COM_FILTERS.indexOf(c)]?.classList.add('active');
-  renderAnalytics();
-}
-function setLsCommodity(c){
-  lsCurCommodity=c;
-  document.querySelectorAll('.ls-commodity-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.ls-commodity-btn')[COM_FILTERS.indexOf(c)]?.classList.add('active');
-  renderLsAnalytics();
-}
 function setMonthlyCommodity(c){
   monthlyCommodity=c;
   document.querySelectorAll('.monthly-commodity-btn').forEach(b=>b.classList.remove('active'));
@@ -721,11 +618,11 @@ document.addEventListener('DOMContentLoaded',()=>{
 function switchPage(n){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('page-'+n).classList.add('active');
-  const idx={record:0,analytics:1,lsanalytics:2,review:3,monthly:4}[n]??0;
+  const isAna=['stats','diag','ranking'].includes(n);
+  document.getElementById(isAna?'page-ana':'page-'+n).classList.add('active');
+  const idx={record:0,stats:1,diag:2,ranking:3,review:4,monthly:5}[n]??0;
   document.querySelectorAll('.nav-tab')[idx].classList.add('active');
-  if(n==='analytics')renderAnalytics();
-  if(n==='lsanalytics')renderLsAnalytics();
+  if(isAna){ANA.tab=n;renderAna();}
   if(n==='review')renderReviewPage();
   if(n==='monthly')renderMonthlyCompare();
 }
@@ -1074,407 +971,498 @@ async function cloudAction(type){
   }catch(e){st.innerText='失敗 ✗';toast('同步失敗（請檢查 Token / Gist ID）','err');}
 }
 
-/* ══════════ ANALYTICS HELPERS ══════════ */
-function getFiltered(range,from,to,commodity){
-  range=range??curRange;from=from??rFrom;to=to??rTo;commodity=commodity??curCommodity;
-  let dates=Object.keys(tradesData).sort();const today=new Date().toLocaleDateString('sv');
-  if(range==='1m'){const m=today.substring(0,7);dates=dates.filter(d=>d.startsWith(m));}
-  else if(range==='3m'){const c=new Date();c.setMonth(c.getMonth()-3);dates=dates.filter(d=>d>=c.toLocaleDateString('sv'));}
-  else if(range==='6m'){const c=new Date();c.setMonth(c.getMonth()-6);dates=dates.filter(d=>d>=c.toLocaleDateString('sv'));}
-  else if(range==='custom'){dates=dates.filter(d=>(!from||d>=from)&&(!to||d<=to));}
-  const r=[];dates.forEach(d=>{(tradesData[d]||[]).forEach(t=>r.push({...t,date:d}));});
-  return filterByCommodity(r,commodity);
-}
-function setRange(r){
-  curRange=r;
-  if(r==='custom'){rFrom=document.getElementById('range-from').value;rTo=document.getElementById('range-to').value;}
-  const btns=document.querySelectorAll('#page-analytics .range-btn:not(.commodity-btn)');
-  btns.forEach(b=>b.classList.remove('active'));
-  const map={'1m':0,'3m':1,'6m':2,'all':3,'custom':4};
-  btns[map[r]]?.classList.add('active');
-  renderAnalytics();
-}
-function setLsRange(r){
-  lsCurRange=r;
-  if(r==='custom'){lsRFrom=document.getElementById('ls-range-from').value;lsRTo=document.getElementById('ls-range-to').value;}
-  document.querySelectorAll('.ls-range-btn').forEach(b=>b.classList.remove('active'));
-  const map={'1m':0,'3m':1,'6m':2,'all':3,'custom':4};
-  document.querySelectorAll('.ls-range-btn')[map[r]]?.classList.add('active');
-  renderLsAnalytics();
-}
-function renderAnalytics(){
-  const T=getFiltered();
-  renderKPI(T);renderPnlBar(T);renderEquity(T);renderHistogram(T);
-  renderHeatmap(T,'heatmap-container');
-  renderBubble(T);renderDuration(T,'chart-dur-trend','chart-dur-3d');renderMaeMfe(T,'chart-maemfe','mae-mfe-no-data','maemfe-stats-body');
-}
+/* ══════════ 績效統計／問題診斷／排行榜 ══════════
+   資料只有：進出場時間、價格、口數、損益，以及選填的 MFE／MAE。
+   不用K棒，也不重建單筆持倉中的損益經過；所有數字都以「平倉結果」計算。 */
+const ANA={tab:'stats',range:'all',from:'',to:'',com:'all',side:'all',demo:null,rkMode:'amt',rkSort:'mfe',dgM:'pnl',dgAfter:'loss',draw:[],groups:[]};
+const A_UP='#10b981',A_DN='#f43f5e',A_LONG='#f87171',A_SHORT='#34d399',A_GOLD='#f59e0b',A_ACC='#00d4ff';
+const aNum=v=>{const n=parseFloat(String(v??'').replace(/,/g,''));return isNaN(n)?null:n;};
+const aSum=(a,f)=>a.reduce((s,x)=>s+f(x),0);
+const aM=v=>`${v>=0?'+':'-'}$${Math.abs(Math.round(v)).toLocaleString('en-US')}`;
+const aM0=v=>`$${Math.abs(Math.round(v)).toLocaleString('en-US')}`;
+const aPct=v=>isFinite(v)?v.toFixed(0)+'%':'—';
+const aCl=v=>v>=0?'up':'dn';
+const aHold=m=>m==null?'—':(m<60?`${m.toFixed(0)} 分`:(m<1440?`${(m/60).toFixed(1)} 時`:`${(m/1440).toFixed(1)} 天`));
+const aSideTxt=t=>t.side==='long'?'多':'空';
+function aStat(a){const n=a.length,w=a.filter(t=>t.pnl>0),l=a.filter(t=>t.pnl<0),p=aSum(a,t=>t.pnl),gw=aSum(w,t=>t.pnl),gl=-aSum(l,t=>t.pnl);
+  return{n,w:w.length,l:l.length,e:n-w.length-l.length,wr:n?w.length/n*100:NaN,pnl:p,avg:n?p/n:NaN,gw,gl,pf:gl?gw/gl:(gw?Infinity:NaN),avgW:w.length?gw/w.length:0,avgL:l.length?gl/l.length:0,maxW:n?Math.max(...a.map(t=>t.pnl)):0,maxL:n?Math.min(...a.map(t=>t.pnl)):0};}
+function aMdd(a){let c=0,pk=0,m=0;[...a].sort((x,y)=>x.exitEp-y.exitEp).forEach(t=>{c+=t.pnl;if(c>pk)pk=c;if(pk-c>m)m=pk-c;});return m;}
+const aPf=v=>v===Infinity?'∞':(isFinite(v)?v.toFixed(2):'—');
 
-function calcConsecutive(T){
-  const byDate={};
-  T.forEach(t=>{if(!byDate[t.date])byDate[t.date]=0;byDate[t.date]+=t.totalPnl;});
-  const dates=Object.keys(byDate).sort();
-  let curWin=0,curLoss=0,maxWin=0,maxLoss=0;
-  dates.forEach(d=>{
-    const pnl=byDate[d];
-    if(pnl>0){curWin++;curLoss=0;}
-    else if(pnl<0){curLoss++;curWin=0;}
-    else{curWin=0;curLoss=0;}
-    if(curWin>maxWin)maxWin=curWin;
-    if(curLoss>maxLoss)maxLoss=curLoss;
-  });
-  return{maxWin,maxLoss};
-}
-
-function renderKPI(T){
-  const el=document.getElementById('kpi-row');
-  if(!T.length){el.innerHTML='<div style="color:var(--muted);font-size:.85rem;">尚無資料</div>';return;}
-  const wins=T.filter(t=>t.totalPnl>0),losses=T.filter(t=>t.totalPnl<0);
-  const pSum=wins.reduce((s,t)=>s+t.totalPnl,0),lSum=losses.reduce((s,t)=>s+Math.abs(t.totalPnl),0);
-  const totPnl=T.reduce((s,t)=>s+t.totalPnl,0);
-  const wr=(wins.length/T.length*100).toFixed(1);
-  const pf=lSum?(pSum/lSum).toFixed(2):'∞';
-  const avgW=wins.length?(pSum/wins.length).toFixed(0):0;
-  const avgL=losses.length?(lSum/losses.length).toFixed(0):0;
-  const byDate={};T.forEach(t=>{if(!byDate[t.date])byDate[t.date]=0;byDate[t.date]+=t.totalPnl;});
-  let cum=0,peak=0,mdd=0;
-  Object.keys(byDate).sort().forEach(d=>{cum+=byDate[d];if(cum>peak)peak=cum;if(peak-cum>mdd)mdd=peak-cum;});
-  const{maxWin,maxLoss}=calcConsecutive(T);
-  const ev=(wins.length/T.length*parseFloat(avgW))-(losses.length/T.length*parseFloat(avgL));
-  el.innerHTML=`
-    <div class="kpi-card c-accent"><div class="kpi-label">總筆數</div><div class="kpi-val">${T.length}</div><div class="kpi-sub">勝${wins.length} / 負${losses.length}</div></div>
-    <div class="kpi-card c-danger"><div class="kpi-label">連續虧損天數</div><div class="kpi-val" style="color:var(--danger);">${maxLoss}</div><div class="kpi-sub">最長連虧天數</div></div>
-    <div class="kpi-card c-success"><div class="kpi-label">連續獲利天數</div><div class="kpi-val" style="color:var(--success);">${maxWin}</div><div class="kpi-sub">最長連勝天數</div></div>
-    <div class="kpi-card c-success"><div class="kpi-label">勝率</div><div class="kpi-val" style="color:${parseFloat(wr)>=50?'var(--success)':'var(--danger)'};">${wr}%</div><div class="kpi-sub">&nbsp;</div></div>
-    <div class="kpi-card c-gold"><div class="kpi-label">獲利因子</div><div class="kpi-val" style="color:var(--gold);">${pf}</div><div class="kpi-sub">總獲利 ÷ 總虧損</div></div>
-    <div class="kpi-card ${totPnl>=0?'c-success':'c-danger'}"><div class="kpi-label">累積損益</div><div class="kpi-val" style="color:${totPnl>=0?'var(--success)':'var(--danger)'};">$${totPnl.toFixed(0)}</div><div class="kpi-sub">&nbsp;</div></div>
-    <div class="kpi-card c-warn"><div class="kpi-label">最大回撤</div><div class="kpi-val" style="color:var(--warn);">$${mdd.toFixed(0)}</div><div class="kpi-sub">&nbsp;</div></div>
-    <div class="kpi-card c-purple"><div class="kpi-label">期望值</div><div class="kpi-val" style="color:${ev>=0?'var(--success)':'var(--danger)'};">$${ev.toFixed(0)}</div><div class="kpi-sub">勝率×均獲 − 敗率×均賠</div></div>`;
-}
-
-function renderPnlBar(T){
-  const bar=document.getElementById('pnl-ratio-bar');
-  if(!T.length){bar.style.display='none';return;}
-  const wins=T.filter(t=>t.totalPnl>0);const losses=T.filter(t=>t.totalPnl<0);
-  const avgW=wins.length?(wins.reduce((s,t)=>s+t.totalPnl,0)/wins.length):0;
-  const avgL=losses.length?(losses.reduce((s,t)=>s+Math.abs(t.totalPnl),0)/losses.length):0;
-  const total=avgW+avgL;const greenPct=total>0?((avgW/total)*100).toFixed(1):50;
-  const rr=avgL>0?(avgW/avgL).toFixed(2):'∞';
-  bar.style.display='block';
-  document.getElementById('pnl-ratio-label').innerText=`賺賠比  ${rr} : 1`;
-  document.getElementById('pnl-ratio-win').innerText=`平均獲利 $${avgW.toFixed(0)}`;
-  document.getElementById('pnl-ratio-loss').innerText=`平均虧損 -$${avgL.toFixed(0)}`;
-  document.getElementById('pnl-ratio-green').style.width=`${greenPct}%`;
-}
-
-function renderLSCompare(T){
-  const el=document.getElementById('ls-compare-body');
-  const longT=T.filter(t=>t.side==='long');const shortT=T.filter(t=>t.side==='short');
-  if(!longT.length&&!shortT.length){el.innerHTML='<div style="color:var(--muted);font-size:.82rem;text-align:center;padding:20px;">尚無足夠資料</div>';return;}
-  function calcStats(trades){
-    if(!trades.length)return null;
-    const wins=trades.filter(t=>t.totalPnl>0);const losses=trades.filter(t=>t.totalPnl<0);
-    const pSum=wins.reduce((s,t)=>s+t.totalPnl,0);const lSum=losses.reduce((s,t)=>s+Math.abs(t.totalPnl),0);
-    const wr=wins.length/trades.length;const avgW=wins.length?pSum/wins.length:0;const avgL=losses.length?lSum/losses.length:0;
-    const avgWPts=wins.length?wins.reduce((s,t)=>s+t.totalPnl/ptVal(t),0)/wins.length:0;
-    const avgLPts=losses.length?losses.reduce((s,t)=>s+Math.abs(t.totalPnl)/ptVal(t),0)/losses.length:0;
-    const rr=avgL>0?avgW/avgL:null;
-    const totPnl=trades.reduce((s,t)=>s+t.totalPnl,0);const pf=lSum?(pSum/lSum):null;const ev=wr*avgW-(1-wr)*avgL;
-    let cum=0,peak=0,mdd=0;trades.forEach(t=>{cum+=t.totalPnl;if(cum>peak)peak=cum;if(peak-cum>mdd)mdd=peak-cum;});
-    const givebackRates=wins.filter(t=>t.mfe&&t.mfe>0).map(t=>(Math.abs(t.mfe)-t.totalPnl)/Math.abs(t.mfe)*100);
-    const avgGiveback=givebackRates.length?givebackRates.reduce((s,v)=>s+v,0)/givebackRates.length:null;
-    const lossWithMae=losses.filter(t=>t.mae!=null&&Math.abs(t.mae)>0);
-    const avgMaePts=lossWithMae.length?lossWithMae.reduce((s,t)=>s+Math.abs(t.mae)/ptVal(t),0)/lossWithMae.length:null;
-    const hasBoth=trades.filter(t=>t.mfe!=null&&t.mae!=null);
-    const totalMFE=hasBoth.reduce((s,t)=>s+Math.abs(t.mfe),0);const totalMAE=hasBoth.reduce((s,t)=>s+Math.abs(t.mae),0);
-    const riskEff=hasBoth.length&&totalMAE>0?totalMFE/totalMAE:null;
-    const rrrValid=trades.filter(t=>t.mae!=null&&t.mae!==0);
-    const rrrPnl=rrrValid.reduce((s,t)=>s+t.totalPnl,0);const rrrMae=rrrValid.reduce((s,t)=>s+Math.abs(t.mae),0);
-    const avgRRR=rrrValid.length&&rrrMae>0?rrrPnl/rrrMae:null;
-    return{count:trades.length,wins:wins.length,wr,pSum,lSum,avgW,avgL,avgWPts,avgLPts,rr,totPnl,pf,ev,mdd,avgGiveback,avgMaePts,riskEff,avgRRR};
+/* ── 範例資料：只存在記憶體，不寫入 localStorage、也不會同步 ── */
+function anaDemoData(){
+  if(anaDemoData.c)return anaDemoData.c;
+  let s=20261105;const R=()=>(s=(s*1664525+1013904223)>>>0)/4294967296;
+  const out={},pick=a=>a[Math.floor(R()*a.length)],today=new Date();
+  const fmt=m=>`${String(Math.floor(m/60)%24).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
+  const c={pts:45,dec:2,tick:.25,q:[1,2,2,3,4],hours:[1290,1320,1350,1380,1440,1500]},com='MNQ',pv=COM.MNQ.pv;
+  const notes=['突破前高，量能放大','回測均線不破','開盤區間突破','假跌破後站回','跟著趨勢回檔進場'];
+  for(let back=125;back>=0;back--){
+    const d=new Date(today);d.setDate(d.getDate()-back);if([0,6].includes(d.getDay())||R()<.22)continue;
+    const date=d.toLocaleDateString('sv');
+    const count=1+Math.floor(R()*R()*6);let clock=pick(c.hours),px=25000*(1+(R()-.5)*.05),last=null;out[date]=[];
+    for(let i=0;i<count;i++){
+      const revenge=last&&last.totalPnl<0&&R()<.55,side=revenge&&R()<.6?(last.side==='long'?'short':'long'):(R()<.54?'long':'short');
+      let q=pick(c.q);if(revenge&&R()<.45)q+=1;
+      const gap=revenge?2+Math.floor(R()*9):15+Math.floor(R()*80);clock+=last?gap:0;
+      const edge=(i===0?.2:0)+(revenge?-.55:0)+(side==='long'?.08:-.03)+(i>=3?-.35:0)+(new Date(date).getDay()===3?-.2:0);
+      const z=(R()+R()+R()-1.5)*1.6+edge,win=z>0;
+      const ptsR=(win?Math.abs(z)*1.15:-Math.min(Math.abs(z),1.05))*c.pts,dir=side==='long'?1:-1;
+      const rnd=v=>+(Math.round(v/c.tick)*c.tick).toFixed(c.dec);
+      const entry=rnd(px),exit=rnd(entry+dir*ptsR),hold=win?6+Math.floor(Math.abs(z)*34+R()*25):16+Math.floor(R()*70);
+      const entries=[{time:fmt(clock),sec:'00',qty:q,price:String(entry),reason:pick(notes),isScaling:false}];
+      if(R()<.2){const avgDown=R()<.5,ap=rnd(entry+dir*(avgDown?-1:1)*c.pts*.25);entries.push({time:fmt(clock+Math.floor(hold/3)),sec:'00',qty:1,price:String(ap),reason:avgDown?'往不利方向加碼':'順勢加碼',isScaling:true});}
+      const tq=entries.reduce((x,e)=>x+e.qty,0),ae=entries.reduce((x,e)=>x+Number(e.price)*e.qty,0)/tq;
+      const end=clock+hold,exits=(tq>=3&&R()<.4)?[{qty:tq-1,time:fmt(clock+Math.floor(hold*.6)),sec:'00',price:String(exit),reason:'先出大部分'},{qty:1,time:fmt(end),sec:'00',price:String(exit),reason:'尾倉出場'}]:[{qty:tq,time:fmt(end),sec:'00',price:String(exit),reason:win?'到目標出場':'停損出場'}];
+      const pnl=Math.round((exit-ae)*dir*pv*tq),absP=Math.abs(pnl),hasEx=R()<.72;
+      const t={id:Number(date.replace(/-/g,''))*100+i,side,commodity:com,tradeType:'day',entries,exits,totalPnl:pnl,duration:'',durSec:hold*60,hasScaling:entries.length>1,
+        mfe:hasEx?Math.round(pnl>0?absP*(1+R()*.9):absP*R()*1.5):null,mae:hasEx?Math.round(pnl>0?absP*R()*.5:absP*(1+R()*.25)):null};
+      t.duration=fmtDur(t.durSec);out[date].push(t);last=t;clock=end;px=exit;
+    }
   }
-  const ls=calcStats(longT);const ss=calcStats(shortT);
-  function metricRow(label,lVal,sVal,fmt,higherIsBetter=true){
-    const lN=lVal??0,sN=sVal??0;const absMax=Math.max(Math.abs(lN),Math.abs(sN),1);
-    const lPct=Math.abs(lN)/absMax*90;const sPct=Math.abs(sN)/absMax*90;
-    const lColor=higherIsBetter?(lN>=sN?'var(--success)':'var(--danger)'):(lN<=sN?'var(--success)':'var(--danger)');
-    const sColor=higherIsBetter?(sN>=lN?'var(--success)':'var(--danger)'):(sN<=lN?'var(--success)':'var(--danger)');
-    return `<div style="display:grid;grid-template-columns:1fr 72px 1fr;gap:0;align-items:center;">
-      <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;padding-right:8px;">
-        <span style="font-family:var(--fm);font-size:.9rem;font-weight:700;color:${lColor};min-width:54px;text-align:right;">${lVal!=null?fmt(lN):'—'}</span>
-        <div style="width:${lPct}px;max-width:90px;height:18px;background:rgba(244,63,94,.45);border-radius:3px 0 0 3px;min-width:3px;flex-shrink:0;"></div>
-      </div>
-      <div style="text-align:center;font-size:.65rem;color:#ffffff;font-family:var(--fm);letter-spacing:.3px;padding:0 2px;line-height:1.3;">${label}</div>
-      <div style="display:flex;align-items:center;gap:8px;padding-left:8px;">
-        <div style="width:${sPct}px;max-width:90px;height:18px;background:rgba(16,185,129,.45);border-radius:0 3px 3px 0;min-width:3px;flex-shrink:0;"></div>
-        <span style="font-family:var(--fm);font-size:.9rem;font-weight:700;color:${sColor};min-width:54px;">${sVal!=null?fmt(sN):'—'}</span>
-      </div>
-    </div>`;
+  return anaDemoData.c=out;
+}
+function anaIsDemo(){if(ANA.demo!==null)return ANA.demo;return !Object.values(tradesData).some(a=>(a||[]).some(aClosed));}
+function aClosed(t){return (t.exits||[]).length>0||Number(t.totalPnl)!==0;}
+function anaToggleDemo(){ANA.demo=!anaIsDemo();renderAna();}
+
+/* ── 把原始紀錄整理成分析用欄位 ── */
+function aNorm(t,date){
+  const entries=(t.entries&&t.entries.length)?t.entries:[{time:t.entryTime,qty:t.entryQty,price:''}],exits=t.exits||[];
+  const f=entries[0],qty=aSum(entries,e=>e.qty||0)||1,pv=ptVal(t);
+  const entryEp=f.time?toEpoch(date,f.time,f.sec):null;
+  let exitEp=null;
+  exits.filter(e=>e.time).forEach(e=>{let x=toEpoch(e.date||date,e.time,e.sec);if(entryEp!=null&&t.tradeType!=='swing'&&x<entryEp)x+=86400;if(exitEp==null||x>exitEp)exitEp=x;});
+  if(exitEp==null)exitEp=entryEp!=null?entryEp+(t.durSec||0):toEpoch(date,'00:00',0);
+  const ePr=entries.map(e=>aNum(e.price)),xPr=exits.map(e=>aNum(e.price)),xQty=aSum(exits,e=>e.qty||0);
+  let pts=null,avgE=null;
+  if(ePr.every(p=>p!=null)){avgE=entries.reduce((s,e,i)=>s+ePr[i]*(e.qty||0),0)/qty;
+    if(exits.length&&xQty&&xPr.every(p=>p!=null)){const avgX=exits.reduce((s,e,i)=>s+xPr[i]*(e.qty||0),0)/xQty;pts=t.side==='long'?avgX-avgE:avgE-avgX;}}
+  let add='single';
+  if(entries.length>1&&ePr.every(p=>p!=null)){let q=0,av=0,dn=false;entries.forEach((e,i)=>{if(i>0&&(t.side==='long'?ePr[i]<av:ePr[i]>av))dn=true;av=(av*q+ePr[i]*e.qty)/(q+e.qty);q+=e.qty;});add=dn?'down':'up';}
+  const durS=t.durSec!=null?t.durSec:(entryEp!=null&&exits.some(e=>e.time)?exitEp-entryEp:null);
+  const mfe=t.mfe!=null?Math.abs(t.mfe):null,mae=t.mae!=null?Math.abs(t.mae):null;
+  return{raw:t,id:t.id,date,side:t.side,com:comOf(t),type:t.tradeType||'day',qty,pv,pnl:Number(t.totalPnl)||0,per:(Number(t.totalPnl)||0)/qty,entryEp:entryEp??exitEp,exitEp,time:f.time||'--:--',pts,ePx:ePr[0],avgE,add,exitN:exits.length,hold:durS!=null?Math.max(durS/60,0):null,mfe,mae,mfeP:mfe!=null?mfe/(qty*pv):null,maeP:mae!=null?mae/(qty*pv):null,hour:f.time?parseInt(f.time):null,dow:new Date(date+'T12:00:00').getDay()};
+}
+/* 順序欄位要在多空篩選「之前」算：只看多單時，「上一筆」仍是實際的上一筆 */
+function aSeq(all){
+  const days={};all.forEach(t=>(days[t.date]=days[t.date]||[]).push(t));
+  Object.values(days).forEach(a=>{a.sort((x,y)=>x.entryEp-y.entryEp);
+    a.forEach((t,i)=>{t.nth=i+1;
+      const done=a.slice(0,i).filter(o=>o.exitEp<=t.entryEp);
+      t.prev=done.length?done.reduce((b,o)=>o.exitEp>=b.exitEp?o:b):null;
+      t.overlap=i-done.length;t.dayBefore=aSum(done,o=>o.pnl);
+      t.gap=t.prev?(t.entryEp-t.prev.exitEp)/60:null;
+      t.same=t.prev?t.prev.side===t.side:null;
+      t.qtyChg=t.prev?Math.sign(t.qty-t.prev.qty):null;
+      t.dist=(t.prev&&t.prev.com===t.com&&t.ePx!=null&&t.prev.lastX!=null)?Math.abs(t.ePx-t.prev.lastX):null;
+      t.lStreak=t.prev?(t.prev.pnl<0?t.prev.lStreak+1:0):0;t.wStreak=t.prev?(t.prev.pnl>0?t.prev.wStreak+1:0):0;});});
+}
+function anaData(){
+  const src=anaIsDemo()?anaDemoData():tradesData,today=new Date().toLocaleDateString('sv');
+  let lo='',hi='';
+  if(ANA.range==='1m')lo=today.slice(0,7)+'-01';
+  else if(ANA.range==='3m'||ANA.range==='6m'){const c=new Date();c.setMonth(c.getMonth()-(ANA.range==='3m'?3:6));lo=c.toLocaleDateString('sv');}
+  else if(ANA.range==='custom'){lo=ANA.from;hi=ANA.to;}
+  const base=[];let open=0;
+  Object.keys(src).sort().filter(d=>(!lo||d>=lo)&&(!hi||d<=hi)).forEach(d=>(src[d]||[]).forEach(t=>{
+    if(ANA.com!=='all'&&comOf(t)!==ANA.com)return;
+    if(!aClosed(t)){open++;return;}
+    const n=aNorm(t,d);const xs=(t.exits||[]);n.lastX=xs.length?aNum(xs[xs.length-1].price):null;base.push(n);}));
+  const byD={};base.forEach(t=>(byD[t.date]=byD[t.date]||[]).push(t));
+  Object.values(byD).forEach(a=>{if(a.some(t=>t.hour>=15)&&a.some(t=>t.hour!=null&&t.hour<8))a.filter(t=>t.hour!=null&&t.hour<8).forEach(t=>{t.entryEp+=86400;t.exitEp+=86400;});});
+  aSeq(base);
+  const sided=ANA.side==='all'?base:base.filter(t=>t.side===ANA.side);
+  sided.sort((a,b)=>a.exitEp-b.exitEp);
+  return{T:sided,base,open};
+}
+
+/* ── 外框與篩選 ── */
+function anaSet(k,v){
+  if(k==='range'&&v==='custom'){ANA.from=document.getElementById('ana-from').value;ANA.to=document.getElementById('ana-to').value;}
+  ANA[k]=v;renderAna();
+}
+function anaFilterHtml(base){
+  const b=(k,v,l,st='')=>`<button class="range-btn ${ANA[k]===v?'active':''}" style="${st}" onclick="anaSet('${k}','${v}')">${l}</button>`;
+  return `<span class="lbl">時間</span>${b('range','1m','本月')}${b('range','3m','近3月')}${b('range','6m','近6月')}${b('range','all','全部')}
+  <input type="date" id="ana-from" value="${ANA.from}"><span class="mt">～</span><input type="date" id="ana-to" value="${ANA.to}">${b('range','custom','套用')}
+  <span class="sep">│</span><span class="lbl">方向</span>${b('side','all','多＋空')}${b('side','long','只看多單','color:#f87171')}${b('side','short','只看空單','color:#34d399')}`;
+}
+function renderAna(){
+  const {T,base,open}=anaData(),demo=anaIsDemo(),hasReal=Object.values(tradesData).some(a=>(a||[]).some(aClosed));
+  document.getElementById('ana-filter').innerHTML=anaFilterHtml(base);
+  document.getElementById('ana-demo-bar').innerHTML=demo
+    ?`<div class="ana-demo">⚠️ 目前看的是<b>範例資料</b>（模板展示用，全是假的，不會存進紀錄、也不會同步）${hasReal?'':'；你存下第一筆平倉交易後就會自動換成你的資料'}<button onclick="anaToggleDemo()">看我的資料</button></div>`
+    :`<div class="ana-demo real">目前看的是你的交易紀錄${open?`；${open} 筆尚未出場的單沒有算進來`:''}<button onclick="anaToggleDemo()">看範例資料</button></div>`;
+  ANA.draw=[];ANA.groups=[];
+  const body=document.getElementById('ana-body');
+  if(!T.length){body.innerHTML=`<div class="ana-empty">這個範圍沒有已平倉的交易<br><span style="font-size:.8rem">換個時間、商品或方向看看</span></div>`;return;}
+  if(ANA.tab==='stats')anaStats(T,body);
+  else if(ANA.tab==='diag')anaDiag(T,body);
+  else anaRank(T,body);
+  body.scrollTop=0;anaDrawAll();
+}
+function anaDrawAll(){Object.keys(ANA_XH).forEach(k=>delete ANA_XH[k]);ANA.draw.forEach(d=>{const el=document.getElementById(d.id);if(!el)return;const w=Math.floor(el.clientWidth);if(w>30)el.innerHTML=d.fn(w);});}
+let anaSlotN=0;
+function aSlot(fn){const id='as'+(++anaSlotN);ANA.draw.push({id,fn});return `<div class="ana-slot" id="${id}"></div>`;}
+function aReg(list){ANA.groups.push(list);return ANA.groups.length-1;}
+const aTipT=t=>`${t.date} ${t.time}｜${aSideTxt(t)} ${t.qty}口\n損益 ${aM(t.pnl)}${t.pts!=null?`（${t.pts>=0?'+':''}${+t.pts.toFixed(2)} 點）`:''}｜持有 ${aHold(t.hold)}${t.mfe!=null?`\nMFE ${aM0(t.mfe)}`:''}${t.mae!=null?`｜MAE ${aM0(t.mae)}`:''}\n點一下看這筆`;
+function aAttr(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+function aNice(span,n){const r=(span||1)/n,p=Math.pow(10,Math.floor(Math.log10(r))),m=r/p;return (m<=1?1:m<=2?2:m<=5?5:10)*p;}
+function aScale(lo,hi,n=5){if(lo===hi){hi+=1;lo-=1;}const st=aNice(hi-lo,n),a=Math.floor(lo/st)*st,b=Math.ceil(hi/st)*st,t=[];for(let v=a;v<=b+st*1e-6;v+=st)t.push(+v.toFixed(6));return{lo:a,hi:b,t};}
+const aK=v=>{const a=Math.abs(v);return (v<0?'-':'')+'$'+(a>=10000?(a/1000).toFixed(a%1000?1:0)+'k':Math.round(a).toLocaleString('en-US'));};
+
+/* ── 圖表 ── */
+let anaXhN=0;const ANA_XH={};
+function aMonths(A,X0,slot,top,bot,labelY){let g='';const segs=[];A.forEach((t,i)=>{const m=t.date.slice(0,7);if(!segs.length||segs[segs.length-1].m!==m)segs.push({m,from:i,to:i});else segs[segs.length-1].to=i;});
+  segs.forEach((o,k)=>{const x1=X0+slot*o.from,x2=X0+slot*(o.to+1),[yy,mm]=o.m.split('-'),w=x2-x1;
+    if(k>0)g+=`<line x1="${x1}" x2="${x1}" y1="${top}" y2="${bot}" stroke="rgba(250,204,21,.28)" stroke-dasharray="3,3"/>`;
+    if(k%2)g+=`<rect x="${x1}" y="${top}" width="${w}" height="${bot-top}" fill="rgba(255,255,255,.018)"/>`;
+    const full=(k===0||segs[k-1].m.slice(0,4)!==yy)?`${yy}年${+mm}月`:`${+mm}月`,l=w>=58?full:(w>=22?`${+mm}月`:'');
+    if(labelY&&l)g+=`<text x="${(x1+x2)/2}" y="${labelY}" fill="#cbd5e1" font-size="11" font-weight="700" text-anchor="middle">${l}</text>`;});return g;}
+function aYGrid(Y,y,L,R,zero=.3){let g='';Y.t.forEach(v=>{g+=`<line x1="${L}" x2="${R}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(255,255,255,${v===0?zero:.06})"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end" class="ana-ax">${aK(v)}</text>`;});return g;}
+const aXhOverlay=(t,b)=>`<rect class="xh-band" y="${t}" height="${b-t}" width="0" fill="rgba(250,204,21,.07)" visibility="hidden" pointer-events="none"/><line class="xh-v" y1="${t}" y2="${b}" stroke="#facc15" stroke-width="1.5" stroke-dasharray="5,4" visibility="hidden" pointer-events="none"/><line class="xh-h" stroke="rgba(250,204,21,.75)" stroke-dasharray="3,3" visibility="hidden" pointer-events="none"/><g class="xh-yl" visibility="hidden" pointer-events="none"><rect x="0" y="-8" width="56" height="16" rx="3" fill="#facc15"/><text x="28" y="4" fill="#000" font-size="10" font-weight="800" font-family="monospace" text-anchor="middle"></text></g>`;
+const aInfoHint=(id,txt)=>`<div class="xh-info" id="${id}_info">${txt}</div>`;
+function aXhSvg(id,part,W,H,inner,cfg){ANA_XH[id].parts[part]=cfg;return `<svg viewBox="0 0 ${W} ${H}" height="${H}" data-xh="${id}" data-part="${part}" style="cursor:crosshair">${inner}${aXhOverlay(cfg.t,cfg.b)}</svg>`;}
+/* 累積損益＋回撤：同一條時間軸，十字線一起走；回撤最深那根微微發光 */
+function cEquity(T,idx,opt={}){return W=>{
+  const A=[...T].sort((a,b)=>a.exitEp-b.exitEp),n=A.length,id='xh'+(++anaXhN),P={l:60,r:14},slot=(W-P.l-P.r)/n,X=i=>P.l+slot*(i+.5);
+  let c=0,pk=0,mi=-1,mv=0;const eq=[],dd=[];A.forEach((t,i)=>{c+=t.pnl;pk=Math.max(pk,c);eq.push(c);dd.push(c-pk);if(c-pk<mv){mv=c-pk;mi=i;}});
+  ANA_XH[id]={parts:{},band:slot,l:P.l,r:W-P.r,t:A.map(idx),pts:A.map((t,i)=>({x:X(i),title:`#${i+1} ${aSideTxt(t)} ・ ${t.date} ${t.time}`,items:[['這筆',aM(t.pnl),t.pnl>=0?A_UP:A_DN],['累積',aM(eq[i]),eq[i]>=0?A_UP:A_DN],['回撤',dd[i]?'-'+aM0(dd[i]):'$0',A_DN],['口數',t.qty+'口','#fff']]}))};
+  // 累積損益
+  const H1=opt.h||240,T1=12,B1=H1-6,Ye=aScale(Math.min(0,...eq),Math.max(0,...eq)),ye=v=>T1+(Ye.hi-v)/(Ye.hi-Ye.lo)*(B1-T1);
+  const d=eq.map((v,i)=>`${i?'L':'M'}${X(i).toFixed(1)} ${ye(v).toFixed(1)}`).join(''),col=opt.color||A_ACC;
+  const top=aXhSvg(id,'eq',W,H1,aMonths(A,P.l,slot,T1,B1)+aYGrid(Ye,ye,P.l,W-P.r)+`<path d="${d}L${X(n-1)} ${ye(0)}L${X(0)} ${ye(0)}Z" fill="${col}" fill-opacity=".1"/><path d="${d}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round"/>`,{t:T1,b:B1,lo:Ye.lo,hi:Ye.hi});
+  // 回撤
+  const H2=opt.h2||110,T2=6,B2=H2-22,Yd=aScale(Math.min(mv,-1),0,3),yd=v=>T2+(Yd.hi-v)/(Yd.hi-Yd.lo)*(B2-T2),bw=Math.max(Math.min(slot-(slot>4?1:0),26),.8);
+  let bars='';dd.forEach((v,i)=>{if(!v)return;const hl=i===mi,h=Math.max(yd(v)-yd(0),1);bars+=`<rect x="${X(i)-bw/2}" y="${yd(0)}" width="${bw}" height="${h}" fill="${hl?'#ff7a90':A_DN}" fill-opacity="${hl?1:.5}" ${hl?'style="filter:drop-shadow(0 0 2.5px rgba(255,122,144,.75))"':''}/>`;});
+  let mark='';if(mi>=0){const tx=X(mi),right=tx<W*.7;mark=`<text x="${tx+(right?6:-6)}" y="${Math.min(yd(mv)-2,B2-2)}" text-anchor="${right?'start':'end'}" font-size="11" font-weight="700" fill="#ff9fb0" font-family="var(--fm)">MDD -${aM0(mv)}</text>`;}
+  const low=aXhSvg(id,'dd',W,H2,aMonths(A,P.l,slot,T2,B2,H2-6)+aYGrid(Yd,yd,P.l,W-P.r,.3)+bars+mark,{t:T2,b:B2,lo:Yd.lo,hi:Yd.hi});
+  return aInfoHint(id,`👆 滑鼠移到圖上，累積損益和回撤的十字線一起走`)+top+`<div class="xh-sub">回撤（離最高點多遠）</div>`+low;};}
+/* MFE／MAE：寬淡色＝波動範圍、窄實心＝出場損益、白線＝出場位置 */
+function cMaeMfe(A,idx,opt={}){return W=>{
+  const H=opt.h||290,P={l:60,r:14,t:22,b:32},N=A.length,id='xh'+(++anaXhN),mfe=A.map(t=>t.mfe||0),mae=A.map(t=>-(t.mae||0)),pnl=A.map(t=>t.pnl);
+  const Y=aScale(Math.min(0,...mae,...pnl),Math.max(0,...mfe,...pnl),6),y=v=>P.t+(Y.hi-v)/(Y.hi-Y.lo)*(H-P.t-P.b),slot=(W-P.l-P.r)/N,X=i=>P.l+slot*(i+.5),zero=y(0);
+  const wick=Math.max(2,Math.min(slot*.62,22)),body=Math.max(1.5,Math.min(slot*.32,10)),rr=Math.min(3,wick/2),rb=Math.min(2,body/2),g=id;let bars='';
+  A.forEach((t,i)=>{const x=X(i),up=y(mfe[i]),dn=y(mae[i]),py=y(pnl[i]),c=pnl[i]>=0?'#22c55e':'#ef4444';
+    if(mfe[i]>0)bars+=`<rect x="${x-wick/2}" y="${up}" width="${wick}" height="${Math.max(.5,zero-up)}" rx="${rr}" fill="url(#mmU-${g})" stroke="rgba(34,197,94,.55)" stroke-width=".8"/>`;
+    if(mae[i]<0)bars+=`<rect x="${x-wick/2}" y="${zero}" width="${wick}" height="${Math.max(.5,dn-zero)}" rx="${rr}" fill="url(#mmD-${g})" stroke="rgba(239,68,68,.55)" stroke-width=".8"/>`;
+    bars+=`<rect x="${x-body/2}" y="${Math.min(py,zero)}" width="${body}" height="${Math.max(1.5,Math.abs(py-zero))}" rx="${rb}" fill="${c}"/><line x1="${x-wick/2-1}" x2="${x+wick/2+1}" y1="${py}" y2="${py}" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`;});
+  ANA_XH[id]={parts:{},band:slot,l:P.l,r:W-P.r,t:A.map(idx),pts:A.map((t,i)=>{const it=[['MFE',aM0(mfe[i]),'#22c55e'],['出場',aM(pnl[i]),pnl[i]>=0?'#22c55e':'#ef4444'],['MAE','-'+aM0(mae[i]),'#ef4444'],['口數',t.qty+'口','#fff']];if(t.mfe>0&&t.pnl>0)it.push(['回吐',((t.mfe-t.pnl)/t.mfe*100).toFixed(0)+'%',A_GOLD]);return{x:X(i),title:`#${i+1} ${aSideTxt(t)} ・ ${t.date}`,items:it};})};
+  const defs=`<defs><linearGradient id="mmU-${g}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22c55e" stop-opacity=".45"/><stop offset="100%" stop-color="#22c55e" stop-opacity=".12"/></linearGradient><linearGradient id="mmD-${g}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ef4444" stop-opacity=".12"/><stop offset="100%" stop-color="#ef4444" stop-opacity=".45"/></linearGradient></defs>`;
+  const svg=aXhSvg(id,'mm',W,H,defs+aMonths(A,P.l,slot,P.t,H-P.b,H-P.b+18)+aYGrid(Y,y,P.l,W-P.r,.45)+bars,{t:P.t,b:H-P.b,lo:Y.lo,hi:Y.hi});
+  return aInfoHint(id,'👆 滑鼠移到圖上，十字線跟著走、這裡即時顯示那一筆的 MFE／出場／MAE')+`<div class="xh-legend"><span><i style="width:12px;height:10px;background:rgba(34,197,94,.35);border:1px solid rgba(34,197,94,.6)"></i>寬淡色上方＝MFE 最大浮盈</span><span><i style="width:12px;height:10px;background:rgba(239,68,68,.35);border:1px solid rgba(239,68,68,.6)"></i>寬淡色下方＝MAE 最大浮虧</span><span><i style="width:5px;height:12px;background:#22c55e;margin-right:1px"></i><i style="width:5px;height:12px;background:#ef4444"></i>窄實心＝出場損益</span><span><i style="width:14px;height:0;border-top:2px solid #fff"></i>出場位置</span></div>`+svg;};}
+function aXhMove(e){
+  const src=(e.touches&&e.touches[0])||e,svg=e.target.closest&&e.target.closest('svg[data-xh]');if(!svg)return;
+  const id=svg.dataset.xh,cfg=ANA_XH[id];if(!cfg)return;const m=svg.getScreenCTM();if(!m)return;
+  const pt=svg.createSVGPoint();pt.x=src.clientX;pt.y=src.clientY;const p=pt.matrixTransform(m.inverse());
+  const i=Math.max(0,Math.min(cfg.pts.length-1,Math.round((p.x-cfg.l)/cfg.band-.5))),it=cfg.pts[i];cfg.last=i;
+  document.querySelectorAll(`svg[data-xh="${id}"]`).forEach(s=>{
+    const v=s.querySelector('.xh-v'),b=s.querySelector('.xh-band'),h=s.querySelector('.xh-h'),yl=s.querySelector('.xh-yl');
+    v.setAttribute('x1',it.x);v.setAttribute('x2',it.x);v.setAttribute('visibility','visible');
+    b.setAttribute('x',it.x-cfg.band/2);b.setAttribute('width',cfg.band);b.setAttribute('visibility','visible');
+    if(s===svg){const c=cfg.parts[s.dataset.part],y=Math.max(c.t,Math.min(c.b,p.y)),val=c.hi-(y-c.t)/(c.b-c.t)*(c.hi-c.lo);
+      h.setAttribute('x1',cfg.l);h.setAttribute('x2',cfg.r);h.setAttribute('y1',y);h.setAttribute('y2',y);h.setAttribute('visibility','visible');
+      yl.querySelector('text').textContent=aK(val);yl.setAttribute('transform',`translate(${cfg.l-58},${y})`);yl.setAttribute('visibility','visible');}
+    else{h.setAttribute('visibility','hidden');yl.setAttribute('visibility','hidden');}});
+  if(cfg.shown!==i){cfg.shown=i;const inf=document.getElementById(id+'_info');if(inf){inf.classList.add('active');inf.innerHTML=`<span class="st"><b style="color:#facc15">${it.title}</b></span>`+it.items.map(x=>`<span class="st"><em>${x[0]}</em><b style="color:${x[2]}">${x[1]}</b></span>`).join('');}}
+}
+function aXhOut(e){const svg=e.target.closest&&e.target.closest('svg[data-xh]');if(!svg||(e.relatedTarget&&svg.contains(e.relatedTarget)))return;document.querySelectorAll(`svg[data-xh="${svg.dataset.xh}"]`).forEach(s=>s.querySelectorAll('.xh-v,.xh-band,.xh-h,.xh-yl').forEach(n=>n.setAttribute('visibility','hidden')));}
+document.addEventListener('mousemove',aXhMove);document.addEventListener('mouseout',aXhOut);
+document.addEventListener('touchstart',e=>{ANA.touch=Date.now();aXhMove(e);},{passive:true});document.addEventListener('touchmove',aXhMove,{passive:true});
+function cBars(items,opt={}){return W=>{
+  const H=opt.h||220,P={l:60,r:10,t:12,b:opt.noX?10:24};const vals=items.map(i=>i.v).concat(0),Y=aScale(Math.min(...vals),Math.max(...vals));
+  const y=v=>P.t+(Y.hi-v)/(Y.hi-Y.lo)*(H-P.t-P.b),bw=(W-P.l-P.r)/Math.max(items.length,1),gap=bw>5?2:(bw>2?1:0),mw=opt.maxW||40;
+  let g='';Y.t.forEach(v=>{g+=`<line x1="${P.l}" x2="${W-P.r}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(255,255,255,${v===0?.3:.06})"/><text x="${P.l-6}" y="${y(v)+4}" text-anchor="end" class="ana-ax">${aK(v)}</text>`;});
+  const every=Math.ceil(items.length/Math.max(1,Math.floor((W-P.l)/62)));
+  items.forEach((it,i)=>{const w=Math.min(bw-gap,mw),cx=P.l+bw*i+bw/2,top=y(Math.max(it.v,0)),h=Math.max(Math.abs(y(it.v)-y(0)),it.v?1:0);
+    g+=`<rect x="${cx-w/2}" y="${top}" width="${Math.max(w,.8)}" height="${h}" rx="${w>8?2:0}" fill="${it.c||(it.v>=0?A_UP:A_DN)}" ${it.o?`opacity="${it.o}"`:''}/>`;
+    if(!opt.noX&&it.lbl&&i%every===0)g+=`<text x="${cx}" y="${H-7}" text-anchor="middle" class="ana-ax">${it.lbl}</text>`;
+    g+=`<rect class="ana-hit" x="${P.l+bw*i}" y="${P.t}" width="${bw}" height="${H-P.t-P.b}" data-tip="${aAttr(it.tip||'')}" ${it.t!=null?`data-t="${it.t}"`:''} ${it.d?`data-d="${it.d}"`:''}/>`;});
+  return `<svg viewBox="0 0 ${W} ${H}" height="${H}">${g}</svg>`;};}
+function cScatter(pts,opt={}){return W=>{
+  pts=opt.get?opt.get():pts;if(!pts.length)return '<div class="ana-cover">沒有符合的單</div>';const H=opt.h||300,P={l:62,r:14,t:12,b:38},X=opt.xT?{lo:0,hi:Math.max(...opt.xT,...pts.map(p=>p.x)),t:opt.xT}:aScale(Math.min(...pts.map(p=>p.x),opt.x0??Infinity),Math.max(...pts.map(p=>p.x))),Y=aScale(Math.min(...pts.map(p=>p.y),0),Math.max(...pts.map(p=>p.y),0));
+  const x=v=>P.l+(v-X.lo)/(X.hi-X.lo)*(W-P.l-P.r),y=v=>P.t+(Y.hi-v)/(Y.hi-Y.lo)*(H-P.t-P.b);
+  let g='';Y.t.forEach(v=>{g+=`<line x1="${P.l}" x2="${W-P.r}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(255,255,255,${v===0?.3:.06})"/><text x="${P.l-6}" y="${y(v)+4}" text-anchor="end" class="ana-ax">${opt.yFmt?opt.yFmt(v):aK(v)}</text>`;});
+  X.t.forEach(v=>{g+=`<text x="${x(v)}" y="${H-22}" text-anchor="middle" class="ana-ax">${opt.xFmt?opt.xFmt(v):v}</text>`;});
+  if(opt.xLabel)g+=`<text x="${(P.l+W-P.r)/2}" y="${H-5}" text-anchor="middle" class="ana-ax">${opt.xLabel}</text>`;
+  if(opt.diag){const e=Math.min(X.hi,Y.hi);g+=`<line x1="${x(0)}" y1="${y(0)}" x2="${x(e)}" y2="${y(e)}" stroke="${A_GOLD}" stroke-dasharray="5 4"/><text x="${x(e)-6}" y="${y(e)+14}" text-anchor="end" class="ana-ax" style="fill:${A_GOLD}">出在最高點</text>`;}if(opt.median!=null)g+=`<line x1="${P.l}" x2="${W-P.r}" y1="${y(opt.median)}" y2="${y(opt.median)}" stroke="#e2e8f0" stroke-dasharray="4 4"/>`;
+  pts.forEach(p=>{g+=`<circle cx="${x(p.x)}" cy="${y(p.y)}" r="${p.r||5}" fill="${p.c}" fill-opacity=".62" stroke="${p.hl?A_GOLD:'#0d1420'}" stroke-width="${p.hl?2:1}" data-tip="${aAttr(p.tip||'')}" ${p.t!=null?`data-t="${p.t}"`:''}/>`;});
+  return `<svg viewBox="0 0 ${W} ${H}" height="${H}">${g}</svg>`;};}
+function aTblRows(rows){
+  const m=Math.max(1,...rows.map(r=>Math.abs(aSum(r.a,t=>t.pnl))));
+  return `<div class="ana-scroll"><table class="ana-tbl"><thead><tr><th>分組</th><th>筆數</th><th>勝率</th><th class="bar" style="text-align:center">總損益</th><th></th><th>平均</th></tr></thead><tbody>${rows.map(r=>{const s=aStat(r.a),w=Math.abs(s.pnl)/m*50,pos=s.pnl>=0;
+    return `<tr class="${r.hl||(s.n>=3&&s.avg<0&&r.flag)?'hl':''}" ${s.n?`data-g="${aReg(r.a)}"`:''}><td>${r.l}</td><td>${s.n}</td><td class="${s.n?(s.wr>=50?'up':'dn'):'mt'}">${s.n?aPct(s.wr):'—'}</td>
+    <td class="bar"><div class="ana-bar">${s.n?`<i style="${pos?'left':'right'}:50%;width:${w.toFixed(1)}%;background:${pos?A_UP:A_DN}"></i>`:''}</div></td>
+    <td class="${s.n?aCl(s.pnl):'mt'}">${s.n?aM(s.pnl):'—'}</td><td class="${s.n?aCl(s.avg):'mt'}">${s.n?aM(s.avg):''}</td></tr>`;}).join('')}</tbody></table></div>`;
+}
+
+/* ═══ 績效統計 ═══ */
+function anaStats(T,body){
+  const s=aStat(T),mdd=aMdd(T),byExit=[...T].sort((a,b)=>a.exitEp-b.exitEp),idx=t=>aTIdx(T,t);ANA.cur=T;
+  const L=T.filter(t=>t.side==='long'),Sh=T.filter(t=>t.side==='short');
+  const dates=[...new Set(T.map(t=>t.date))].sort(),holds=T.filter(t=>t.hold!=null);
+  let runW=0,runL=0,cw=0,cl=0;byExit.forEach(t=>{if(t.pnl>0){cw++;cl=0;}else if(t.pnl<0){cl++;cw=0;}else{cw=cl=0;}runW=Math.max(runW,cw);runL=Math.max(runL,cl);});
+  const months={};T.forEach(t=>{const m=t.date.slice(0,7);(months[m]=months[m]||[]).push(t);});
+  const mItems=Object.keys(months).sort().map(m=>{const x=aStat(months[m]);return{v:x.pnl,lbl:m.slice(2),tip:`${m}\n損益 ${aM(x.pnl)}\n${x.n} 筆・勝率 ${aPct(x.wr)}・獲利因子 ${aPf(x.pf)}`};});
+  const mm=T.filter(t=>t.mfe!=null&&t.mae!=null),mmS=[...mm].sort((a,b)=>a.exitEp-b.exitEp),mmL=mmS.filter(t=>t.side==='long'),mmSh=mmS.filter(t=>t.side==='short');
+  const cmp=[['筆數',a=>a.n],['總損益',a=>aM(a.pnl),a=>a.pnl],['勝率',a=>aPct(a.wr),a=>a.wr],['獲利因子',a=>aPf(a.pf),a=>a.pf],['賺賠比（均獲÷均賠）',a=>a.avgL?(a.avgW/a.avgL).toFixed(2):'—',a=>a.avgL?a.avgW/a.avgL:0],['單筆期望值',a=>aM(a.avg),a=>a.avg],['平均獲利',a=>aM(a.avgW),a=>a.avgW],['平均虧損',a=>'-'+aM0(a.avgL),a=>-a.avgL],['最大獲利',a=>aM(a.maxW),a=>a.maxW],['最大虧損',a=>aM(a.maxL),a=>a.maxL]];
+  const sL=aStat(L),sS=aStat(Sh),extra=(lbl,f,fmt,hb=1)=>{const vl=f(L),vs=f(Sh);return `<tr><td>${lbl}</td><td class="${isFinite(vl)&&isFinite(vs)&&vl*hb>vs*hb?'gd':''}">${isFinite(vl)?fmt(vl):'—'}</td><td class="${isFinite(vl)&&isFinite(vs)&&vs*hb>vl*hb?'gd':''}">${isFinite(vs)?fmt(vs):'—'}</td></tr>`;};
+  const avgOf=(a,k)=>{const v=a.filter(t=>t[k]!=null);return v.length?aSum(v,t=>t[k])/v.length:NaN;};
+  const lsRows=cmp.map(r=>{const hl=r[2]?(r[2](sL)>r[2](sS)?0:(r[2](sL)<r[2](sS)?1:-1)):-1;return `<tr><td>${r[0]}</td><td class="${sL.n&&sS.n&&hl===0?'gd':''}">${sL.n?r[1](sL):'—'}</td><td class="${sL.n&&sS.n&&hl===1?'gd':''}">${sS.n?r[1](sS):'—'}</td></tr>`;}).join('')
+    +extra('最大回撤（已實現）',a=>a.length?aMdd(a):NaN,aM0,-1)+extra('平均口數',a=>avgOf(a,'qty'),v=>v.toFixed(1),0)+extra('平均持有',a=>avgOf(a,'hold'),aHold,0)
+    +extra('平均 MFE',a=>avgOf(a,'mfe'),aM0,0)+extra('平均 MAE',a=>avgOf(a,'mae'),aM0,-1);
+  const typeRows=[{l:'當沖',a:T.filter(t=>t.type!=='swing')},{l:'留倉',a:T.filter(t=>t.type==='swing')}].filter(r=>r.a.length);
+  // 蝴蝶圖
+  const single=new Set(T.map(t=>t.com)).size===1,valOf=t=>single&&t.pts!=null?t.pts:t.per,bfA=T.filter(t=>isFinite(valOf(t))),vs=bfA.map(valOf),bStep=vs.length?aNice(Math.max(...vs)-Math.min(...vs),12):1,bk=v=>Math.floor(v/bStep+1e-9)*bStep,keys=[...new Set(bfA.map(t=>+bk(valOf(t)).toFixed(6)))].sort((a,b)=>b-a);
+  const allKeys=[];if(keys.length)for(let v=keys[0];v>=keys[keys.length-1]-1e-9;v=+(v-bStep).toFixed(6))allKeys.push(v);
+  const count=(k,d)=>bfA.filter(t=>t.side===d&&Math.abs(bk(valOf(t))-k)<bStep/2),bMax=Math.max(1,...allKeys.flatMap(k=>[count(k,'long').length,count(k,'short').length]));
+  const unit=single?'點':'$/口',fv=v=>single?(v>=0?'+':'')+(+v.toFixed(2)):(v>=0?'+':'-')+'$'+Math.abs(Math.round(v)).toLocaleString('en-US');
+  const bfRows=allKeys.map(k=>{const a=count(k,'long'),b=count(k,'short'),row=(arr,col,rt)=>{const w=arr.length/bMax*100;return `<div style="flex:1;display:flex;align-items:center;gap:6px;justify-content:${rt?'flex-start':'flex-end'};min-width:0;" ${arr.length?`data-g="${aReg(arr)}" data-tip="${fv(k)}～${fv(k+bStep)} ${unit}｜${arr.length} 筆\n點一下看明細"`:''}>${rt?`<i style="display:block;height:12px;width:${w}%;background:${col};border-radius:0 3px 3px 0"></i><span class="mt" style="font-size:.72rem">${arr.length||''}</span>`:`<span class="mt" style="font-size:.72rem">${arr.length||''}</span><i style="display:block;height:12px;width:${w}%;background:${col};border-radius:3px 0 0 3px"></i>`}</div>`;};
+    return `<div style="display:flex;align-items:center;gap:6px;height:18px;">${row(a,A_LONG,false)}<div style="width:82px;text-align:center;font-family:var(--fm);font-size:.72rem;" class="${k>=0?'up':'dn'}">${fv(k)}</div>${row(b,A_SHORT,true)}</div>`;}).join('');
+  const qMax=Math.max(...T.map(t=>t.qty)),bub=a=>a.filter(t=>t.hold!=null).map(t=>({x:t.hold,y:t.pnl,r:4+t.qty/qMax*9,c:t.pnl>=0?A_UP:A_DN,tip:aTipT(t),t:idx(t)}));
+  const bubChart=a=>bub(a).length?aSlot(cScatter(bub(a),{h:280,xLabel:'持有分鐘',x0:0,xFmt:v=>v})):'<div class="ana-cover">沒有資料</div>';
+  const days=dates.slice().reverse().map(d=>{const a=T.filter(t=>t.date===d),x=aStat(a);return `<div class="day-row" data-d="${d}"><span>${d}</span><span class="mt">${x.n} 筆</span><span class="mt">${aSum(a,t=>t.qty)} 口</span><b class="${aCl(x.pnl)}">${aM(x.pnl)}</b></div>`;}).join('');
+  body.innerHTML=`<div class="ana-head"><h2>📊 績效統計</h2><span>${dates[0]} ~ ${dates[dates.length-1]}・${s.n} 筆・${dates.length} 個交易日</span></div>
+  <div class="ana-hero"><div><div class="l">總損益</div><div class="v ${aCl(s.pnl)}">${aM(s.pnl)}</div><div class="s">獲利 ${aM0(s.gw)}・虧損 ${aM0(s.gl)}</div></div>
+    <div><div class="l">勝率</div><div class="v">${aPct(s.wr)}</div><div class="s">${s.w} 勝 / ${s.l} 敗${s.e?` / ${s.e} 平`:''}</div></div>
+    <div><div class="l">獲利因子</div><div class="v gd">${aPf(s.pf)}</div><div class="s">總獲利 ÷ 總虧損</div></div>
+    <div><div class="l">最大回撤（已實現）</div><div class="v" style="color:var(--warn)">${aM0(mdd)}</div><div class="s">依每筆出場先後計算</div></div></div>
+  <div class="ana-grid">${[['單筆期望值',aM(s.avg),aCl(s.avg)],['賺賠比',s.avgL?(s.avgW/s.avgL).toFixed(2):'—',''],['平均獲利',aM(s.avgW),'up'],['平均虧損','-'+aM0(s.avgL),'dn'],['最大獲利',aM(s.maxW),'up'],['最大虧損',aM(s.maxL),'dn'],['最長連勝',runW+' 筆','up'],['最長連敗',runL+' 筆','dn'],['平均口數',(aSum(T,t=>t.qty)/s.n).toFixed(1),''],['平均持有',holds.length?aHold(aSum(holds,t=>t.hold)/holds.length):'—',''],['MFE／MAE 已填',`${mm.length}/${s.n}`,'']].map(x=>`<div><div class="l">${x[0]}</div><div class="v ${x[2]}">${x[1]}</div></div>`).join('')}</div>
+  <div class="ana-sec"><h3>📅 每月損益</h3>${aSlot(cBars(mItems,{h:200,maxW:48}))}</div>
+  <div class="ana-sec"><h3>📈 累積損益 <small>每個轉折＝一筆平倉；不含持倉過程中的浮動</small></h3>${aSlot(cEquity(T,idx,{h:280,h2:130}))}</div>
+  ${ANA.side==='all'?`<div class="ana-two"><div class="ana-sec"><h3 style="color:${A_LONG}">做多 累積損益 <small>${sL.n} 筆・${aM(sL.pnl)}</small></h3>${L.length?aSlot(cEquity(L,idx,{color:A_LONG,h:210,h2:110})):'<div class="ana-cover">沒有多單</div>'}</div><div class="ana-sec"><h3 style="color:${A_SHORT}">做空 累積損益 <small>${sS.n} 筆・${aM(sS.pnl)}</small></h3>${Sh.length?aSlot(cEquity(Sh,idx,{color:A_SHORT,h:210,h2:110})):'<div class="ana-cover">沒有空單</div>'}</div></div>`:''}
+  <div class="ana-two"><div class="ana-sec"><h3>⚖️ 多空分析 <small>黃字＝該項較好</small></h3><div class="ana-scroll"><table class="ana-tbl"><thead><tr><th>指標</th><th style="color:${A_LONG}">做多</th><th style="color:${A_SHORT}">做空</th></tr></thead><tbody>${lsRows}</tbody></table></div></div>
+    <div class="ana-sec"><h3>🦋 多空分布蝴蝶圖 <small>每${single?` ${+bStep.toFixed(2)} 點`:` $${Math.round(bStep).toLocaleString('en-US')}／口`}</small></h3>
+      <div style="display:flex;font-size:.75rem;font-weight:700;margin-bottom:4px;"><span style="flex:1;text-align:right;color:${A_LONG}">做多</span><span style="width:94px;text-align:center" class="mt">區間</span><span style="flex:1;color:${A_SHORT}">做空</span></div>${bfRows}</div></div>
+  ${typeRows.length>1?`<div class="ana-sec"><h3>🌙 當沖 vs 留倉</h3>${aTblRows(typeRows)}</div>`:''}
+  <div class="ana-sec"><h3>📊 MAE/MFE 分析（每筆交易盤中波動） <small style="color:var(--gold)">⚠ 含未實現・只畫兩格都有填的 ${mm.length} 筆</small></h3>${mm.length?aSlot(cMaeMfe(mmS,idx)):'<div class="ana-cover">這個範圍還沒有填 MFE／MAE 的單。<br>這兩格是選填，有填才畫得出這張圖。</div>'}</div>
+  ${ANA.side==='all'&&mm.length?`<div class="ana-two"><div class="ana-sec"><h3 style="color:${A_LONG}">做多 MAE/MFE <small>${mmL.length} 筆</small></h3>${mmL.length?aSlot(cMaeMfe(mmL,idx,{h:250})):'<div class="ana-cover">沒有資料</div>'}</div><div class="ana-sec"><h3 style="color:${A_SHORT}">做空 MAE/MFE <small>${mmSh.length} 筆</small></h3>${mmSh.length?aSlot(cMaeMfe(mmSh,idx,{h:250})):'<div class="ana-cover">沒有資料</div>'}</div></div>`:''}
+  <div class="ana-two"><div class="ana-sec"><h3 style="color:${A_LONG}">做多：持有時間 × 損益 <small>點越大口數越多</small></h3>${bubChart(L)}</div><div class="ana-sec"><h3 style="color:${A_SHORT}">做空：持有時間 × 損益 <small>點越大口數越多</small></h3>${bubChart(Sh)}</div></div>
+  <div class="ana-sec"><h3>📋 每日明細 <small>點一天看當天每一筆</small></h3><div style="max-height:320px;overflow-y:auto;">${days}</div></div>`;
+}
+function aTIdx(T,t){return T.indexOf(t);}
+
+/* ═══ 問題診斷的互動圖表 ═══ */
+function anaTog(btn,k,v){ANA[k]=v;btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===btn));anaDrawAll();}
+const aTogBtns=(k,opts)=>`<span class="ana-tog">${opts.map(([v,l])=>`<button class="${ANA[k]===v?'on':''}" onclick="anaTog(this,'${k}','${v}')">${l}</button>`).join('')}</span>`;
+function aMetric(s,m){return m==='wr'?s.wr:(m==='avg'?s.avg:s.pnl);}
+const aMFmt=(v,m)=>m==='wr'?v.toFixed(0)+'%':aK(v),aMVal=(v,m)=>m==='wr'?v.toFixed(0)+'%':aM(v);
+const aGTip=(l,s,ex='')=>`${l}\n${s.n} 筆・勝率 ${aPct(s.wr)}\n總損益 ${aM(s.pnl)}・平均 ${aM(s.avg)}${ex}${s.n&&s.n<3?'\n⚠ 樣本少':''}\n點一下看這些單`;
+/* 分組長條：跟著「總損益／平均／勝率」切換 */
+function cGroup(rows,opt={}){const R=rows.map(r=>({l:r.s||r.l,full:r.l,a:r.a,st:aStat(r.a),g:r.a.length?aReg(r.a):null}));return W=>{
+  const m=ANA.dgM,H=opt.h||210,P={l:58,r:10,t:20,b:36},vals=R.filter(r=>r.st.n).map(r=>aMetric(r.st,m)),Y=m==='wr'?{lo:0,hi:100,t:[0,25,50,75,100]}:aScale(Math.min(0,...vals)*1.2,Math.max(0,...vals)*1.2);
+  const y=v=>P.t+(Y.hi-v)/(Y.hi-Y.lo)*(H-P.t-P.b),slot=(W-P.l-P.r)/R.length,bw=Math.min(slot*.66,54),mx=Math.max(...R.map(r=>String(r.l).length));
+  const every=Math.max(1,Math.ceil(mx*7/slot));let g='';
+  Y.t.forEach(v=>{g+=`<line x1="${P.l}" x2="${W-P.r}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(255,255,255,${(m==='wr'?v===50:v===0)?.3:.06})" ${m==='wr'&&v===50?'stroke-dasharray="4 4"':''}/><text x="${P.l-6}" y="${y(v)+4}" text-anchor="end" class="ana-ax">${aMFmt(v,m)}</text>`;});
+  R.forEach((r,i)=>{const cx=P.l+slot*(i+.5);if(i%every===0){g+=`<text x="${cx}" y="${H-P.b+15}" text-anchor="middle" class="ana-ax" fill="#cbd5e1">${r.l}</text><text x="${cx}" y="${H-P.b+29}" text-anchor="middle" class="ana-ax" style="font-size:10px">${r.st.n} 筆</text>`;}
+    if(!r.st.n)return;const v=aMetric(r.st,m),base=m==='wr'?0:0,top=y(Math.max(v,base)),h=Math.max(Math.abs(y(v)-y(base)),1.5),good=m==='wr'?v>=50:v>=0,o=r.st.n<3?.35:.9;
+    g+=`<rect x="${cx-bw/2}" y="${top}" width="${bw}" height="${h}" rx="3" fill="${good?A_UP:A_DN}" opacity="${o}"/>`;
+    if(slot>=44)g+=`<text x="${cx}" y="${v>=0||m==='wr'?top-5:top+h+13}" text-anchor="middle" class="ana-tl" style="font-size:11px;font-family:var(--fm)">${aMVal(v,m)}</text>`;
+    g+=`<rect class="ana-hit" x="${P.l+slot*i}" y="${P.t-14}" width="${slot}" height="${H-P.t-P.b+44}" data-tip="${aAttr(aGTip(r.full,r.st))}" data-g="${r.g}"/>`;});
+  return `<svg viewBox="0 0 ${W} ${H}" height="${H}">${g}</svg>`;};}
+/* 成對長條：同一組條件下，A／B 兩種情況並排 */
+function cPair(rows,la,lb,opt={}){const R=rows.map(r=>({l:r.l,A:r.A,B:r.B,sa:aStat(r.A),sb:aStat(r.B),ga:r.A.length?aReg(r.A):null,gb:r.B.length?aReg(r.B):null}));return W=>{
+  const m=ANA.dgM,H=opt.h||220,P={l:58,r:10,t:18,b:36},vals=R.flatMap(r=>[r.sa,r.sb]).filter(s=>s.n).map(s=>aMetric(s,m)),Y=m==='wr'?{lo:0,hi:100,t:[0,25,50,75,100]}:aScale(Math.min(0,...vals,0),Math.max(0,...vals,0));
+  const y=v=>P.t+(Y.hi-v)/(Y.hi-Y.lo)*(H-P.t-P.b),slot=(W-P.l-P.r)/R.length,bw=Math.min(slot*.36,30),every=Math.max(1,Math.ceil(Math.max(...R.map(r=>r.l.length))*7/slot));let g='';
+  Y.t.forEach(v=>{g+=`<line x1="${P.l}" x2="${W-P.r}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(255,255,255,${(m==='wr'?v===50:v===0)?.3:.06})"/><text x="${P.l-6}" y="${y(v)+4}" text-anchor="end" class="ana-ax">${aMFmt(v,m)}</text>`;});
+  R.forEach((r,i)=>{const cx=P.l+slot*(i+.5);if(i%every===0)g+=`<text x="${cx}" y="${H-P.b+15}" text-anchor="middle" class="ana-ax">${r.l}</text><text x="${cx}" y="${H-P.b+29}" text-anchor="middle" class="ana-ax" style="font-size:10px">${r.sa.n} / ${r.sb.n} 筆</text>`;
+    [[r.sa,r.ga,cx-bw-1,A_GOLD,la],[r.sb,r.gb,cx+1,A_ACC,lb]].forEach(([st,gi,x,c,lab])=>{if(!st.n)return;const v=aMetric(st,m),top=y(Math.max(v,0)),h=Math.max(Math.abs(y(v)-y(0)),1.5);
+      g+=`<rect x="${x}" y="${top}" width="${bw}" height="${h}" rx="2" fill="${c}" opacity="${st.n<3?.35:.9}"/><rect class="ana-hit" x="${x-1}" y="${P.t}" width="${bw+2}" height="${H-P.t-P.b}" data-tip="${aAttr(aGTip(`${r.l}・${lab}`,st))}" data-g="${gi}"/>`;});});
+  return `<svg viewBox="0 0 ${W} ${H}" height="${H}">${g}</svg>`;};}
+const aPairLegend=(a,b)=>`<div class="xh-legend"><span><i style="width:11px;height:11px;background:${A_GOLD}"></i>${a}</span><span><i style="width:11px;height:11px;background:${A_ACC}"></i>${b}</span></div>`;
+/* 賺賠筆數鏡像圖：上＝最後賺、下＝最後賠 */
+function cMirror(rows,opt={}){const R=rows.map(r=>{const w=r.a.filter(t=>t.pnl>0),l=r.a.filter(t=>t.pnl<=0);return{l:r.l,a:r.a,w:w.length,lo:l.length,st:aStat(r.a),g:r.a.length?aReg(r.a):null,ex:r.ex?r.ex(r.a):''};});return W=>{
+  const H=opt.h||240,P={l:40,r:10,t:22,b:26},mx=Math.max(1,...R.flatMap(r=>[r.w,r.lo])),Y=aScale(-mx,mx,4),y=v=>P.t+(Y.hi-v)/(Y.hi-Y.lo)*(H-P.t-P.b),slot=(W-P.l-P.r)/R.length,bw=Math.min(slot*.66,46),every=Math.max(1,Math.ceil(Math.max(...R.map(r=>r.l.length))*7/slot));let g='';
+  Y.t.forEach(v=>{g+=`<line x1="${P.l}" x2="${W-P.r}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(255,255,255,${v===0?.3:.06})"/><text x="${P.l-6}" y="${y(v)+4}" text-anchor="end" class="ana-ax">${Math.abs(v)}</text>`;});
+  R.forEach((r,i)=>{const cx=P.l+slot*(i+.5);if(i%every===0)g+=`<text x="${cx}" y="${H-8}" text-anchor="middle" class="ana-ax">${r.l}</text>`;
+    if(r.w)g+=`<rect x="${cx-bw/2}" y="${y(r.w)}" width="${bw}" height="${y(0)-y(r.w)}" rx="3" fill="${A_UP}" opacity=".9"/>`;
+    if(r.lo)g+=`<rect x="${cx-bw/2}" y="${y(0)}" width="${bw}" height="${y(-r.lo)-y(0)}" rx="3" fill="${A_DN}" opacity=".9"/>`;
+    if(r.st.n){if(slot>=30)g+=`<text x="${cx}" y="${y(r.w)-5}" text-anchor="middle" class="ana-tl" style="font-size:11px;font-family:var(--fm)">${aPct(r.w/r.st.n*100)}</text>`;
+      g+=`<rect class="ana-hit" x="${P.l+slot*i}" y="${P.t-14}" width="${slot}" height="${H-P.t-P.b+14}" data-tip="${aAttr(`${r.l}\n賺 ${r.w} 筆・賠 ${r.lo} 筆（${aPct(r.w/r.st.n*100)} 最後是賺的）\n總損益 ${aM(r.st.pnl)}${r.ex}\n點一下看這些單`)}" data-g="${r.g}"/>`;}});
+  return `<svg viewBox="0 0 ${W} ${H}" height="${H}">${g}</svg>`;};}
+/* 留下＋回吐堆疊：整根高度＝平均最大浮盈 */
+function cKeep(rows,opt={}){const R=rows.map(r=>{const m=r.a.filter(t=>t.mfe!=null);return{l:r.l,a:r.a,keep:m.length?aSum(m,r.pp)/m.length:0,mf:m.length?aSum(m,t=>t.mfeP)/m.length:0,n:r.a.length,nm:m.length,sum:aSum(r.a,t=>t.pnl),g:r.a.length?aReg(r.a):null};});return W=>{
+  const H=opt.h||240,P={l:44,r:10,t:22,b:36},Y=aScale(0,Math.max(1,...R.map(r=>Math.max(r.mf,r.keep))),4),y=v=>P.t+(Y.hi-v)/(Y.hi-Y.lo)*(H-P.t-P.b),slot=(W-P.l-P.r)/R.length,bw=Math.min(slot*.6,54),every=Math.max(1,Math.ceil(Math.max(...R.map(r=>r.l.length))*7/slot));let g='';
+  Y.t.forEach(v=>{g+=`<line x1="${P.l}" x2="${W-P.r}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(255,255,255,${v===0?.3:.06})"/><text x="${P.l-6}" y="${y(v)+4}" text-anchor="end" class="ana-ax">${v}</text>`;});
+  R.forEach((r,i)=>{const cx=P.l+slot*(i+.5);if(i%every===0)g+=`<text x="${cx}" y="${H-P.b+15}" text-anchor="middle" class="ana-ax">${r.l}</text><text x="${cx}" y="${H-P.b+29}" text-anchor="middle" class="ana-ax" style="font-size:10px">${r.n} 筆</text>`;
+    if(!r.n)return;const kept=Math.max(r.keep,0);
+    if(r.mf>kept)g+=`<rect x="${cx-bw/2}" y="${y(r.mf)}" width="${bw}" height="${y(kept)-y(r.mf)}" rx="3" fill="${A_GOLD}" opacity=".4"/>`;
+    g+=`<rect x="${cx-bw/2}" y="${y(kept)}" width="${bw}" height="${y(0)-y(kept)}" rx="3" fill="${A_UP}" opacity=".9"/>`;
+    if(slot>=30)g+=`<text x="${cx}" y="${y(Math.max(r.mf,kept))-5}" text-anchor="middle" class="ana-tl" style="font-size:11px;font-family:var(--fm)">${kept.toFixed(0)}</text>`;
+    g+=`<rect class="ana-hit" x="${P.l+slot*i}" y="${P.t-14}" width="${slot}" height="${H-P.t-P.b+44}" data-tip="${aAttr(`${r.l}・${r.n} 筆獲利單\n平均留下 ${r.keep.toFixed(1)} 點／口\n平均最大浮盈 ${r.mf.toFixed(1)} 點（${r.nm} 筆有填）\n合計 ${aM(r.sum)}\n點一下看這些單`)}" data-g="${r.g}"/>`;});
+  return `<svg viewBox="0 0 ${W} ${H}" height="${H}">${g}</svg>`;};}
+/* 星期 × 時段熱力圖 */
+function aHeat(T,hrs){const dn=['週日','週一','週二','週三','週四','週五','週六'],days=[1,2,3,4,5,6,0].filter(d=>T.some(t=>t.dow===d)),cell=(a,lbl)=>{const st=aStat(a);return{st,lbl,g:a.length?aReg(a):null};},M=days.map(d=>hrs.map(h=>cell(T.filter(t=>t.dow===d&&t.hour===h),`${dn[d]} ${String(h).padStart(2,'0')}:00`)));
+  const cols=`56px repeat(${hrs.length},minmax(30px,1fr))`,head=`<div></div>${hrs.map(h=>`<div class="hm-h">${String(h).padStart(2,'0')}</div>`).join('')}`;
+  return W=>{const m=ANA.dgM,mx=Math.max(1,...M.flat().filter(c=>c.st.n).map(c=>m==='wr'?Math.abs(c.st.wr-50):Math.abs(aMetric(c.st,m))));
+    return `<div class="ana-scroll"><div class="hm-grid" style="grid-template-columns:${cols};min-width:${56+hrs.length*30}px">${head}${M.map((r,i)=>`<div class="hm-d">${dn[days[i]]}</div>${r.map(c=>{if(!c.st.n)return '<div class="hm-c"></div>';const v=m==='wr'?c.st.wr-50:aMetric(c.st,m),o=(Math.abs(v)/mx*.75+.12).toFixed(2);return `<div class="hm-c on" style="background:${v>=0?`rgba(16,185,129,${o})`:`rgba(244,63,94,${o})`}" data-g="${c.g}" data-tip="${aAttr(aGTip(c.lbl,c.st))}">${c.st.n}</div>`;}).join('')}`).join('')}</div></div>`;};}
+const aDet=(h,o)=>`<details class="dg-det"${o?' open':''}><summary>看數字表格</summary>${h}</details>`;
+
+/* ═══ 問題診斷 ═══ */
+function anaDiag(T,body){
+  ANA.cur=T;
+  if(T.length<3){body.innerHTML='<div class="ana-empty">至少要 3 筆交易才能診斷</div>';return;}
+  const all=aStat(T),F=[],G=[],C=[],single=new Set(T.map(t=>t.com)).size===1,S=aStat,AL=Math.max(all.avgL,1);
+  const rows=(g,src=T)=>g.map(x=>({l:x.l,a:src.filter(x.f),flag:x.flag}));
+  const note=(c,h)=>`<div class="dg-note ${c}">${h}</div>`;
+  const card=(id,icon,title,how,main,notes)=>{C.push(`<section class="dg-card" id="dg-${id}"><div style="min-width:0"><h3>${icon} ${title}</h3><div class="dg-how">${how}</div>${main}</div><div class="dg-notes">${(notes.length?notes:[['info','目前沒有明顯的訊號。']]).map(n=>note(n[0],n[1])).join('')}</div></section>`);};
+  // 1 賠錢後
+  const first=T.filter(t=>!t.prev),afW=T.filter(t=>t.prev&&t.prev.pnl>0),afL=T.filter(t=>t.prev&&t.prev.pnl<0),sF=S(first),sW=S(afW),sL=S(afL);
+  const rev=afL.filter(t=>t.gap<=10),sRev=S(rev),revs=S(afL.filter(t=>t.same===false)),sames=S(afL.filter(t=>t.same===true)),ups=S(afL.filter(t=>t.qtyChg===1));
+  const avgG=a=>a.length?aSum(a,t=>t.gap)/a.length:NaN;
+  const gaps=[[0,5],[5,10],[10,20],[20,30],[30,60],[60,120],[120,Infinity]],dual=(fc,g)=>{const cell=s=>s.n?`<td>${s.n}</td><td class="${s.wr>=50?'up':'dn'}">${aPct(s.wr)}</td><td class="${aCl(s.pnl)}">${aM(s.pnl)}</td><td class="${aCl(s.avg)}">${aM(s.avg)}</td>`:'<td class="mt">0</td><td></td><td class="mt">—</td><td></td>';
+    return `<div class="ana-scroll"><table class="ana-tbl"><thead><tr><th rowspan="2">${fc}</th><th colspan="4" style="text-align:center;color:${A_DN}">上一筆賠錢後</th><th colspan="4" style="text-align:center;color:${A_UP}">上一筆賺錢後</th></tr><tr><th>筆</th><th>勝率</th><th>總損益</th><th>平均</th><th>筆</th><th>勝率</th><th>總損益</th><th>平均</th></tr></thead><tbody>${g.map(x=>{const a=S(afL.filter(x.f)),b=S(afW.filter(x.f));return `<tr class="${a.n>=2&&a.avg<0&&a.avg<b.avg?'hl':''}"><td>${x.l}</td>${cell(a)}${cell(b)}</tr>`;}).join('')}</tbody></table></div>`;};
+  const n1=[];
+  if(sL.n&&sW.n){const worse=sL.avg<sW.avg-AL*.2;n1.push([worse?'bad':'good',`上一筆<b>賠錢後</b>平均 <b class="${aCl(sL.avg)}">${aM(sL.avg)}</b>（勝率 ${aPct(sL.wr)}）；<b>賺錢後</b>平均 <b class="${aCl(sW.avg)}">${aM(sW.avg)}</b>（勝率 ${aPct(sW.wr)}）。${worse?'賠錢會影響下一筆。':'賠錢後沒有明顯變差。'}`]);}
+  let bw=null;[5,10,15,20,30,45,60,90].forEach(g=>{const a=S(afL.filter(t=>t.gap<g)),b=S(afL.filter(t=>t.gap>=g));if(a.n>=2&&b.n>=2&&a.avg<0&&b.avg>a.avg&&(!bw||b.avg-a.avg>bw.d))bw={g,a,b,d:b.avg-a.avg};});
+  if(bw)n1.push(['tip',`賠完 <b>${bw.g} 分鐘內</b>再進 ${bw.a.n} 筆，平均 <b class="dn">${aM(bw.a.avg)}</b>；等超過 ${bw.g} 分鐘的 ${bw.b.n} 筆平均 <b class="${aCl(bw.b.avg)}">${aM(bw.b.avg)}</b>。`]);
+  if(revs.n>=2&&sames.n)n1.push([revs.avg<sames.avg?'bad':'good',`賠錢後<b>反手</b> ${revs.n} 筆平均 <b class="${aCl(revs.avg)}">${aM(revs.avg)}</b>；同方向再進 ${sames.n} 筆平均 <b class="${aCl(sames.avg)}">${aM(sames.avg)}</b>。`]);
+  if(ups.n)n1.push([ups.pnl<0?'bad':'info',`賠錢後<b>口數加大</b> ${ups.n} 筆，合計 <b class="${aCl(ups.pnl)}">${aM(ups.pnl)}</b>。`]);
+  if(sRev.n>=2&&sRev.pnl<0)F.push({i:-sRev.pnl,go:'after',h:`賠完 <b>10 分鐘內</b>就再進場的 ${sRev.n} 筆，合計 <b class="dn">${aM(sRev.pnl)}</b>，勝率 ${aPct(sRev.wr)}。`});
+  if(revs.n>=2&&revs.pnl<0)F.push({i:-revs.pnl*.8,go:'after',h:`賠錢後<b>反手</b>的 ${revs.n} 筆合計 <b class="dn">${aM(revs.pnl)}</b>，勝率 ${aPct(revs.wr)}。`});
+  if(ups.n>=2&&ups.pnl<0)F.push({i:-ups.pnl*.9,go:'after',h:`賠錢後<b>口數加大</b>的 ${ups.n} 筆合計 <b class="dn">${aM(ups.pnl)}</b>。`});
+  if(sL.n>=5&&sL.avg>=0)G.push(`上一筆賠錢後，下一筆平均還是 <b class="up">${aM(sL.avg)}</b>，情緒沒有拖累你。`);
+  card('after','😤','賠錢後的下一筆','同一天內，看上一筆的結果有沒有影響下一筆。「上一筆」是這筆進場前最後出場的單，只看多單或空單時也一樣。紅底＝左邊明顯比右邊差。',
+    `<div class="dg-kpis"><div><span>當天第一筆</span><b class="${aCl(sF.pnl)}">${aM(sF.pnl)}</b><em>${sF.n} 筆・勝率 ${aPct(sF.wr)}</em></div><div><span>上一筆賠錢後</span><b class="${aCl(sL.pnl)}">${aM(sL.pnl)}</b><em>${sL.n} 筆・勝率 ${aPct(sL.wr)}</em></div><div><span>上一筆賺錢後</span><b class="${aCl(sW.pnl)}">${aM(sW.pnl)}</b><em>${sW.n} 筆・勝率 ${aPct(sW.wr)}</em></div><div><span>賠後平均隔多久再進</span><b>${isFinite(avgG(afL))?avgG(afL).toFixed(0):'—'} 分鐘</b><em>賺後隔 ${isFinite(avgG(afW))?avgG(afW).toFixed(0):'—'} 分鐘</em></div><div><span>賠後反手比例</span><b>${aPct(afL.length?afL.filter(t=>t.same===false).length/afL.length*100:NaN)}</b><em>賠後加口 ${aPct(afL.length?ups.n/afL.length*100:NaN)}</em></div></div>
+    ${(()=>{const pair=g=>g.map(x=>({l:x.l,A:afL.filter(x.f),B:afW.filter(x.f)})),idxT=t=>T.indexOf(t),sq=v=>Math.sqrt(v),get=()=>T.filter(t=>t.prev&&(ANA.dgAfter==='all'||(ANA.dgAfter==='loss'?t.prev.pnl<0:t.prev.pnl>0))).map(t=>({x:sq(Math.max(t.gap,0)),y:t.pnl,r:4+Math.min(t.qty,8),c:t.pnl>=0?A_UP:A_DN,tip:`上一筆 ${aM(t.prev.pnl)}，隔 ${t.gap.toFixed(0)} 分鐘${t.same?'同方向':'反手'}再進\n`+aTipT(t),t:idxT(t)}));
+      const qRows=[{l:'加大',f:t=>t.qtyChg===1},{l:'一樣',f:t=>t.qtyChg===0},{l:'減少',f:t=>t.qtyChg===-1}],dRows=[{l:'同方向',f:t=>t.same===true},{l:'反手',f:t=>t.same===false}];
+      return `<div class="dg-chart"><div class="ana-h3">🫧 隔多久再進場 × 下一筆賺賠 <small>每個點一筆，越左越急，點越大口數越多</small>${aTogBtns('dgAfter',[['loss','賠錢後'],['win','賺錢後'],['all','全部']])}</div>${aSlot(cScatter([],{get,h:290,xT:[0,5,15,30,60,120,240].map(sq),xFmt:v=>Math.round(v*v),xLabel:'距離上一筆出場幾分鐘'}))}</div>
+      <div class="dg-chart"><div class="ana-h3">⏳ 依間隔比較</div>${aPairLegend('上一筆賠錢後','上一筆賺錢後')}${aSlot(cPair(pair(gaps.map(([a,b])=>({l:b===Infinity?`${a}分+`:`${a}-${b}分`,f:t=>t.gap>=a&&t.gap<b}))),'賠錢後','賺錢後'))}</div>
+      <div class="dg-cols"><div class="dg-chart"><div class="ana-h3">🔁 同方向 or 反手</div>${aPairLegend('上一筆賠錢後','上一筆賺錢後')}${aSlot(cPair(pair(dRows),'賠錢後','賺錢後',{h:190}))}</div><div class="dg-chart"><div class="ana-h3">📦 口數比上一筆</div>${aPairLegend('上一筆賠錢後','上一筆賺錢後')}${aSlot(cPair(pair(qRows),'賠錢後','賺錢後',{h:190}))}</div></div>
+      <div class="dg-chart"><div class="ana-h3">🧊 連賠／連賺之後</div>${aSlot(cGroup(rows([{l:'連賠 1 筆後',f:t=>t.lStreak===1},{l:'連賠 2 筆後',f:t=>t.lStreak===2},{l:'連賠 3 筆+',f:t=>t.lStreak>=3},{l:'連賺 1 筆後',f:t=>t.wStreak===1},{l:'連賺 2 筆+',f:t=>t.wStreak>=2}]),{h:190}))}</div>`;})()}
+    <details class="dg-det"><summary>看數字表格</summary><div class="dg-sub">① 隔多久再進場</div>${dual('間隔',gaps.map(([a,b])=>({l:b===Infinity?`${a} 分鐘以上`:`${a}～${b} 分鐘`,f:t=>t.gap>=a&&t.gap<b})))}
+    <div class="dg-sub">② 同方向 or 反手</div>${dual('方向',[{l:'同方向再進',f:t=>t.same===true},{l:'反手',f:t=>t.same===false}])}
+    <div class="dg-sub">③ 口數比上一筆</div>${dual('口數',[{l:'加大',f:t=>t.qtyChg===1},{l:'一樣',f:t=>t.qtyChg===0},{l:'減少',f:t=>t.qtyChg===-1}])}
+    ${single?`<div class="dg-sub">④ 進場價離上一筆最後出場價多遠</div>${(()=>{const dv=T.filter(t=>t.dist!=null).map(t=>t.dist);if(!dv.length)return '<div class="mt" style="font-size:.8rem">價格沒填，算不出來</div>';const st=aNice(Math.max(...dv)||1,4);return dual('距離',[0,1,2,3].map(i=>({l:i<3?`${+(i*st).toFixed(2)}～${+((i+1)*st).toFixed(2)} 點`:`${+(3*st).toFixed(2)} 點以上`,f:t=>t.dist!=null&&t.dist>=i*st&&(i===3||t.dist<(i+1)*st)})));})()}`:''}
+    <div class="dg-sub">⑤ 連賠／連賺之後</div>${aTblRows(rows([{l:'連賠 1 筆後',f:t=>t.lStreak===1,flag:1},{l:'連賠 2 筆後',f:t=>t.lStreak===2,flag:1},{l:'連賠 3 筆以上',f:t=>t.lStreak>=3,flag:1},{l:'連賺 1 筆後',f:t=>t.wStreak===1},{l:'連賺 2 筆以上',f:t=>t.wStreak>=2}]))}</details>`,n1);
+  // 2 第幾筆
+  const nthR=[1,2,3,4,5].map(n=>({l:`第 ${n} 筆`,f:t=>t.nth===n,flag:n>1})).concat([{l:'第 6 筆以後',f:t=>t.nth>=6,flag:1}]);
+  const n2=[],vn=nthR.map(r=>({l:r.l,s:S(T.filter(r.f))})).filter(r=>r.s.n>=2);
+  if(vn.length){const b=[...vn].sort((x,y)=>y.s.avg-x.s.avg)[0],w=[...vn].sort((x,y)=>x.s.avg-y.s.avg)[0];n2.push([b.s.avg>=0?'good':'info',`最好的是<b>${b.l}</b>，平均 <b class="${aCl(b.s.avg)}">${aM(b.s.avg)}</b>。`]);if(w!==b&&w.s.avg<0)n2.push(['bad',`最差的是<b>${w.l}</b>，平均 <b class="dn">${aM(w.s.avg)}</b>。`]);}
+  for(let k=2;k<=4;k++){const s=S(T.filter(t=>t.nth>=k));if(s.n>=3&&s.pnl<0){F.push({i:-s.pnl,go:'nth',h:`每天第 <b>${k}</b> 筆以後的 ${s.n} 筆合計 <b class="dn">${aM(s.pnl)}</b>，勝率 ${aPct(s.wr)}。`});break;}}
+  card('nth','🔢','當天第幾筆','前幾筆賺、後面越做越差，通常代表越做越急，可以考慮每天限制筆數。',aSlot(cGroup(rows(nthR).map((r,i)=>({...r,s:i<5?`第${i+1}筆`:'第6筆+'}))))+aDet(aTblRows(rows(nthR))),n2);
+  // 3 當天累積
+  const X=AL,dayRows=[{l:'當天第一筆',f:t=>t.nth===1},{l:`已賠 ${aM0(2*X)} 以上`,f:t=>t.nth>1&&t.dayBefore<=-2*X,flag:1},{l:`已賠 ${aM0(X)}～${aM0(2*X)}`,f:t=>t.nth>1&&t.dayBefore>-2*X&&t.dayBefore<=-X,flag:1},{l:`小賠（${aM0(X)} 內）`,f:t=>t.nth>1&&t.dayBefore>-X&&t.dayBefore<0,flag:1},{l:'持平',f:t=>t.nth>1&&t.dayBefore===0},{l:`小賺（${aM0(X)} 內）`,f:t=>t.nth>1&&t.dayBefore>0&&t.dayBefore<X},{l:`已賺 ${aM0(X)} 以上`,f:t=>t.nth>1&&t.dayBefore>=X,flag:1}];
+  const n3=[],deep=S(T.filter(t=>t.nth>1&&t.dayBefore<=-X)),rich=S(T.filter(t=>t.nth>1&&t.dayBefore>=X));
+  if(deep.n)n3.push([deep.pnl<0?'bad':'good',`當天已賠超過 ${aM0(X)} 還繼續做：${deep.n} 筆，合計 <b class="${aCl(deep.pnl)}">${aM(deep.pnl)}</b>。`]);
+  if(rich.n)n3.push([rich.pnl<0?'bad':'good',`當天已賺超過 ${aM0(X)} 還繼續做：${rich.n} 筆，合計 <b class="${aCl(rich.pnl)}">${aM(rich.pnl)}</b>。${rich.pnl<0?'賺的又吐回去。':''}`]);
+  if(deep.n>=2&&deep.pnl<0)F.push({i:-deep.pnl,go:'state',h:`當天已賠超過 ${aM0(X)} 還繼續做的 ${deep.n} 筆，又賠 <b class="dn">${aM(deep.pnl)}</b>。`});
+  if(rich.n>=2&&rich.pnl<0)F.push({i:-rich.pnl,go:'state',h:`當天已賺超過 ${aM0(X)} 後繼續做的 ${rich.n} 筆，吐回 <b class="dn">${aM(rich.pnl)}</b>。`});
+  if(rich.n>=3&&rich.pnl>0)G.push(`當天已經賺錢後繼續做，還能再賺 <b class="up">${aM(rich.pnl)}</b>。`);
+  card('state','📉','當天已經賺／賠多少的時候',`進場前當天已平倉的累積損益，級距用你的平均虧損 ${aM0(X)} 當單位。`,aSlot(cGroup(rows(dayRows).map((r,i)=>({...r,s:['第一筆',`賠${aM0(2*X)}+`,`賠${aM0(X)}+`,'小賠','持平','小賺',`賺${aM0(X)}+`][i]}))))+aDet(aTblRows(rows(dayRows))),n3);
+  // 5 加碼與分批
+  const addR=[{l:'單筆進場',f:t=>t.add==='single'},{l:'順勢加碼',f:t=>t.add==='up'},{l:'攤平',f:t=>t.add==='down',flag:1}],exR=[{l:'一次出完',f:t=>t.exitN<=1},{l:'分批出場',f:t=>t.exitN>1}];
+  const n5=[],sD=S(T.filter(t=>t.add==='down')),sU=S(T.filter(t=>t.add==='up')),sP=S(T.filter(t=>t.exitN>1)),sO=S(T.filter(t=>t.exitN<=1));
+  if(sD.n)n5.push([sD.pnl<0?'bad':'info',`<b>攤平</b> ${sD.n} 筆，合計 <b class="${aCl(sD.pnl)}">${aM(sD.pnl)}</b>，勝率 ${aPct(sD.wr)}。`]);
+  if(sU.n)n5.push([sU.pnl>=0?'good':'bad',`<b>順勢加碼</b> ${sU.n} 筆，合計 <b class="${aCl(sU.pnl)}">${aM(sU.pnl)}</b>。`]);
+  if(sP.n&&sO.n)n5.push(['info',`分批出場平均 <b class="${aCl(sP.avg)}">${aM(sP.avg)}</b>；一次出完平均 <b class="${aCl(sO.avg)}">${aM(sO.avg)}</b>。`]);
+  if(sD.n>=2&&sD.pnl<0)F.push({i:-sD.pnl,go:'add',h:`<b>攤平</b>的 ${sD.n} 筆合計 <b class="dn">${aM(sD.pnl)}</b>。`});
+  card('add','➕','加碼與分批出場','順勢＝加碼價比當時均價有利；攤平＝加碼價比當時均價不利。需要有填進場價才分得出來。',`<div class="dg-cols"><div><div class="dg-sub">加碼方式</div>${aSlot(cGroup(rows(addR),{h:190}))}</div><div><div class="dg-sub">出場方式</div>${aSlot(cGroup(rows(exR),{h:190}))}</div></div>`+aDet(`<div class="dg-cols"><div>${aTblRows(rows(addR))}</div><div>${aTblRows(rows(exR))}</div></div>`),n5);
+  // 6 抱單分析：不用「抓到幾成」評分，改看抱單有沒有價值、什麼時候回不來
+  const pp=t=>t.pnl/(t.qty*t.pv),fp=v=>`${v>=0?'+':''}${v.toFixed(1)}`,avgBy=(a,f)=>a.length?aSum(a,f)/a.length:NaN,winH=T.filter(t=>t.pnl>0&&t.hold!=null),n6=[];
+  const lossPts=T.filter(t=>t.pnl<0).map(t=>-pp(t)),R1=Math.max(lossPts.length?aSum(lossPts,v=>v)/lossPts.length:1,.25);
+  const htbl=(heads,rs)=>`<div class="ana-scroll"><table class="ana-tbl"><thead><tr><th>${heads[0]}</th>${heads.slice(1).map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rs.join('')}</tbody></table></div>`;
+  const tr=(lbl,a,cells,hl)=>a.length?`<tr class="${hl?'hl':''}" data-g="${aReg(a)}"><td>${lbl}</td>${cells.map(c=>`<td class="${c[1]||''}">${c[0]}</td>`).join('')}</tr>`:`<tr><td>${lbl}</td>${cells.map(()=>'<td class="mt">—</td>').join('')}</tr>`;
+  // ① 獲利單抱多久、賺多少
+  const hb=[[0,10],[10,20],[20,40],[40,60],[60,120],[120,Infinity]],hRows=hb.map(([a,b])=>{const x=winH.filter(t=>t.hold>=a&&t.hold<b),m=x.filter(t=>t.mfe!=null),keep=avgBy(x,pp);return tr(b===Infinity?`${a} 分鐘以上`:`${a}～${b} 分鐘`,x,[[x.length],[x.length?fp(keep):'—','up'],[m.length?avgBy(m,t=>t.mfeP-pp(t)).toFixed(1):'—','gd'],[x.length?aM(aSum(x,t=>t.pnl)):'—','up']]);});
+  if(winH.length>=4){const sh=[...winH].sort((a,b)=>a.hold-b.hold),k=Math.max(1,Math.floor(sh.length/3)),qk=sh.slice(0,k),lg=sh.slice(-k),kv=avgBy(qk,pp),lv=avgBy(lg,pp);n6.push([lv>kv?'good':'bad',`抱最久的三分之一獲利單（${aHold(avgBy(lg,t=>t.hold))}）平均賺 <b class="up">${fp(lv)} 點</b>；最快走的三分之一（${aHold(avgBy(qk,t=>t.hold))}）平均 <b class="up">${fp(kv)} 點</b>。${lv>kv*1.3?'抱單是值得的。':(lv>kv?'抱久賺多一點，但差距不大。':'抱久沒有比較賺。')}`]);if(lv>kv*1.3)G.push(`獲利單抱得久確實賺比較多：平均 <b class="up">${fp(lv)} 點</b> vs 快走的 ${fp(kv)} 點。`);}
+  const mfeA=T.filter(t=>t.mfe!=null),maeA=T.filter(t=>t.mae!=null);const hLbl=([a,b])=>b===Infinity?`${a}分+`:`${a}-${b}分`;let m6=`<div class="dg-sub">① 獲利單抱多久、賺多少 <small class="mt" style="font-weight:400">點／口</small></div><div class="xh-legend"><span><i style="width:11px;height:11px;background:${A_UP}"></i>平均留下（數字）</span><span><i style="width:11px;height:11px;background:${A_GOLD};opacity:.45"></i>平均回吐（到最大浮盈）</span></div>${aSlot(cKeep(hb.map(b=>({l:hLbl(b),a:winH.filter(t=>t.hold>=b[0]&&t.hold<b[1]),pp}))))}${aDet(htbl(['持有時間','筆數','平均賺','平均回吐','合計'],hRows),true)}`;
+  // ③ 浮盈走到多少，最後留下多少
+  if(mfeA.length>=3){const st=30,maxM=Math.max(...mfeA.map(t=>t.mfeP)),bk=Array.from({length:Math.min(Math.floor(maxM/st)+1,10)},(_,i)=>[i*st,(i+1)*st]).concat(maxM>=300?[[300,Infinity]]:[]),mRows=bk.map(([a,b])=>{const x=mfeA.filter(t=>t.mfeP>=a&&t.mfeP<b),w=x.filter(t=>t.pnl>0).length;return tr(b===Infinity?`${a} 點以上`:`${a}～${b} 點`,x,[[x.length],[x.length?aPct(w/x.length*100):'—',x.length&&w/x.length<.5?'dn':'up'],[x.length?fp(avgBy(x,pp)):'—',x.length&&avgBy(x,pp)<0?'dn':'up'],[x.length?aM(aSum(x,t=>t.pnl)):'—',aCl(aSum(x,t=>t.pnl))]],a>0&&x.length>=2&&avgBy(x,pp)<0);});
+    m6+=`<div class="dg-sub">② 最大浮盈走到多少，最後留下多少 <small class="mt" style="font-weight:400">每 30 點一格，最多到 300 點</small></div><div class="dg-cols"><div><div class="xh-legend"><span><i style="width:11px;height:11px;background:${A_UP}"></i>最後賺幾筆（上方％＝賺的比例）</span><span><i style="width:11px;height:11px;background:${A_DN}"></i>最後賠幾筆</span></div>${aSlot(cMirror(bk.map(([a,b])=>({l:b===Infinity?'300+':`${a}-${b}`,a:mfeA.filter(t=>t.mfeP>=a&&t.mfeP<b),ex:x=>x.length?`\n平均留下 ${fp(avgBy(x,pp))} 點`:''}))))}</div><div><div class="xh-legend"><span><i style="width:14px;height:0;border-top:2px dashed ${A_GOLD}"></i>線上＝賣在最高點，離線越遠回吐越多</span></div>${aSlot(cScatter(mfeA.map(t=>({x:t.mfeP,y:pp(t),r:4+Math.min(t.qty,8),c:t.pnl>=0?A_UP:A_DN,tip:`最大浮盈 ${t.mfeP.toFixed(1)} 點 → 留下 ${fp(pp(t))} 點\n`+aTipT(t),t:T.indexOf(t)})),{h:240,x0:0,diag:1,xLabel:'最大浮盈（點／口）',yFmt:v=>v}))}</div></div>${aDet(htbl(['最大浮盈','筆數','最後還賺的比例','平均留下（點）','合計'],mRows),true)}`;
+    const turned=T.filter(t=>t.pnl<0&&t.mfeP!=null&&t.mfeP>=R1),tS=aSum(turned,t=>t.pnl);if(turned.length){n6.push(['bad',`<b>${turned.length} 筆</b>曾浮盈超過平均虧損（${R1.toFixed(1)} 點）卻賠錢出場，合計 <b class="dn">${aM(tS)}</b>。可以抱，但這些單的保護值得檢討。`]);if(turned.length>=2)F.push({i:-tS*.7,go:'eff',h:`${turned.length} 筆單曾浮盈超過 ${R1.toFixed(1)} 點，最後賠錢出場，合計 <b class="dn">${aM(tS)}</b>。`});}}
+  // ④ 被套多深還救得回來
+  if(maeA.length>=3){const st=Math.max(1,aNice([...maeA.map(t=>t.maeP)].sort((a,b)=>a-b)[Math.floor(maeA.length*.9)]||1,4)),bk=[0,1,2,3,4].map(i=>[i*st,i<4?(i+1)*st:Infinity]),info=bk.map(([a,b])=>{const x=maeA.filter(t=>t.maeP>=a&&t.maeP<b);return{a,b,x,w:x.filter(t=>t.pnl>0).length};});
+    m6+=`<div class="dg-sub">③ 被套多深，還救得回來嗎</div><div class="xh-legend"><span><i style="width:11px;height:11px;background:${A_UP}"></i>最後賺幾筆（上方％＝救回比例）</span><span><i style="width:11px;height:11px;background:${A_DN}"></i>最後賠幾筆</span></div>${aSlot(cMirror(info.map(o=>({l:o.b===Infinity?`${o.a}+`:`${o.a}-${o.b}`,a:o.x,ex:x=>x.length?`\n平均結果 ${fp(avgBy(x,pp))} 點`:''}))))}${aDet(htbl(['最大被套','筆數','最後獲利的比例','平均結果（點）','合計'],info.map(o=>tr(o.b===Infinity?`${o.a} 點以上`:`${o.a}～${o.b} 點`,o.x,[[o.x.length],[o.x.length?aPct(o.w/o.x.length*100):'—',o.x.length&&o.w/o.x.length<.5?'dn':'up'],[o.x.length?fp(avgBy(o.x,pp)):'—',o.x.length&&avgBy(o.x,pp)<0?'dn':'up'],[o.x.length?aM(aSum(o.x,t=>t.pnl)):'—',aCl(aSum(o.x,t=>t.pnl))]],o.x.length>=3&&o.w/o.x.length<.25))),true)}`;
+    const dead=info.find(o=>o.x.length>=3&&o.w/o.x.length<.25&&o.a>0);if(dead){const dp=maeA.filter(t=>t.maeP>=dead.a),dw=dp.filter(t=>t.pnl>0).length,ds=aSum(dp,t=>t.pnl);n6.push(['tip',`被套超過 <b>${dead.a} 點</b>的 ${dp.length} 筆，只有 ${dw} 筆最後獲利，合計 <b class="${aCl(ds)}">${aM(ds)}</b>。套到這裡通常回不來了。`]);if(ds<0)F.push({i:-ds*.6,go:'eff',h:`被套超過 <b>${dead.a} 點</b>的 ${dp.length} 筆只有 ${dw} 筆救回來，合計 <b class="dn">${aM(ds)}</b>。`});}}
+  if(mfeA.length<3||maeA.length<3)m6+=`<div class="ana-cover">${Math.min(mfeA.length,maeA.length)} 筆有填 MFE／MAE；②③ 至少要 3 筆才會出現。</div>`;
+  n6.push(['info','MFE 只記到你出場為止，<b>出場後又走多遠不知道</b>，所以這裡不評斷「出太早」，也不用「抓到幾成」來扣分。']);
+  card('eff','🪝','抱單分析','你是當沖、但能抱就抱，所以不看賣得多接近最高點，只看三件事：抱有沒有多賺、浮盈最後留下多少、被套多深就回不來。全部換算成每口點數。',m6,n6);
+  // 7 持有時間
+  const hv=T.filter(t=>t.hold!=null),hW=hv.filter(t=>t.pnl>0),hL=hv.filter(t=>t.pnl<0),avH=a=>a.length?aSum(a,t=>t.hold)/a.length:NaN,holdR=[[0,5],[5,15],[15,30],[30,60],[60,120],[120,240],[240,Infinity]].map(([a,b])=>({l:b===Infinity?`${a} 分鐘以上`:`${a}～${b} 分鐘`,f:t=>t.hold!=null&&t.hold>=a&&t.hold<b,flag:1})),n7=[];
+  if(hW.length&&hL.length){const r=avH(hL)>avH(hW);n7.push([r?'bad':'good',`獲利單平均抱 <b>${aHold(avH(hW))}</b>，虧損單平均抱 <b>${aHold(avH(hL))}</b>。${r?'賠錢的單抱得比較久。':'虧損單處理得比獲利單快。'}`]);if(r&&avH(hL)>avH(hW)*1.4)F.push({i:all.gl*.15,go:'hold',h:`虧損單平均抱 <b>${aHold(avH(hL))}</b>，比獲利單的 ${aHold(avH(hW))} 久很多。`});else if(!r)G.push(`虧損單平均抱 ${aHold(avH(hL))}，比獲利單短，砍單果斷。`);}
+  card('hold','⏱','持有時間','從第一筆進場到最後一筆出場。',aSlot(cGroup(rows(holdR).map((r,i)=>({...r,s:r.l.replace(' 分鐘以上','分+').replace(' 分鐘','分').replace('～','-')}))))+aDet(aTblRows(rows(holdR))),n7);
+  // 8 時段／星期
+  const hOrd=h=>h>=15?h-15:h+9,hrs=[...new Set(T.map(t=>t.hour).filter(h=>h!=null))].sort((a,b)=>hOrd(a)-hOrd(b)),hrR=hrs.map(h=>({l:`${String(h).padStart(2,'0')}:00～${String((h+1)%24).padStart(2,'0')}:00`,f:t=>t.hour===h,flag:1})),n8=[];
+  const hS=hrR.map(r=>({l:r.l,s:S(T.filter(r.f))})).filter(r=>r.s.n>=3).sort((a,b)=>a.s.pnl-b.s.pnl);
+  if(hS.length){const w=hS[0],b=hS[hS.length-1];if(w.s.pnl<0){n8.push(['bad',`最常賠的時段 <b>${w.l}</b>：${w.s.n} 筆 <b class="dn">${aM(w.s.pnl)}</b>。`]);F.push({i:-w.s.pnl*.8,go:'time',h:`<b>${w.l}</b> 進場的 ${w.s.n} 筆合計 <b class="dn">${aM(w.s.pnl)}</b>，勝率 ${aPct(w.s.wr)}。`});}if(b.s.pnl>0){n8.push(['good',`最好的時段 <b>${b.l}</b>：${b.s.n} 筆 <b class="up">${aM(b.s.pnl)}</b>。`]);G.push(`<b>${b.l}</b> 是你最會賺的時段：${b.s.n} 筆 <b class="up">${aM(b.s.pnl)}</b>。`);}}
+  const dnm=['週日','週一','週二','週三','週四','週五','週六'],dowR=[1,2,3,4,5,6,0].filter(d=>T.some(t=>t.dow===d)).map(d=>({l:dnm[d],f:t=>t.dow===d,flag:1}));
+  const dS=dowR.map(r=>({l:r.l,s:S(T.filter(r.f))})).filter(r=>r.s.n>=3).sort((a,b)=>a.s.pnl-b.s.pnl);if(dS[0]&&dS[0].s.pnl<0){n8.push(['bad',`<b>${dS[0].l}</b>最差：${dS[0].s.n} 筆 <b class="dn">${aM(dS[0].s.pnl)}</b>。`]);F.push({i:-dS[0].s.pnl*.6,go:'time',h:`<b>${dS[0].l}</b>的 ${dS[0].s.n} 筆合計 <b class="dn">${aM(dS[0].s.pnl)}</b>。`});}
+  card('time','🕐','進場時段與星期','依你填的進場時間，每小時一格，從晚上排到隔天；星期依交易日期。熱力圖格子裡的數字是筆數。',`<div class="dg-sub">星期 × 時段</div>${aSlot(aHeat(T,hrs))}<div class="dg-cols"><div><div class="dg-sub">時段</div>${aSlot(cGroup(hrR.map(r=>({l:r.l,s:r.l.slice(0,2)+'點',a:T.filter(r.f)}))))}</div><div><div class="dg-sub">星期</div>${aSlot(cGroup(rows(dowR)))}</div></div>`+aDet(`<div class="dg-cols"><div>${aTblRows(rows(hrR))}</div><div>${aTblRows(rows(dowR))}</div></div>`),n8);
+  F.sort((a,b)=>b.i-a.i);
+  body.innerHTML=`<div class="ana-head"><h2>🩺 問題診斷</h2><span>${[...T].sort((a,b)=>a.date.localeCompare(b.date))[0].date} ~ ${[...T].sort((a,b)=>b.date.localeCompare(a.date))[0].date}・${T.length} 筆</span></div>
+  <div class="dg-bar"><b>圖表看</b>${aTogBtns('dgM',[['pnl','總損益'],['avg','每筆平均'],['wr','勝率']])}<small>滑過任何圖看明細，點一下看那些單</small></div>
+  <div class="dg-sum"><div class="ana-sec"><h3 class="dn">🚨 錢主要賠在這裡 <small>點一下看細節</small></h3><ol>${F.length?F.slice(0,6).map(x=>`<li data-go="dg-${x.go}">${x.h}</li>`).join(''):'<li>沒有找到明顯的問題</li>'}</ol></div><div class="ana-sec"><h3 class="up">✅ 做得好的</h3><ul>${G.length?G.slice(0,5).map(x=>`<li>${x}</li>`).join(''):'<li>資料再多一點才看得出來</li>'}</ul></div></div>
+  ${C.join('')}
+  <div class="ana-sec" style="font-size:.8rem;line-height:1.7;color:#94a3b8;"><b style="color:#cbd5e1">這份報告算不到的：</b>單筆持倉中的損益路徑、未實現回撤、進場當下的均線位置與當天行情波動，以及出場後又走了多遠。這些都要有K棒才知道，所以沒有放，也沒有用估的。</div>`;
   }
-  function sd(label){return `<div style="margin:8px 0 4px;padding-top:10px;border-top:1px solid var(--border);font-size:.6rem;color:#ffffff;text-align:center;font-family:var(--fm);letter-spacing:.5px;">── ${label} ──</div>`;}
-  const fmt$=v=>`$${Math.abs(v).toFixed(0)}`;const fmtPts=v=>`${Math.abs(v).toFixed(1)}pt`;
-  const fmtPct=v=>`${(v*100).toFixed(1)}%`;const fmtGb=v=>`${v.toFixed(1)}%`;
-  const fmtRR=v=>`${v.toFixed(2)}x`;const fmtX=v=>(v!=null)?`${v.toFixed(2)}x`:'—';
-  let lScore=0,sScore=0;
-  const scoreMets=ls&&ss?[[ls.totPnl,ss.totPnl,true],[ls.wr,ss.wr,true],[ls.pSum,ss.pSum,true],[ls.lSum,ss.lSum,false],[ls.pf??0,ss.pf??0,true],[ls.ev,ss.ev,true],[ls.mdd,ss.mdd,false],[ls.avgWPts,ss.avgWPts,true],[ls.avgLPts,ss.avgLPts,false],...(ls.rr!=null&&ss.rr!=null?[[ls.rr,ss.rr,true]]:[]),...(ls.avgGiveback!=null&&ss.avgGiveback!=null?[[ls.avgGiveback,ss.avgGiveback,false]]:[]),...(ls.avgMaePts!=null&&ss.avgMaePts!=null?[[ls.avgMaePts,ss.avgMaePts,false]]:[]),...(ls.riskEff!=null&&ss.riskEff!=null?[[ls.riskEff,ss.riskEff,true]]:[]),...(ls.avgRRR!=null&&ss.avgRRR!=null?[[ls.avgRRR,ss.avgRRR,true]]:[])]:[];
-  scoreMets.forEach(([l,s,h])=>{if(h?(l>=s):(l<=s))lScore++;else sScore++;});
-  el.innerHTML=`
-  <div style="display:grid;grid-template-columns:1fr 60px 1fr;align-items:center;margin-bottom:14px;">
-    <div style="text-align:center;"><div style="font-size:1rem;font-weight:900;letter-spacing:2px;color:#f87171;">📈 做多</div><div style="font-family:var(--fm);font-size:.78rem;color:#94a3b8;margin-top:3px;">${ls?ls.count:0} 筆</div></div>
-    <div style="text-align:center;font-family:var(--fm);font-size:.9rem;font-weight:700;color:#ffffff;">VS</div>
-    <div style="text-align:center;"><div style="font-size:1rem;font-weight:900;letter-spacing:2px;color:#34d399;">📉 做空</div><div style="font-family:var(--fm);font-size:.78rem;color:#94a3b8;margin-top:3px;">${ss?ss.count:0} 筆</div></div>
-  </div>
-  <div style="display:flex;flex-direction:column;gap:7px;">
-    ${sd('損益總覽')}
-    ${metricRow('淨損益',ls?.totPnl,ss?.totPnl,fmt$)}${metricRow('勝率',ls?.wr,ss?.wr,fmtPct)}
-    ${metricRow('總獲利',ls?.pSum,ss?.pSum,fmt$)}${metricRow('總虧損',ls?ls.lSum:null,ss?ss.lSum:null,fmt$,false)}
-    ${metricRow('賺賠比',ls?.rr,ss?.rr,fmtRR)}${metricRow('獲利因子',ls?.pf,ss?.pf,fmtX)}
-    ${metricRow('期望值',ls?.ev,ss?.ev,v=>(v>=0?'+':'')+`$${v.toFixed(0)}`)}${metricRow('最大回撤',ls?ls.mdd:null,ss?ss.mdd:null,fmt$,false)}
-    ${sd('點數明細')}${metricRow('均獲(pt)',ls?.avgWPts,ss?.avgWPts,fmtPts)}${metricRow('均虧(pt)',ls?ls.avgLPts:null,ss?ss.avgLPts:null,fmtPts,false)}
-    ${(ls?.avgGiveback!=null||ss?.avgGiveback!=null||ls?.avgMaePts!=null||ss?.avgMaePts!=null)?sd('風控'):''}
-    ${(ls?.avgGiveback!=null||ss?.avgGiveback!=null)?metricRow('獲利回吐率',ls?.avgGiveback,ss?.avgGiveback,fmtGb,false):''}
-    ${(ls?.avgMaePts!=null||ss?.avgMaePts!=null)?metricRow('平均MAE(pt)',ls?.avgMaePts,ss?.avgMaePts,fmtPts,false):''}
-    ${(ls?.riskEff!=null||ss?.riskEff!=null)?metricRow('理想R:R',ls?.riskEff,ss?.riskEff,fmtX):''}
-    ${(ls?.avgRRR!=null||ss?.avgRRR!=null)?metricRow('實際R:R',ls?.avgRRR,ss?.avgRRR,v=>`${v.toFixed(2)}x`):''}
-  </div>
-  <div style="margin-top:12px;padding:12px 18px;background:var(--bg);border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:12px;">
-    <span style="font-size:.72rem;color:#ffffff;font-family:var(--fm);">綜合勝出</span>
-    ${ls&&ss?(()=>{const winner=lScore>=sScore?'做多':'做空';const color=lScore>=sScore?'#f87171':'#34d399';const icon=lScore>=sScore?'📈':'📉';return `<span style="font-family:var(--fm);font-size:1rem;font-weight:900;color:${color};">${icon} ${winner}</span>`;})():'<span style="color:var(--muted);">資料不足</span>'}
-    <div style="display:flex;gap:6px;align-items:center;">
-      <span style="font-family:var(--fm);font-size:.75rem;font-weight:700;color:#f87171;background:rgba(244,63,94,.12);border:1px solid rgba(244,63,94,.3);padding:3px 10px;border-radius:4px;">多 ${lScore}</span>
-      <span style="font-size:.7rem;color:#ffffff;">:</span>
-      <span style="font-family:var(--fm);font-size:.75rem;font-weight:700;color:#34d399;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);padding:3px 10px;border-radius:4px;">${sScore} 空</span>
-    </div>
-  </div>`;
+
+/* ═══ 排行榜 ═══ */
+function anaRank(T,body){
+  ANA.cur=T;const idx=t=>T.indexOf(t),by=[...T].sort((a,b)=>b.pnl-a.pnl),chrono=[...T].sort((a,b)=>a.entryEp-b.entryEp);
+  const dm={};T.forEach(t=>(dm[t.date]=dm[t.date]||[]).push(t));
+  const dates=Object.keys(dm).sort(),dayList=[];
+  for(let d=new Date(dates[0]+'T12:00:00'),e=new Date(dates[dates.length-1]+'T12:00:00');d<=e;d.setDate(d.getDate()+1)){const k=d.toLocaleDateString('sv');if(d.getDay()===0||d.getDay()===6){if(!dm[k])continue;}dayList.push({d:k,a:dm[k]||[],p:aSum(dm[k]||[],t=>t.pnl)});}
+  const traded=dayList.filter(x=>x.a.length),ds=[...traded].sort((a,b)=>b.p-a.p);
+  const runs=[];let cur=null;chrono.forEach((t,k)=>{const s=t.pnl>0?'W':(t.pnl<0?'L':'E');if(s==='E'){cur=null;return;}if(cur&&cur.s===s){cur.to=k;cur.n++;cur.sum+=t.pnl;}else{cur={s,from:k,to:k,n:1,sum:t.pnl};runs.push(cur);}});
+  const bW=runs.filter(r=>r.s==='W').sort((a,b)=>b.n-a.n||b.sum-a.sum)[0],bL=runs.filter(r=>r.s==='L').sort((a,b)=>b.n-a.n||a.sum-b.sum)[0];
+  const mf=T.filter(t=>t.mfe!=null),ma=T.filter(t=>t.mae!=null),mxF=[...mf].sort((a,b)=>b.mfe-a.mfe)[0],mxA=[...ma].sort((a,b)=>b.mae-a.mae)[0];
+  const tile=(ic,l,v,c,s,attr)=>`<div class="rg-tile" ${attr}><div class="l">${ic} ${l}</div><div class="v ${c}">${v}</div><div class="s">${s}</div></div>`;
+  const ts=t=>`${t.date.slice(5)} ${t.time}・${aSideTxt(t)} ${t.qty}口`,ta=t=>`data-t="${idx(t)}"`,rs=r=>r?`${chrono[r.from].date.slice(5)} → ${chrono[r.to].date.slice(5)}・${aM(r.sum)}`:'—';
+  const tiles=[tile('🏆','最賺一筆',aM(by[0].pnl),aCl(by[0].pnl),ts(by[0]),ta(by[0])),tile('💥','最賠一筆',aM(by[by.length-1].pnl),aCl(by[by.length-1].pnl),ts(by[by.length-1]),ta(by[by.length-1])),tile('☀️','最好的一天',aM(ds[0].p),aCl(ds[0].p),`${ds[0].d}・${ds[0].a.length} 筆`,`data-d="${ds[0].d}"`),tile('🌧','最差的一天',aM(ds[ds.length-1].p),aCl(ds[ds.length-1].p),`${ds[ds.length-1].d}・${ds[ds.length-1].a.length} 筆`,`data-d="${ds[ds.length-1].d}"`),mxF?tile('🚀','最大 MFE',aM0(mxF.mfe),'up',ts(mxF),ta(mxF)):'',mxA?tile('🕳️','最深 MAE',aM0(mxA.mae),'dn',ts(mxA),ta(mxA)):'',tile('🔥','最長連勝',bW?bW.n+' 筆':'—','up',rs(bW),bW?`data-t="${idx(chrono[bW.from])}"`:''),tile('🧊','最長連敗',bL?bL.n+' 筆':'—','dn',rs(bL),bL?`data-t="${idx(chrono[bL.from])}"`:'')].join('');
+  const qs=T.map(t=>t.qty),qmed=(()=>{const a=[...T].map(t=>t.pnl).sort((x,y)=>x-y);return a[Math.floor(a.length/2)];})();
+  const jitter=(i)=>((i*37)%11-5)*.035,qPts=T.map((t,i)=>({x:t.qty+jitter(i),y:t.pnl,c:t.pnl>=0?A_UP:A_DN,r:5,tip:aTipT(t),t:idx(t)}));
+  const wn=T.filter(t=>t.pnl>0),gw=aSum(wn,t=>t.pnl),top5=gw?aSum([...wn].sort((a,b)=>b.pnl-a.pnl).slice(0,5),t=>t.pnl)/gw*100:0;
+  const stk=W=>{const n=chrono.length,cols=Math.max(10,Math.floor((W-2)/17)),rowsN=Math.ceil(n/cols),H=rowsN*17+2;let g='';chrono.forEach((t,i)=>{const x=(i%cols)*17+1,y=Math.floor(i/cols)*17+1,inB=(bW&&i>=bW.from&&i<=bW.to)||(bL&&i>=bL.from&&i<=bL.to);g+=`<rect x="${x}" y="${y}" width="15" height="15" rx="3" fill="${t.pnl>0?A_UP:(t.pnl<0?A_DN:'#475569')}" stroke="${inB?A_GOLD:'none'}" stroke-width="${inB?2:0}" data-tip="${aAttr(aTipT(t))}" data-t="${idx(t)}"/>`;});return `<svg viewBox="0 0 ${W} ${H}" height="${H}">${g}</svg>`;};
+  body.innerHTML=`<div class="ana-head"><h2>🏆 排行榜</h2><span>${T.length} 筆・點任何一筆或一天看明細</span></div>
+  <div class="rg-tiles">${tiles}</div>
+  <div class="rg-row"><div class="ana-sec"><h3>💰 每一筆損益排行 <small>左最賺、右最賠；前 5 筆佔總獲利 ${aPct(top5)}</small><span class="ana-tog"><button class="${ANA.rkMode==='amt'?'on':''}" onclick="ANA.rkMode='amt';renderAna()">整筆金額</button><button class="${ANA.rkMode==='per'?'on':''}" onclick="ANA.rkMode='per';renderAna()">每口</button></span></h3>${aSlot(W=>cBars([...T].sort((a,b)=>ANA.rkMode==='per'?b.per-a.per:b.pnl-a.pnl).map(t=>({v:ANA.rkMode==='per'?t.per:t.pnl,tip:aTipT(t),t:idx(t)})),{h:320,noX:1})(W))}</div>
+    <div class="ana-sec"><h3>📦 口數 × 損益 <small>虛線＝全部單的中位數</small></h3>${aSlot(cScatter(qPts,{h:320,xLabel:'口數',median:qmed,xFmt:v=>v}))}</div></div>
+  ${anaRankMM(T,idx)}
+  <div class="rg-row"><div class="ana-sec"><h3>📅 每天損益 <span class="ana-chip">交易 ${traded.length} 天</span><span class="ana-chip up">賺 ${traded.filter(x=>x.p>0).length} 天</span><span class="ana-chip dn">賠 ${traded.filter(x=>x.p<0).length} 天</span><span class="ana-chip mt">沒交易 ${dayList.length-traded.length} 天</span></h3>${aSlot(cBars(dayList.map(x=>({v:x.p,lbl:x.d.slice(5),d:x.a.length?x.d:null,tip:x.a.length?`${x.d}\n${aM(x.p)}・${x.a.length} 筆\n點一下看當天`:`${x.d}\n沒有交易`})),{h:280}))}</div>
+    <div class="ana-sec"><h3>🔥 連勝／連敗 <small>照時間排，每格一筆；黃框＝最長的那段</small></h3>${aSlot(stk)}</div></div>`;
 }
-
-const CD={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#ffffff',font:{size:10}},grid:{color:'rgba(255,255,255,.08)',lineWidth:1}},y:{ticks:{color:'#ffffff',font:{size:10}},grid:{color:'rgba(255,255,255,.08)',lineWidth:1}}}};
-function dc(id){if(aC[id]){try{aC[id].destroy();}catch(e){}delete aC[id];}}
-
-function renderEquity(T,canvasId='chart-equity',key='eq'){
-  dc(key);if(!T.length)return;
-  const sorted=[...T].sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:a.id-b.id);
-  let cum=0;const labels=sorted.map((_,i)=>`#${i+1}`);
-  const data=sorted.map(t=>{cum+=t.totalPnl;return cum;});
-  const colors=sorted.map(t=>t.totalPnl>=0?'#10b981':'#f43f5e');
-  const ctx=document.getElementById(canvasId).getContext('2d');
-  const g=ctx.createLinearGradient(0,0,0,195);g.addColorStop(0,'rgba(0,212,255,.25)');g.addColorStop(1,'rgba(0,212,255,0)');
-  const opts=JSON.parse(JSON.stringify(CD));
-  opts.plugins={legend:{display:false},tooltip:{callbacks:{title:items=>{const t=sorted[items[0].dataIndex];return `#${items[0].dataIndex+1}  ${t.date}  ${comInfo(comOf(t)).name}  ${(t.entries&&t.entries[0]?.time)||''}`;},label:item=>`累積: $${item.raw}  本筆: ${sorted[item.dataIndex].totalPnl>=0?'+':''}$${sorted[item.dataIndex].totalPnl}`}}};
-  opts.scales.x={ticks:{display:false},grid:{color:'rgba(255,255,255,.06)'}};
-  opts.scales.y={ticks:{color:'#ffffff',font:{size:10}},grid:{color:'rgba(255,255,255,.08)'}};
-  aC[key]=new Chart(ctx,{type:'line',data:{labels,datasets:[{data,borderColor:'#00d4ff',borderWidth:2,fill:true,backgroundColor:g,tension:.35,pointRadius:3,pointBackgroundColor:colors,pointBorderWidth:0}]},options:opts});
+function anaRankMM(T,idx){
+  const mm=T.filter(t=>t.mfe!=null&&t.mae!=null);
+  if(!mm.length)return `<div class="ana-sec"><h3>🎯 MFE／MAE 排名</h3><div class="ana-cover">這個範圍還沒有填 MFE／MAE 的單，填了就會出現排名和分布圖。</div></div>`;
+  const s=ANA.rkSort,ratio=t=>t.mfe/Math.max(t.mae,1),f={mfe:(a,b)=>b.mfe-a.mfe,mae:(a,b)=>b.mae-a.mae,rb:(a,b)=>ratio(b)-ratio(a),rw:(a,b)=>ratio(a)-ratio(b)}[s],top=[...mm].sort(f).slice(0,15),hl=new Set(top);
+  const b=(k,l)=>`<button class="${s===k?'on':''}" onclick="ANA.rkSort='${k}';anaKeepScroll()">${l}</button>`,mx=Math.max(1,...top.map(t=>Math.max(t.mfe,t.mae,Math.abs(t.pnl))));
+  const rowsH=top.map((t,i)=>{const pv=Math.abs(t.pnl)/mx*50;return `<div data-t="${idx(t)}" data-tip="${aAttr(aTipT(t))}" style="display:grid;grid-template-columns:22px 170px 1fr 70px;gap:6px;align-items:center;height:22px;font-size:.74rem;font-family:var(--fm);"><span class="mt">${i+1}</span><span style="white-space:nowrap;overflow:hidden;">${t.date.slice(5)} ${aSideTxt(t)} ${t.qty}口</span><div style="position:relative;height:12px;background:rgba(255,255,255,.03);"><i style="position:absolute;right:50%;width:${t.mae/mx*50}%;top:0;bottom:0;background:${A_DN};opacity:.7"></i><i style="position:absolute;left:50%;width:${t.mfe/mx*50}%;top:0;bottom:0;background:${A_UP};opacity:.7"></i><i style="position:absolute;${t.pnl>=0?`left:${50+pv}%`:`left:${50-pv}%`};width:2px;top:-2px;bottom:-2px;background:#fff"></i></div><b class="${aCl(t.pnl)}" style="text-align:right">${aM(t.pnl)}</b></div>`;}).join('');
+  const pts=mm.map(t=>({x:t.mae,y:t.mfe,r:4+Math.min(t.qty,8),c:t.pnl>=0?A_UP:A_DN,hl:hl.has(t),tip:aTipT(t),t:idx(t)}));
+  return `<div class="rg-row"><div class="ana-sec"><h3>🎯 MFE／MAE 排名 <small>綠＝MFE、紅＝MAE、白線＝實際出場</small><span class="ana-tog">${b('mfe','MFE 最大')}${b('mae','MAE 最深')}${b('rb','比值最好')}${b('rw','比值最差')}</span></h3><div class="ana-scroll"><div style="min-width:440px">${rowsH}</div></div></div>
+    <div class="ana-sec"><h3>🗺 MAE × MFE 分布 <small>黃框＝左邊榜上的單；已填 ${mm.length}/${T.length} 筆</small></h3>${aSlot(cScatter(pts,{h:340,x0:0,xLabel:'MAE（最多賠到）',xFmt:v=>aK(v)}))}</div></div>`;
 }
+function anaKeepScroll(){const b=document.getElementById('ana-body'),y=b.scrollTop;renderAna();b.scrollTop=y;}
 
-function renderHistogram(T){
-  dc('hist');if(!T.length)return;
-  const pnls=T.map(t=>t.totalPnl);const STEP=100;
-  const mn=Math.floor(Math.min(...pnls)/STEP)*STEP;const mx=Math.ceil(Math.max(...pnls)/STEP)*STEP;
-  const labels=[],bins=[];
-  for(let b=mn;b<=mx;b+=STEP){labels.push(b===0?'0':(b>0?'+'+b:String(b)));bins.push(pnls.filter(p=>p>=b&&p<b+STEP).length);}
-  const opts=JSON.parse(JSON.stringify(CD));
-  opts.scales.y={ticks:{color:'#ffffff',font:{size:10},stepSize:1,callback:v=>Number.isInteger(v)?v:''},grid:{color:'rgba(255,255,255,.08)'}};
-  aC['hist']=new Chart(document.getElementById('chart-histogram').getContext('2d'),{type:'bar',data:{labels,datasets:[{data:bins,backgroundColor:labels.map(l=>parseFloat(l.replace('+',''))>=0?'rgba(16,185,129,.75)':'rgba(244,63,94,.75)'),borderRadius:4,barPercentage:.85}]},options:opts});
+/* ── 明細視窗與互動 ── */
+function anaModal(title,list,date){
+  const real=!anaIsDemo();
+  document.querySelector('#ana-modal .hd span').innerText=title;
+  const gb=document.getElementById('ana-modal-go');gb.style.display=(real&&date)?'':'none';gb.onclick=()=>{anaCloseModal();anaGoDate(date);};
+  document.querySelector('#ana-modal .bd').innerHTML=[...list].sort((a,b)=>a.entryEp-b.entryEp).map(t=>`<div style="font-size:.74rem;color:#94a3b8;font-family:var(--fm);margin:2px 0 5px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">${t.date}${t.pts!=null?`<span>${t.pts>=0?'+':''}${+t.pts.toFixed(2)} 點</span>`:''}</div>${tradeCardHtml(t.raw)}`).join('');
+  document.getElementById('ana-modal').style.display='flex';
 }
-
-/* ══════════ 蝴蝶旋風圖 ══════════ */
-function calcTradePoints(t){
-  const entries=t.entries||[];
-  const totalEntryQty=entries.reduce((s,e)=>s+(e.qty||0),0);
-  if(!totalEntryQty)return null;
-  const hasAllEntryPrices=entries.every(e=>e.price!==''&&e.price!=null&&!isNaN(parseFloat(String(e.price).replace(/,/g,''))));
-  if(!hasAllEntryPrices)return null;
-  const avgEntry=entries.reduce((s,e)=>s+parseFloat(String(e.price).replace(/,/g,''))*(e.qty||0),0)/totalEntryQty;
-  const exits=t.exits||[];
-  const totalExitQty=exits.reduce((s,e)=>s+(e.qty||0),0);
-  if(!totalExitQty)return null;
-  const hasAllExitPrices=exits.every(e=>e.price!==''&&e.price!=null&&!isNaN(parseFloat(String(e.price).replace(/,/g,''))));
-  if(!hasAllExitPrices)return null;
-  const avgExit=exits.reduce((s,e)=>s+parseFloat(String(e.price).replace(/,/g,''))*(e.qty||0),0)/totalExitQty;
-  return t.side==='long'?(avgExit-avgEntry):(avgEntry-avgExit);
-}
-
-function renderButterflyQuad(longT,shortT,wrapperId,commodity){
-  const wrap=document.getElementById(wrapperId);
-  if(!wrap)return;
-  wrap.innerHTML='';
-  wrap.style.position='relative';
-
-  const info=commodity&&commodity!=='all'?comInfo(commodity):null;
-  const STEP=info?info.step:10;
-  const dec=(String(STEP).split('.')[1]||'').length;
-  const num=v=>Number(v.toFixed(dec));
-  const fmtB=v=>{const n=num(v);return n===0?'0':(n>0?'+':'')+n;};
-  const binOf=p=>Math.floor(p/STEP+1e-9);
-  const titleEl=document.getElementById('butterfly-title');
-  if(titleEl)titleEl.innerText=`多空點數分布蝴蝶圖（每${num(STEP)}點）${info?'':'・建議先選單一商品'}`;
-
-  const allT=[...longT,...shortT];
-  if(!allT.length){wrap.innerHTML='<div style="color:var(--muted);font-size:.82rem;text-align:center;padding:40px;">尚無資料</div>';return;}
-
-  const longWithPts=longT.map(t=>({...t,pts:calcTradePoints(t)})).filter(t=>t.pts!=null);
-  const shortWithPts=shortT.map(t=>({...t,pts:calcTradePoints(t)})).filter(t=>t.pts!=null);
-  if(!longWithPts.length&&!shortWithPts.length){
-    wrap.innerHTML='<div style="color:var(--muted);font-size:.82rem;text-align:center;padding:40px;">尚無含進出場價的交易資料</div>';return;
-  }
-
-  const allPts=[...longWithPts,...shortWithPts].map(t=>t.pts);
-  const iMin=binOf(Math.min(...allPts)),iMax=binOf(Math.max(...allPts));
-  const binIdx=[];for(let i=iMax;i>=iMin;i--)binIdx.push(i);
-  const sortedBins=binIdx.map(i=>i*STEP);
-  const longDetails=binIdx.map(i=>longWithPts.filter(t=>binOf(t.pts)===i));
-  const shortDetails=binIdx.map(i=>shortWithPts.filter(t=>binOf(t.pts)===i));
-  const longCounts=longDetails.map(a=>a.length);
-  const shortCounts=shortDetails.map(a=>a.length);
-
-  const maxCount=Math.max(...longCounts,...shortCounts,1);
-  const LABEL_COL=76,ROW_H=36,TITLE_H=32,PAD_BOT=28,BAR_PAD=4,SIDE_PAD=28;
-  const totalH=TITLE_H+sortedBins.length*ROW_H+PAD_BOT;
-  const canvas=document.createElement('canvas');
-  const dpr=window.devicePixelRatio||1;
-  const cssW=wrap.clientWidth||900;
-  canvas.style.width='100%';canvas.style.height=totalH+'px';
-  canvas.width=cssW*dpr;canvas.height=totalH*dpr;
-  wrap.appendChild(canvas);
-  const c=canvas.getContext('2d');c.scale(dpr,dpr);
-  const W=cssW,sideW=(W-LABEL_COL)/2,centerX=sideW,barAreaW=sideW-SIDE_PAD;
-  function drawTitles(){const ty=TITLE_H/2;c.font=`900 16px 'Noto Sans TC',sans-serif`;c.fillStyle='#fb923c';c.textAlign='center';c.textBaseline='middle';c.fillText('做多',sideW/2,ty);c.fillStyle='#34d399';c.fillText('做空',sideW+LABEL_COL+sideW/2,ty);c.font=`600 10px 'JetBrains Mono',monospace`;c.fillStyle='#ffffff';c.fillText('點數',centerX+LABEL_COL/2,ty-6);c.fillText('區間',centerX+LABEL_COL/2,ty+6);}
-  function drawBg(){const pc=sortedBins.filter(b=>b>=0).length;if(pc>0){c.fillStyle='rgba(52,211,153,.035)';c.fillRect(0,TITLE_H,W,pc*ROW_H);}if(pc<sortedBins.length){c.fillStyle='rgba(248,113,113,.035)';c.fillRect(0,TITLE_H+pc*ROW_H,W,(sortedBins.length-pc)*ROW_H);}}
-  function drawRows(){sortedBins.forEach((b,i)=>{const rowY=TITLE_H+i*ROW_H,rowCy=rowY+ROW_H/2,isGain=b>=0,lc=longCounts[i],sc=shortCounts[i];c.beginPath();c.moveTo(0,rowY+ROW_H);c.lineTo(W,rowY+ROW_H);c.strokeStyle='rgba(255,255,255,.04)';c.lineWidth=1;c.setLineDash([]);c.stroke();if(lc>0){const bw=Math.max(lc/maxCount*barAreaW,6),bx=centerX-bw,lg2=c.createLinearGradient(bx,0,centerX,0);if(isGain){lg2.addColorStop(0,'rgba(251,146,60,.2)');lg2.addColorStop(1,'rgba(251,146,60,.88)');}else{lg2.addColorStop(0,'rgba(248,113,113,.2)');lg2.addColorStop(1,'rgba(248,113,113,.88)');}c.fillStyle=lg2;roundRectLeft(c,bx,rowY+BAR_PAD,bw,ROW_H-BAR_PAD*2,5);c.fill();c.font=`700 11px 'JetBrains Mono',monospace`;c.fillStyle='#ffffff';c.textAlign='right';c.textBaseline='middle';c.fillText(lc,bx-4,rowCy);}const rxStart=centerX+LABEL_COL;if(sc>0){const bw=Math.max(sc/maxCount*barAreaW,6),sg2=c.createLinearGradient(rxStart,0,rxStart+bw,0);if(isGain){sg2.addColorStop(0,'rgba(52,211,153,.88)');sg2.addColorStop(1,'rgba(52,211,153,.2)');}else{sg2.addColorStop(0,'rgba(96,165,250,.88)');sg2.addColorStop(1,'rgba(96,165,250,.2)');}c.fillStyle=sg2;roundRectRight(c,rxStart,rowY+BAR_PAD,bw,ROW_H-BAR_PAD*2,5);c.fill();c.font=`700 11px 'JetBrains Mono',monospace`;c.fillStyle='#ffffff';c.textAlign='left';c.textBaseline='middle';c.fillText(sc,rxStart+bw+4,rowCy);}const label=fmtB(b),cx2=centerX+LABEL_COL/2;c.fillStyle=isGain?'rgba(52,211,153,.15)':'rgba(248,113,113,.15)';c.strokeStyle=isGain?'rgba(52,211,153,.45)':'rgba(248,113,113,.45)';c.lineWidth=1;c.beginPath();c.roundRect(centerX+3,rowY+BAR_PAD,LABEL_COL-6,ROW_H-BAR_PAD*2,4);c.fill();c.stroke();c.font=`700 12px 'JetBrains Mono',monospace`;c.fillStyle=isGain?'#6ee7b7':'#fca5a5';c.textAlign='center';c.textBaseline='middle';c.fillText(label,cx2,rowCy);});}
-  function drawZeroLine(){const pc=sortedBins.filter(b=>b>=0).length;if(pc<=0||pc>=sortedBins.length)return;const zy=TITLE_H+pc*ROW_H;c.beginPath();c.moveTo(0,zy);c.lineTo(W,zy);c.strokeStyle='rgba(255,255,255,.5)';c.lineWidth=2;c.setLineDash([9,5]);c.stroke();c.setLineDash([]);c.font=`600 10px 'JetBrains Mono',monospace`;c.fillStyle='rgba(52,211,153,.7)';c.textAlign='left';c.textBaseline='bottom';c.fillText('▲ 獲利',6,zy-3);c.fillStyle='rgba(248,113,113,.7)';c.textAlign='left';c.textBaseline='top';c.fillText('▼ 虧損',6,zy+3);}
-  function drawXAxis(){const axY=TITLE_H+sortedBins.length*ROW_H+14;c.font=`400 9px 'JetBrains Mono',monospace`;c.fillStyle='rgba(255,255,255,.35)';c.textBaseline='alphabetic';[Math.ceil(maxCount/2),maxCount].forEach(v=>{const px=centerX-v/maxCount*barAreaW;c.textAlign='center';c.fillText(v,px,axY);});const rxStart=centerX+LABEL_COL;[Math.ceil(maxCount/2),maxCount].forEach(v=>{const px=rxStart+v/maxCount*barAreaW;c.textAlign='center';c.fillText(v,px,axY);});c.fillStyle='rgba(255,255,255,.6)';c.textAlign='center';c.fillText('（筆）',sideW/2,axY+11);c.fillText('（筆）',rxStart+sideW/2,axY+11);}
-  drawBg();drawRows();drawZeroLine();drawTitles();drawXAxis();
-
-  const tip=document.createElement('div');
-  tip.style.cssText=`position:absolute;display:none;pointer-events:none;background:rgba(8,12,20,.96);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#e2e8f0;line-height:1.65;z-index:999;box-shadow:0 4px 24px rgba(0,0,0,.5);min-width:180px;max-width:280px;overflow:visible;`;
-  wrap.style.overflow='visible';wrap.appendChild(tip);
-  const ptsDec=Math.max(1,dec);
-  canvas.addEventListener('mousemove',e=>{const rect=canvas.getBoundingClientRect(),mx=(e.clientX-rect.left),my=(e.clientY-rect.top);if(my<TITLE_H||my>TITLE_H+sortedBins.length*ROW_H){tip.style.display='none';return;}const rowIdx=Math.floor((my-TITLE_H)/ROW_H);if(rowIdx<0||rowIdx>=sortedBins.length){tip.style.display='none';return;}const rxStart=centerX+LABEL_COL;let side=null;if(mx<centerX)side='long';else if(mx>rxStart)side='short';else{tip.style.display='none';return;}const b=sortedBins[rowIdx],count=side==='long'?longCounts[rowIdx]:shortCounts[rowIdx];if(count===0){tip.style.display='none';return;}const details=side==='long'?longDetails[rowIdx]:shortDetails[rowIdx],sideLabel=side==='long'?'做多':'做空',sideColor=side==='long'?'#fb923c':'#34d399';let html=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.1);"><span style="color:${sideColor};font-weight:700;font-size:13px;">${sideLabel}</span><span style="color:#94a3b8;">點數區間</span><span style="color:${b>=0?'#6ee7b7':'#fca5a5'};font-weight:700;">${fmtB(b)} ~ ${fmtB(b+STEP)} pt</span></div><div style="color:#94a3b8;font-size:11px;margin-bottom:6px;">共 ${count} 筆</div>`;details.slice(0,6).forEach(t=>{const entryTime=(t.entries&&t.entries[0]?.time)||'';const totalQty=(t.entries||[]).reduce((s,e)=>s+(e.qty||0),0);const isLong=t.side==='long';html+=`<div style="padding:4px 0;border-bottom:1px solid rgba(255,255,255,.06);"><div style="display:flex;justify-content:space-between;gap:10px;font-size:11px;"><span style="color:#64748b;">${t.date} ${entryTime}</span><span style="color:${t.pts>=0?'#34d399':'#f87171'};font-weight:700;">${t.pts>=0?'+':''}${t.pts.toFixed(ptsDec)} pt</span></div><div style="display:flex;gap:8px;font-size:10px;margin-top:2px;"><span style="color:${comInfo(comOf(t)).color};">${comInfo(comOf(t)).name}</span><span style="color:${isLong?'#f87171':'#34d399'};">${isLong?'多':'空'}</span><span style="color:#64748b;">${totalQty}口</span><span style="color:${t.totalPnl>=0?'#34d399':'#f87171'};">$${t.totalPnl>=0?'+':''}${t.totalPnl}</span></div></div>`;});if(details.length>6)html+=`<div style="color:#475569;font-size:10px;margin-top:4px;">… 還有 ${details.length-6} 筆</div>`;tip.innerHTML=html;tip.style.display='block';let tx=mx+14;const tipW=tip.offsetWidth||220,tipH=tip.offsetHeight||120;if(tx+tipW>W-4)tx=mx-tipW-14;if(tx<4)tx=4;const wrapH=wrap.clientHeight||totalH;let ty2=my-10;if(ty2+tipH>wrapH-4)ty2=my-tipH-6;if(ty2<0)ty2=0;tip.style.left=tx+'px';tip.style.top=ty2+'px';});
-  canvas.addEventListener('mouseleave',()=>{tip.style.display='none';});
-}
-
-function roundRectLeft(ctx,x,y,w,h,r){if(w<=0||h<=0)return;r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w,y);ctx.lineTo(x+w,y+h);ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();}
-function roundRectRight(ctx,x,y,w,h,r){if(w<=0||h<=0)return;r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);ctx.lineTo(x,y+h);ctx.closePath();}
-if(!CanvasRenderingContext2D.prototype.roundRect){CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){r=Math.min(r,w/2,h/2);this.beginPath();this.moveTo(x+r,y);this.lineTo(x+w-r,y);this.arcTo(x+w,y,x+w,y+r,r);this.lineTo(x+w,y+h-r);this.arcTo(x+w,y+h,x+w-r,y+h,r);this.lineTo(x+r,y+h);this.arcTo(x,y+h,x,y+h-r,r);this.lineTo(x,y+r);this.arcTo(x,y,x+r,y,r);this.closePath();};}
-
-function renderHeatmap(T,containerId){
-  const DAY_LABELS=['一','二','三','四','五'];const hm={};
-  T.forEach(t=>{const time=(t.entries||[{time:t.entryTime}])[0].time||'00:00';const[h,m]=time.split(':').map(Number);const sm=Math.floor(m/5)*5;let dow=new Date(t.date).getDay();if(h>=0&&h<8){const prev=new Date(t.date);prev.setDate(prev.getDate()-1);dow=prev.getDay();}const adj=dow===0?6:dow-1;if(adj>4)return;const key=`${adj}_${h}_${sm}`;if(!hm[key])hm[key]={win:0,total:0,pnl:0};hm[key].total++;hm[key].pnl+=t.totalPnl;if(t.totalPnl>0)hm[key].win++;});
-  const slotSet=new Set();Object.keys(hm).forEach(k=>{const[,h,m]=k.split('_');slotSet.add(parseInt(h)*60+parseInt(m));});
-  const slotMins=[...slotSet].sort((a,b)=>a-b);
-  if(!slotMins.length){document.getElementById(containerId).innerHTML='<div style="color:var(--muted);padding:20px;font-size:.8rem;">尚無資料</div>';return;}
-  const mn=slotMins[0],mx=slotMins[slotMins.length-1];
-  const cols=[];for(let s=mn;s<=mx;s+=5)cols.push(s);
-  const cellH=Math.max(24,Math.min(40,Math.floor(200/5)))+'px';
-  let html=`<div style="display:grid;grid-template-columns:22px ${cols.map(()=>'minmax(6px,1fr)').join(' ')};gap:3px;width:100%;">`;
-  html+='<div></div>'+cols.map((s,i)=>{const h2=Math.floor(s/60),m2=s%60;const lbl=(i%2===0)?`${String(h2).padStart(2,'0')}:${String(m2).padStart(2,'0')}`:'' ;return `<div style="text-align:center;color:#ffffff;font-size:.45rem;white-space:nowrap;overflow:hidden;padding-bottom:3px;font-family:var(--fm);">${lbl}</div>`;}).join('');
-  DAY_LABELS.forEach((day,di)=>{html+=`<div style="color:#ffffff;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;font-size:.65rem;font-family:var(--fm);">${day}</div>`;cols.forEach(s=>{const h2=Math.floor(s/60),m2=s%60;const cell=hm[`${di}_${h2}_${m2}`];if(!cell){html+=`<div style="height:${cellH};background:rgba(255,255,255,.04);border-radius:3px;"></div>`;return;}const wr=cell.win/cell.total;const intensity=Math.min(cell.total/3,1);const r=Math.round(244*(1-wr)*intensity),g=Math.round(185*wr*intensity);const hhmm=`${String(h2).padStart(2,'0')}:${String(m2).padStart(2,'0')}`;html+=`<div title="週${day} ${hhmm} | ${cell.total}筆 勝率${(wr*100).toFixed(0)}% PnL:$${cell.pnl.toFixed(0)}" style="height:${cellH};background:rgb(${r},${g},18);border-radius:3px;cursor:default;"></div>`;});});
-  html+='</div>';document.getElementById(containerId).innerHTML=html;
-}
-
-function renderBubble(T){
-  dc('bb');const lD=[],sD=[];
-  T.forEach(t=>{const time=(t.entries||[{time:t.entryTime,qty:1}])[0].time||'00:00';const[h,m]=time.split(':').map(Number);const qty=t.entries?t.entries.reduce((s,e)=>s+e.qty,0):1;const x=h+m/60;const pt={x,y:t.totalPnl,r:Math.min(Math.max(qty*3,4),18)};if(t.side==='long')lD.push(pt);else sD.push(pt);});
-  const opts=JSON.parse(JSON.stringify(CD));
-  opts.plugins={legend:{display:true,labels:{color:'#ffffff',font:{size:11,weight:'600'},boxWidth:12,padding:18,usePointStyle:true}}};
-  opts.scales.x={ticks:{color:'#ffffff',font:{size:10},callback:v=>{const h=Math.floor(v),m=Math.round((v-h)*60);return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;} },grid:{color:'rgba(255,255,255,.08)'},title:{display:true,text:'進場時間',color:'#ffffff',font:{size:9}}};
-  opts.scales.y={ticks:{color:'#ffffff',font:{size:10}},grid:{color:'rgba(255,255,255,.08)'},title:{display:true,text:'損益($)',color:'#ffffff',font:{size:9}}};
-  const bubbleZeroPlugin={id:'bubbleZero',afterDraw(chart){const{ctx:c,scales:{x,y}}=chart;const z=y.getPixelForValue(0);c.save();c.beginPath();c.moveTo(chart.chartArea.left,z);c.lineTo(chart.chartArea.right,z);c.strokeStyle='rgba(255,255,255,.2)';c.lineWidth=1.5;c.setLineDash([4,4]);c.stroke();c.restore();}};
-  aC['bb']=new Chart(document.getElementById('chart-bubble').getContext('2d'),{type:'bubble',plugins:[bubbleZeroPlugin],data:{datasets:[{label:'做多',data:lD,backgroundColor:'rgba(244,63,94,.5)',borderColor:'#f43f5e',borderWidth:1},{label:'做空',data:sD,backgroundColor:'rgba(52,211,153,.5)',borderColor:'#34d399',borderWidth:1}]},options:opts});
-}
-
-function durToSec(t){if(t.durSec!=null)return t.durSec;if(!t.duration)return null;const p=t.duration.split(':').map(Number);if(p.length===3)return p[0]*3600+p[1]*60+p[2];if(p.length===2)return p[0]*60+p[1];return null;}
-function secToLabel(s){if(s<60)return`${s}s`;if(s<3600)return`${Math.floor(s/60)}m${s%60?String(s%60).padStart(2,'0')+'s':''}`;if(s<86400)return`${Math.floor(s/3600)}h${Math.floor((s%3600)/60)?Math.floor((s%3600)/60)+'m':''}`;return`${Math.floor(s/86400)}d${Math.floor((s%86400)/3600)?Math.floor((s%86400)/3600)+'h':''}`;}
-function renderDuration(T,trendId,d3Id){
-  const tk='dt_'+trendId,d3k='d3_'+d3Id;dc(tk);dc(d3k);
-  const withDur=T.filter(t=>durToSec(t)!=null);
-  if(!withDur.length){[trendId,d3Id].forEach(id=>{const el=document.getElementById(id);if(el){const p=el.parentElement;p.innerHTML=`<canvas id="${id}" style="display:none;"></canvas><div style="color:var(--muted);font-size:.82rem;text-align:center;padding:30px;">尚無持倉時間資料</div>`;}});return;}
-  [trendId,d3Id].forEach(id=>{const el=document.getElementById(id);if(el&&el.style.display==='none'){el.style.display='';el.nextElementSibling?.remove();}});
-  const sorted=[...withDur].sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:a.id-b.id);
-  const winPts=sorted.filter(t=>t.totalPnl>0).map(t=>({x:sorted.indexOf(t)+1,y:durToSec(t)}));
-  const lossPts=sorted.filter(t=>t.totalPnl<0).map(t=>({x:sorted.indexOf(t)+1,y:durToSec(t)}));
-  function movAvg(pts,n=5){return pts.map((p,i)=>{const slice=pts.slice(Math.max(0,i-n+1),i+1);return{x:p.x,y:Math.round(slice.reduce((s,v)=>s+v.y,0)/slice.length)};});}
-  const dtCtx=document.getElementById(trendId).getContext('2d');
-  const dtOpts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#ffffff',font:{size:11,weight:'600'},boxWidth:12,padding:18,usePointStyle:true}},tooltip:{callbacks:{label:item=>{const t=sorted[item.raw.x-1];return t?[`${item.dataset.label}`,`持倉：${secToLabel(item.raw.y)}`,`損益：$${t.totalPnl}`,`日期：${t.date}`]:[];}}}},scales:{x:{title:{display:true,text:'交易序號',color:'#ffffff',font:{size:9}},ticks:{color:'#ffffff',font:{size:9}},grid:{color:'rgba(255,255,255,.08)'}},y:{title:{display:true,text:'持倉時間',color:'#ffffff',font:{size:9}},ticks:{color:'#ffffff',font:{size:10},callback:v=>secToLabel(v)},grid:{color:'rgba(255,255,255,.08)'}}}};
-  aC[tk]=new Chart(dtCtx,{type:'scatter',data:{datasets:[{label:'獲利單',data:winPts,backgroundColor:'rgba(16,185,129,.4)',borderColor:'#10b981',pointRadius:4,pointBorderWidth:1,showLine:false,order:3},{label:'虧損單',data:lossPts,backgroundColor:'rgba(244,63,94,.4)',borderColor:'#f43f5e',pointRadius:4,pointBorderWidth:1,showLine:false,order:3},{label:'獲利移動均線',data:movAvg(winPts),borderColor:'#10b981',backgroundColor:'transparent',pointRadius:0,showLine:true,borderWidth:2,tension:.4,order:1},{label:'虧損移動均線',data:movAvg(lossPts),borderColor:'#f43f5e',backgroundColor:'transparent',pointRadius:0,showLine:true,borderWidth:2,tension:.4,order:1}]},options:dtOpts});
-  const d3Data=withDur.map(t=>({x:durToSec(t),y:t.totalPnl,r:Math.min(Math.max((t.entries?t.entries.reduce((s,e)=>s+e.qty,0):(t.entryQty||1))*3,5),18),win:t.totalPnl>=0,qty:t.entries?t.entries.reduce((s,e)=>s+e.qty,0):(t.entryQty||1),date:t.date}));
-  const d3Win=d3Data.filter(d=>d.win);const d3Loss=d3Data.filter(d=>!d.win);
-  const d3Ctx=document.getElementById(d3Id).getContext('2d');
-  const zeroPlugin2={id:'zeroLine2_'+d3Id,afterDraw(chart){const{ctx:c,scales:{x,y}}=chart;const z=y.getPixelForValue(0);c.save();c.beginPath();c.moveTo(chart.chartArea.left,z);c.lineTo(chart.chartArea.right,z);c.strokeStyle='rgba(255,255,255,.2)';c.lineWidth=1.5;c.setLineDash([4,4]);c.stroke();c.restore();}};
-  aC[d3k]=new Chart(d3Ctx,{type:'bubble',plugins:[zeroPlugin2],data:{datasets:[{label:'獲利',data:d3Win.map(d=>({x:d.x,y:d.y,r:d.r})),backgroundColor:'rgba(16,185,129,.5)',borderColor:'#10b981',borderWidth:1.5},{label:'虧損',data:d3Loss.map(d=>({x:d.x,y:d.y,r:d.r})),backgroundColor:'rgba(244,63,94,.5)',borderColor:'#f43f5e',borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#ffffff',font:{size:11,weight:'600'},boxWidth:12,padding:18,usePointStyle:true}},tooltip:{callbacks:{label:item=>{const src=item.dataset.label==='獲利'?d3Win:d3Loss;const d=src[item.dataIndex];return d?[`持倉：${secToLabel(d.x)}`,`損益：${d.y>=0?'+':''}$${d.y}`,`口數：${d.qty} 口`,`日期：${d.date}`]:[];}}}},scales:{x:{title:{display:true,text:'持倉時間',color:'#ffffff',font:{size:9}},ticks:{color:'#ffffff',font:{size:10},callback:v=>secToLabel(v)},grid:{color:'rgba(255,255,255,.08)'}},y:{title:{display:true,text:'損益 ($)',color:'#ffffff',font:{size:9}},ticks:{color:'#ffffff',font:{size:10}},grid:{color:'rgba(255,255,255,.08)'}}}}});
-}
-
-function renderMaeMfe(T,canvasId,noDataId,statsId){
-  const key='mfe_'+canvasId;dc(key);
-  const noDataEl=document.getElementById(noDataId);
-  const canvas=document.getElementById(canvasId);
-  const valid=T.filter(t=>t.mfe!=null||t.mae!=null);
-  const statsBody=document.getElementById(statsId);
-  if(!valid.length){noDataEl.style.display='block';canvas.style.display='none';statsBody.innerHTML='<div style="color:var(--muted);font-size:.75rem;text-align:center;padding-top:20px;">尚無資料</div>';return;}
-  noDataEl.style.display='none';canvas.style.display='block';
-  const hasBoth=valid.filter(t=>t.mfe!=null&&t.mae!=null);
-  const avgMFE=valid.filter(t=>t.mfe!=null).reduce((s,t)=>s+Math.abs(t.mfe),0)/(valid.filter(t=>t.mfe!=null).length||1);
-  const avgMAE=valid.filter(t=>t.mae!=null).reduce((s,t)=>s+Math.abs(t.mae),0)/(valid.filter(t=>t.mae!=null).length||1);
-  const givebackRates=valid.filter(t=>t.mfe&&t.mfe>0&&t.totalPnl>0).map(t=>(Math.abs(t.mfe)-t.totalPnl)/Math.abs(t.mfe)*100);
-  const avgGiveback=givebackRates.length?givebackRates.reduce((s,v)=>s+v,0)/givebackRates.length:null;
-  const lossWithMae=valid.filter(t=>t.totalPnl<0&&t.mae!=null&&Math.abs(t.mae)>0);
-  const avgMaePts=lossWithMae.length?lossWithMae.reduce((s,t)=>s+Math.abs(t.mae)/ptVal(t),0)/lossWithMae.length:null;
-  const totalMFE=hasBoth.reduce((s,t)=>s+Math.abs(t.mfe),0);const totalMAE=hasBoth.reduce((s,t)=>s+Math.abs(t.mae),0);
-  const riskEff=hasBoth.length&&totalMAE>0?totalMFE/totalMAE:null;
-  const rrrValid=valid.filter(t=>t.mae!=null&&t.mae!==0);
-  const totalPnlSum=rrrValid.reduce((s,t)=>s+t.totalPnl,0);const totalMaeSum=rrrValid.reduce((s,t)=>s+Math.abs(t.mae),0);
-  const avgRRR=rrrValid.length&&totalMaeSum>0?totalPnlSum/totalMaeSum:null;
-  function statRow(icon,label,val,valColor='var(--text)',sub=''){return `<div style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 10px;"><div style="font-size:.6rem;color:#ffffff;margin-bottom:3px;font-family:var(--fm);letter-spacing:.4px;">${icon} ${label}</div><div style="font-family:var(--fm);font-size:.95rem;font-weight:700;color:${valColor};">${val}</div>${sub?`<div style="font-size:.58rem;color:#ffffff;margin-top:2px;">${sub}</div>`:''}</div>`;}
-  const gbColor=avgGiveback!=null?(avgGiveback<=20?'var(--success)':avgGiveback<=50?'var(--gold)':'var(--danger)'):'var(--muted)';
-  const maePtsColor=avgMaePts!=null?(avgMaePts<=5?'var(--success)':avgMaePts<=15?'var(--gold)':'var(--danger)'):'var(--muted)';
-  statsBody.innerHTML=statRow('↕','平均 MFE vs MAE',`$${Math.abs(avgMFE).toFixed(0)} / $${Math.abs(avgMAE).toFixed(0)}`,'var(--text)','MFE（綠）÷ MAE（紅）')+statRow('🔄','獲利回吐率（獲利單）',avgGiveback!=null?`${avgGiveback.toFixed(1)}%`:'—',gbColor,'(MFE−獲利)÷MFE，越低越好')+statRow('📉','平均MAE點數（虧損單）',avgMaePts!=null?`${avgMaePts.toFixed(1)} pt`:'—',maePtsColor,'承受最大浮虧點數，越小越好')+statRow('⚖️','理想報酬風險比',riskEff!=null?`${riskEff.toFixed(2)}x`:'—',riskEff!=null?(riskEff>=1.5?'var(--success)':riskEff>=1?'var(--gold)':'var(--danger)'):'var(--muted)','最大獲利÷最大虧損')+statRow('💰','實際報酬風險比',avgRRR!=null?`${avgRRR.toFixed(2)}x`:'—',avgRRR!=null?(avgRRR>=1?'var(--success)':avgRRR>=0?'var(--gold)':'var(--danger)'):'var(--muted)','出場損益 ÷ 最大虧損');
-  const labels=valid.map((_,i)=>`#${i+1}`);
-  const mfeData=valid.map(t=>t.mfe!=null?Math.abs(t.mfe):0);
-  const maeData=valid.map(t=>t.mae!=null?-Math.abs(t.mae):0);
-  const pnlData=valid.map(t=>t.totalPnl);
-  const ctx=canvas.getContext('2d');
-  const needlePlugin={id:'needlePlugin_'+canvasId,afterDatasetsDraw(chart){const{ctx:c,scales:{x,y}}=chart;const W=4;const zero=y.getPixelForValue(0);valid.forEach((t,i)=>{const cx=x.getPixelForValue(i);if(t.mfe!=null&&t.mfe!==0){const top=y.getPixelForValue(Math.abs(t.mfe));c.save();c.fillStyle='rgba(16,185,129,.85)';c.beginPath();c.roundRect(cx-W/2,top,W,zero-top,2);c.fill();c.restore();}if(t.mae!=null&&t.mae!==0){const bot=y.getPixelForValue(-Math.abs(t.mae));c.save();c.fillStyle='rgba(244,63,94,.85)';c.beginPath();c.roundRect(cx-W/2,zero,W,bot-zero,2);c.fill();c.restore();}const py=y.getPixelForValue(t.totalPnl);const R=6;const col=t.totalPnl>=0?'#10b981':'#f43f5e';c.save();c.beginPath();c.moveTo(cx,py-R);c.lineTo(cx+R,py);c.lineTo(cx,py+R);c.lineTo(cx-R,py);c.closePath();c.fillStyle='#ffffff';c.fill();c.strokeStyle=col;c.lineWidth=1.5;c.stroke();c.restore();});}};
-  aC[key]=new Chart(ctx,{type:'bar',plugins:[needlePlugin],data:{labels,datasets:[{label:'MFE 最大獲利',data:mfeData,backgroundColor:'transparent',borderWidth:0,barPercentage:0.01,categoryPercentage:1,order:3},{label:'MAE 最大虧損',data:maeData,backgroundColor:'transparent',borderWidth:0,barPercentage:0.01,categoryPercentage:1,order:3},{type:'line',label:'出場損益',data:pnlData,showLine:false,pointRadius:0,pointHoverRadius:0,order:2}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:true,labels:{color:'#ffffff',font:{size:11,weight:'600'},padding:18,usePointStyle:true,generateLabels:()=>[{text:'MFE 最大獲利',fillStyle:'rgba(16,185,129,.85)',strokeStyle:'transparent',lineWidth:0,fontColor:'#ffffff'},{text:'MAE 最大虧損',fillStyle:'rgba(244,63,94,.85)',strokeStyle:'transparent',lineWidth:0,fontColor:'#ffffff'},{text:'出場損益 ♦',fillStyle:'#ffffff',strokeStyle:'#94a3b8',lineWidth:1,fontColor:'#ffffff'}]}},tooltip:{callbacks:{title:(items)=>{const idx=items[0].dataIndex;const t=valid[idx];return `第${idx+1}筆  ${t.date||''}  ${comInfo(comOf(t)).name}  ${(t.entries&&t.entries[0]?.time)||t.entryTime||''}`;},label:(item)=>{const t=valid[item.dataIndex];if(item.dataset.label==='MFE 最大獲利')return ` ↑ MFE: +$${t.mfe??0}`;if(item.dataset.label==='MAE 最大虧損')return ` ↓ MAE: $${t.mae??0}`;if(item.dataset.label==='出場損益'){const gb=(t.mfe&&t.mfe>0&&t.totalPnl>0)?((Math.abs(t.mfe)-t.totalPnl)/Math.abs(t.mfe)*100).toFixed(0):'—';return[` ♦ 出場: $${t.totalPnl}`,` 回吐率: ${gb}%`];}}}}},scales:{x:{ticks:{color:'#ffffff',font:{size:10}},grid:{color:'rgba(255,255,255,.06)'},title:{display:true,text:'交易筆數',color:'#ffffff',font:{size:9}}},y:{ticks:{color:'#ffffff',font:{size:10}},grid:{color:(ctx2)=>ctx2.tick.value===0?'rgba(255,255,255,.3)':'rgba(255,255,255,.06)',lineWidth:(ctx2)=>ctx2.tick.value===0?2:1},title:{display:true,text:'損益 ($)',color:'#ffffff',font:{size:9}}}}}});
-}
-
-/* ══════════ 多空個別分析 ══════════ */
-function renderLsAnalytics(){
-  const T=getFiltered(lsCurRange,lsRFrom,lsRTo,lsCurCommodity);
-  const longT=T.filter(t=>t.side==='long');
-  const shortT=T.filter(t=>t.side==='short');
-  const lsKpi=document.getElementById('ls-kpi-row');
-  if(!T.length){
-    lsKpi.innerHTML='<div style="color:var(--muted);font-size:.85rem;">尚無資料</div>';
-    document.getElementById('ls-compare-body').innerHTML='<div style="color:var(--muted);font-size:.82rem;text-align:center;padding:20px;">尚無足夠資料</div>';
-    document.getElementById('ls-butterfly-wrap').innerHTML='';
-    document.getElementById('ls-heatmap-long').innerHTML='';
-    document.getElementById('ls-heatmap-short').innerHTML='';
-    ['eq-ls-long','eq-ls-short','dt_ls-dur-trend-long','dt_ls-dur-trend-short','d3_ls-dur3d-long','d3_ls-dur3d-short','mfe_ls-maemfe-long','mfe_ls-maemfe-short'].forEach(k=>dc(k));
-    return;
-  }
-  function calcConsecBySide(trades){
-    const byDate={};trades.forEach(t=>{if(!byDate[t.date])byDate[t.date]=0;byDate[t.date]+=t.totalPnl;});
-    const dates=Object.keys(byDate).sort();let curWin=0,curLoss=0,maxWin=0,maxLoss=0;
-    dates.forEach(d=>{const pnl=byDate[d];if(pnl>0){curWin++;curLoss=0;}else if(pnl<0){curLoss++;curWin=0;}else{curWin=0;curLoss=0;}if(curWin>maxWin)maxWin=curWin;if(curLoss>maxLoss)maxLoss=curLoss;});
-    return{maxWin,maxLoss};
-  }
-  const{maxWin:lMaxWin,maxLoss:lMaxLoss}=calcConsecBySide(longT);
-  const{maxWin:sMaxWin,maxLoss:sMaxLoss}=calcConsecBySide(shortT);
-  lsKpi.innerHTML=`
-    <div class="kpi-card c-danger" style="border-top:3px solid #f87171;"><div class="kpi-label" style="color:#f87171;">做多 連續虧損天數</div><div class="kpi-val" style="color:var(--danger);">${lMaxLoss}</div><div class="kpi-sub">最長連虧天數</div></div>
-    <div class="kpi-card c-success" style="border-top:3px solid #f87171;"><div class="kpi-label" style="color:#f87171;">做多 連續獲利天數</div><div class="kpi-val" style="color:var(--success);">${lMaxWin}</div><div class="kpi-sub">最長連勝天數</div></div>
-    <div class="kpi-card c-danger" style="border-top:3px solid #34d399;"><div class="kpi-label" style="color:#34d399;">做空 連續虧損天數</div><div class="kpi-val" style="color:var(--danger);">${sMaxLoss}</div><div class="kpi-sub">最長連虧天數</div></div>
-    <div class="kpi-card c-success" style="border-top:3px solid #34d399;"><div class="kpi-label" style="color:#34d399;">做空 連續獲利天數</div><div class="kpi-val" style="color:var(--success);">${sMaxWin}</div><div class="kpi-sub">最長連勝天數</div></div>`;
-  renderLSCompare(T);
-  renderEquity(longT,'ls-equity-long','eq-ls-long');
-  renderEquity(shortT,'ls-equity-short','eq-ls-short');
-  renderButterflyQuad(longT,shortT,'ls-butterfly-wrap',lsCurCommodity);
-  renderHeatmap(longT,'ls-heatmap-long');
-  renderHeatmap(shortT,'ls-heatmap-short');
-  renderDuration(longT,'ls-dur-trend-long','ls-dur3d-long');
-  renderDuration(shortT,'ls-dur-trend-short','ls-dur3d-short');
-  renderMaeMfe(longT,'ls-maemfe-long','ls-maemfe-no-data-long','ls-maemfe-stats-long');
-  renderMaeMfe(shortT,'ls-maemfe-short','ls-maemfe-no-data-short','ls-maemfe-stats-short');
-}
+function anaCloseModal(){document.getElementById('ana-modal').style.display='none';}
+function anaGoDate(d){selDate=d;switchPage('record');cal.gotoDate(d);document.getElementById('current-focus-date').innerText='📅 '+d;document.getElementById('tf-entry-date').innerText=d;resetInput();loadDailyTrades();}
+document.addEventListener('click',e=>{
+  if(e.target.id==='ana-modal')return anaCloseModal();
+  if(!e.target.closest||!e.target.closest('#ana-body'))return;
+  const xs=e.target.closest('svg[data-xh]');if(xs){if(Date.now()-(ANA.touch||0)<800)return;const c=ANA_XH[xs.dataset.xh];if(c&&c.last!=null){const t=ANA.cur[c.t[c.last]];if(t)anaModal(`${t.date} ${t.time}・${aSideTxt(t)} ${t.qty}口`,[t],t.date);}return;}
+  const go=e.target.closest('[data-go]');if(go){document.getElementById(go.dataset.go)?.scrollIntoView({behavior:'smooth'});return;}
+  const n=e.target.closest('[data-t],[data-d],[data-g]');if(!n)return;
+  if(n.dataset.t!==undefined&&n.dataset.t!==''){const t=ANA.cur[Number(n.dataset.t)];if(t)anaModal(`${t.date} ${t.time}・${aSideTxt(t)} ${t.qty}口`,[t],t.date);}
+  else if(n.dataset.d){const l=ANA.cur.filter(t=>t.date===n.dataset.d);anaModal(`${n.dataset.d}・${l.length} 筆・${aM(aSum(l,t=>t.pnl))}`,l,n.dataset.d);}
+  else if(n.dataset.g!==undefined){const l=ANA.groups[Number(n.dataset.g)]||[];anaModal(`${l.length} 筆・${aM(aSum(l,t=>t.pnl))}`,l,null);}
+});
+document.addEventListener('mousemove',e=>{
+  const tip=document.getElementById('ana-tip');if(!tip)return;
+  const n=e.target.closest&&e.target.closest('[data-tip]');
+  if(!n||!n.dataset.tip){tip.style.display='none';return;}
+  tip.textContent=n.dataset.tip;tip.style.display='block';
+  const r=tip.getBoundingClientRect();tip.style.left=Math.max(6,Math.min(e.clientX+14,innerWidth-r.width-8))+'px';tip.style.top=(e.clientY+r.height+22>innerHeight?e.clientY-r.height-10:e.clientY+14)+'px';
+});
+window.addEventListener('resize',()=>{if(document.getElementById('page-ana')?.classList.contains('active')){clearTimeout(window._anaRT);window._anaRT=setTimeout(()=>{anaDrawAll();},120);}});
 
 /* ══════════ 月績效比拚 ══════════ */
 function changeYear(delta){monthlyYear+=delta;renderMonthlyCompare();}
