@@ -324,6 +324,84 @@ input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1;}
 .hm-c.on{cursor:pointer;}.hm-c.on:hover{outline:2px solid #fff;}
 .ana-tog button{white-space:nowrap;}
 @media(max-width:900px){.dg-bar{position:static;}}
+/* ══ K線進出場圖（檢討整理）══ */
+.kc-wrap{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:12px;}
+@media(max-width:1100px){.kc-wrap{grid-template-columns:minmax(0,1fr);}}
+.kc-com{border:1px solid var(--border);border-radius:8px;background:rgba(0,0,0,.2);padding:8px 10px 6px;}
+.kc-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.74rem;color:#cbd5e1;font-weight:700;margin-bottom:4px;}
+.kc-grid{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:12px;}
+@media(max-width:1250px){.kc-grid{grid-template-columns:minmax(0,1fr);}}
+.kc-pane{min-width:0;}
+.kc-title{display:flex;align-items:center;gap:10px;font-family:var(--fm);font-size:.72rem;font-weight:700;color:var(--accent);height:20px;}
+.kc-info{flex:1;min-width:0;font-family:var(--fm);font-size:.66rem;font-weight:400;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.kc-info b{color:#e2e8f0;font-weight:700;margin-right:2px;}
+.kc-slot{width:100%;min-height:60px;position:relative;}
+.kc-slot svg{display:block;width:100%;cursor:crosshair;}
+.kc-empty{font-size:.76rem;color:#94a3b8;padding:18px 10px;text-align:center;line-height:1.7;}
+.kc-btn{background:rgba(0,212,255,.1);color:var(--accent);border:1px solid rgba(0,212,255,.3);padding:3px 10px;border-radius:5px;cursor:pointer;font-size:.72rem;font-weight:700;margin-left:6px;}
+.kc-btn:hover{background:rgba(0,212,255,.22);}
+.kc-tog{display:inline-flex;border:1px solid var(--border);border-radius:5px;overflow:hidden;margin-left:auto;}
+.kc-tog button{background:transparent;border:none;color:#94a3b8;padding:2px 9px;font-size:.66rem;cursor:pointer;font-family:var(--fs);font-weight:700;}
+.kc-tog button.on{background:rgba(0,212,255,.15);color:var(--accent);}
+.kc-legend{display:flex;gap:10px;flex-wrap:wrap;font-size:.64rem;color:#94a3b8;font-weight:400;}
+.kc-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:3px;vertical-align:-1px;}
+#kd-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1100;align-items:center;justify-content:center;padding:18px;}
+#kd-modal .box{background:var(--panel);border:1px solid var(--accent);border-radius:12px;width:min(720px,100%);max-height:88vh;display:flex;flex-direction:column;}
+#kd-modal .hd{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);font-weight:800;}
+#kd-modal .hd button{margin-left:auto;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:4px 12px;cursor:pointer;font-size:.78rem;}
+#kd-modal .bd{overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+.kd-row{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:10px 12px;display:flex;flex-direction:column;gap:7px;}
+.kd-row .nm{font-weight:800;font-size:.9rem;display:flex;align-items:center;gap:8px;}
+.kd-row .st{font-family:var(--fm);font-size:.74rem;color:#94a3b8;line-height:1.6;}
+.kd-row .bt{display:flex;gap:6px;flex-wrap:wrap;}
+.kd-row .bt button{padding:6px 12px;border-radius:6px;cursor:pointer;font-size:.76rem;font-weight:700;border:1px solid var(--border);background:var(--card);color:var(--text);}
+.kd-row .bt button.pri{background:rgba(0,212,255,.12);border-color:rgba(0,212,255,.4);color:var(--accent);}
+.kd-row .bt button:disabled{opacity:.4;cursor:wait;}
+#kd-prog{font-size:.8rem;padding:8px 12px;border-radius:7px;background:rgba(255,255,255,.03);border:1px dashed var(--border);color:#cbd5e1;min-height:36px;}
+#kd-prog.ok{border-color:rgba(16,185,129,.5);color:#6ee7b7;}#kd-prog.err{border-color:rgba(244,63,94,.5);color:#fda4af;}
+/* ══ 檢討整理：一排工具列 + 圖左文右 ══ */
+.rv-bar{display:flex;align-items:center;gap:4px;flex-wrap:wrap;background:var(--panel);padding:7px 16px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.rv-bar .range-btn{padding:4px 8px;font-size:.73rem;}
+.rv-cust input[type=date]{background:var(--card);padding:4px 6px;font-size:.78rem;}
+.rv-bar input[type=date]{background:var(--card);padding:3px 4px;font-size:.7rem;width:112px;}
+.rv-bar .sep{color:var(--border);margin:0 1px;}
+#rv-summary{display:flex;gap:5px;align-items:center;}
+.rv-chip{display:flex;align-items:baseline;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:3px 7px;white-space:nowrap;}
+.rv-chip span{font-size:.62rem;color:#94a3b8;}.rv-chip b{font-family:var(--fm);font-size:.82rem;}
+#kd-btn{margin-left:auto;padding:4px 9px!important;background:rgba(245,158,11,.1);color:var(--gold);border:1px solid rgba(245,158,11,.35);padding:4px 11px;border-radius:6px;cursor:pointer;font-size:.74rem;font-family:var(--fm);font-weight:700;white-space:nowrap;}
+#kd-state{font-weight:400;font-size:.68rem;}
+.rv-day-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:12px;padding:10px 12px 12px;}
+.rv-day-grid.nochart{grid-template-columns:minmax(0,1fr);}
+.rv-aside{position:relative;min-height:200px;}
+.rv-aside>.in{position:absolute;inset:0;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:3px;}
+.rv-day-grid.nochart .rv-aside>.in{position:static;}
+@media(max-width:1000px){.rv-day-grid{grid-template-columns:minmax(0,1fr);}.rv-aside>.in{position:static;}}
+.rvt{background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--border);border-radius:6px;padding:7px 9px;font-size:.78rem;cursor:default;}
+.rvt.win{border-left-color:var(--success);}.rvt.loss{border-left-color:var(--danger);}
+.rvt:hover,.rvt.hl{border-color:rgba(0,212,255,.6);background:rgba(0,212,255,.06);}
+.rvt-h{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px;font-family:var(--fm);}
+.rvt-l{display:flex;gap:6px;align-items:baseline;font-family:var(--fm);font-size:.74rem;margin-top:4px;flex-wrap:wrap;}
+.rvt-l .k{font-size:.62rem;font-weight:700;padding:1px 5px;border-radius:3px;font-family:var(--fs);}
+.rvt-r{font-size:.76rem;line-height:1.55;color:#cbd5e1;white-space:pre-wrap;word-break:break-word;margin:2px 0 0 4px;padding-left:7px;border-left:2px solid var(--border);}
+.rv-rev{background:rgba(0,212,255,.04);border:1px solid rgba(0,212,255,.15);border-radius:8px;padding:9px 10px;display:flex;flex-direction:column;gap:6px;}
+.kc-slot svg .kt{transition:opacity .15s;}
+.kc-dim .kt:not(.on){opacity:.15;}
+.kc-dim .kt.on .kl{stroke-width:1.6;}
+.rv-bar #rv-fd-btn{padding:4px 9px;border-radius:5px;border:1px solid rgba(245,158,11,.35);background:transparent;color:var(--gold);cursor:pointer;font-size:.73rem;font-weight:700;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis;}
+.rv-bar #rv-fd-btn.on{background:rgba(245,158,11,.18);border-color:var(--gold);}
+.rv-bar.fd-on .rv-range{opacity:.35;}
+#fd-pop{display:none;position:fixed;z-index:1300;background:#131c2b;border:1px solid var(--gold);border-radius:9px;min-width:240px;max-width:320px;max-height:60vh;overflow-y:auto;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.5);font-size:.8rem;}
+#fd-pop .hd{font-size:.68rem;color:#94a3b8;padding:4px 8px 6px;border-bottom:1px solid var(--border);margin-bottom:4px;}
+#fd-pop .it{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;}
+#fd-pop .it:hover{background:rgba(255,255,255,.06);}
+#fd-pop .it.on{background:rgba(245,158,11,.15);color:#fde68a;}
+#fd-pop .it .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#fd-pop .it .c{font-family:var(--fm);font-size:.68rem;color:#64748b;}
+#fd-pop .it .ic{opacity:.5;padding:0 3px;font-size:.75rem;}#fd-pop .it .ic:hover{opacity:1;}
+#fd-pop .add{color:var(--accent);border-top:1px solid var(--border);margin-top:4px;border-radius:0 0 6px 6px;}
+.rv-fd-tag{font-size:.6rem;padding:1px 6px;border-radius:3px;background:rgba(245,158,11,.12);color:#fbbf24;border:1px solid rgba(245,158,11,.3);white-space:nowrap;}
+.rv-fd-day{background:none;border:1px solid transparent;color:#94a3b8;border-radius:4px;padding:1px 6px;cursor:pointer;font-size:.72rem;}
+.rv-fd-day:hover{border-color:rgba(245,158,11,.5);color:var(--gold);}
 </style>
 </head>
 <body>
@@ -471,49 +549,33 @@ input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1;}
 <!-- ══ REVIEW PAGE ══ -->
 <div class="page" id="page-review">
   <div style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
-    <div style="display:flex;align-items:center;justify-content:space-between;background:var(--panel);padding:10px 20px;border-bottom:1px solid var(--border);flex-shrink:0;">
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-        <span id="rv-active-summary" style="font-family:var(--fm);font-size:.75rem;color:#94a3b8;"></span>
-        <span id="rv-count" style="font-family:var(--fm);font-size:.75rem;color:#64748b;"></span>
-      </div>
-      <button id="rv-filter-toggle" onclick="toggleReviewFilter()"
-        style="display:flex;align-items:center;gap:6px;background:rgba(0,212,255,.08);color:var(--accent);border:1px solid rgba(0,212,255,.25);padding:5px 14px;border-radius:6px;cursor:pointer;font-size:.78rem;font-family:var(--fm);font-weight:700;transition:all .2s;white-space:nowrap;">
-        <span id="rv-filter-icon">⚙️</span> 篩選 <span id="rv-filter-arrow">▼</span>
-      </button>
+    <div id="rv-bar" class="rv-bar">
+      <button class="range-btn rv-range active" onclick="setReviewRange('1m')">本月</button>
+      <button class="range-btn rv-range" onclick="setReviewRange('3m')">近3月</button>
+      <button class="range-btn rv-range" onclick="setReviewRange('6m')">近6月</button>
+      <button class="range-btn rv-range" onclick="setReviewRange('all')">全部</button>
+      <button class="range-btn rv-range" id="rv-custom-btn" onclick="rvCustomPop(event)">自訂…</button>
+      <span class="sep">│</span>
+      <button class="range-btn rv-side active" id="rv-side-all" onclick="setReviewSide('all')">多＋空</button>
+      <button class="range-btn rv-side" id="rv-side-long" onclick="setReviewSide('long')" style="color:#f87171;">多單</button>
+      <button class="range-btn rv-side" id="rv-side-short" onclick="setReviewSide('short')" style="color:#34d399;">空單</button>
+      <button class="range-btn rv-side" id="rv-side-monthly" onclick="setReviewSide('monthly')" style="color:var(--gold);">月檢討</button>
+      <span class="sep">│</span>
+      <button class="range-btn rv-commodity active" id="rv-commodity-all" onclick="setReviewCommodity('all')">全部商品</button>
+      <button class="range-btn rv-commodity" id="rv-commodity-TX" onclick="setReviewCommodity('TX')" style="color:#a78bfa;">台指</button>
+      <button class="range-btn rv-commodity" id="rv-commodity-CL" onclick="setReviewCommodity('CL')" style="color:#fb923c;">原油</button>
+      <button class="range-btn rv-commodity" id="rv-commodity-MNQ" onclick="setReviewCommodity('MNQ')" style="color:#00d4ff;">MNQ</button>
+      <span class="sep">│</span>
+      <button class="range-btn rv-sort active" id="rv-sort-time" onclick="setReviewSort('time')">⏱ 時間</button>
+      <button class="range-btn rv-sort" id="rv-sort-pnl" onclick="setReviewSort('pnl')">💰 損益</button>
+      <span class="sep">│</span>
+      <button id="rv-fd-btn" onclick="fdMenuTop(event)">📁 資料夾</button>
+      <span class="sep">│</span>
+      <div id="rv-summary"></div>
+      <span id="rv-count" style="display:none"></span>
+      <button id="kd-btn" onclick="kdOpenModal()">📈 K線 <span id="kd-state"></span></button>
     </div>
-    <div id="rv-filter-panel" style="background:var(--panel);border-bottom:1px solid var(--border);flex-shrink:0;overflow:hidden;transition:max-height .25s ease,opacity .2s ease;max-height:200px;opacity:1;">
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 20px 4px;">
-        <span style="font-size:.72rem;color:#94a3b8;font-family:var(--fm);min-width:44px;">時間</span>
-        <button class="range-btn rv-range active" onclick="setReviewRange('1m')">本月</button>
-        <button class="range-btn rv-range" onclick="setReviewRange('3m')">近3月</button>
-        <button class="range-btn rv-range" onclick="setReviewRange('6m')">近6月</button>
-        <button class="range-btn rv-range" onclick="setReviewRange('all')">全部</button>
-        <span style="color:var(--border);margin:0 2px;">│</span>
-        <input type="date" id="rv-from" style="background:var(--card);padding:4px 8px;font-size:.78rem;">
-        <span style="color:#94a3b8;font-size:.8rem;">～</span>
-        <input type="date" id="rv-to" style="background:var(--card);padding:4px 8px;font-size:.78rem;">
-        <button class="range-btn rv-range" onclick="setReviewRange('custom')">套用</button>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:4px 20px 9px;">
-        <span style="font-size:.72rem;color:#94a3b8;font-family:var(--fm);min-width:44px;">方向</span>
-        <button class="range-btn rv-side active" id="rv-side-all" onclick="setReviewSide('all')">全部</button>
-        <button class="range-btn rv-side" id="rv-side-long" onclick="setReviewSide('long')" style="color:#f87171;">📈 多單</button>
-        <button class="range-btn rv-side" id="rv-side-short" onclick="setReviewSide('short')" style="color:#34d399;">📉 空單</button>
-        <button class="range-btn rv-side" id="rv-side-monthly" onclick="setReviewSide('monthly')" style="color:var(--gold);">📅 月檢討</button>
-        <span style="color:var(--border);margin:0 2px;">│</span>
-        <span style="font-size:.72rem;color:#94a3b8;font-family:var(--fm);">商品</span>
-        <button class="range-btn rv-commodity active" id="rv-commodity-all" onclick="setReviewCommodity('all')">全部</button>
-        <button class="range-btn rv-commodity" id="rv-commodity-TX" onclick="setReviewCommodity('TX')" style="color:#a78bfa;">台指</button>
-        <button class="range-btn rv-commodity" id="rv-commodity-CL" onclick="setReviewCommodity('CL')" style="color:#fb923c;">原油</button>
-        <button class="range-btn rv-commodity" id="rv-commodity-MNQ" onclick="setReviewCommodity('MNQ')" style="color:#00d4ff;">MNQ</button>
-        <span style="color:var(--border);margin:0 2px;">│</span>
-        <span style="font-size:.72rem;color:#94a3b8;font-family:var(--fm);">排序</span>
-        <button class="range-btn rv-sort active" id="rv-sort-time" onclick="setReviewSort('time')">⏱ 時間</button>
-        <button class="range-btn rv-sort" id="rv-sort-pnl" onclick="setReviewSort('pnl')">💰 損益</button>
-      </div>
-    </div>
-    <div id="rv-summary" style="display:flex;gap:8px;padding:10px 20px;background:var(--panel);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;"></div>
-    <div id="rv-content" style="flex:1;overflow-y:auto;padding:20px;"></div>
+    <div id="rv-content" style="flex:1;overflow-y:auto;padding:14px 16px;"></div>
   </div>
 </div>
 
@@ -564,6 +626,9 @@ input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1;}
 </div>
 <div id="ana-tip"></div>
 <div id="ana-modal"><div class="box"><div class="hd"><span></span><button id="ana-modal-go">到當天交易記錄</button><button class="x" onclick="anaCloseModal()">關閉</button></div><div class="bd"></div></div></div>
+<div id="kd-modal" onclick="if(event.target===this)kdCloseModal()"><div class="box"><div class="hd"><span>📈 K線資料（檢討整理的進出場圖用）</span><button onclick="kdCloseModal()">關閉</button></div><div class="bd"><div id="kd-rows"></div><div id="kd-prog">選一個方式匯入：選 app 的資料檔，或直接從 GitHub 抓最新版。</div><div style="font-size:.72rem;color:#64748b;line-height:1.7;">・資料檔就是 app 用的 <b>data.bin</b>（在 GitHub repo <span style="font-family:var(--fm)">sdkoppwdo/nq-replay</span>）。<br>・K線只存在<b>這台裝置的瀏覽器</b>，不會跟交易紀錄一起上傳 Gist；換裝置要再匯入一次。<br>・app 的資料更新後，回來這裡按一次「從 GitHub 抓最新」就好。<br>・只畫 MNQ 的單，台指、原油的單不會出現圖。</div></div></div></div>
+<input type="file" id="kd-file" accept=".bin,.json,.gz" style="display:none" onchange="kdOnFile(this)">
+<div id="fd-pop"></div>
 <div id="toast"></div>
 
 <script>
@@ -955,7 +1020,7 @@ async function cloudAction(type){
   try{
     const headers={'Authorization':`token ${token}`,'Accept':'application/vnd.github.v3+json'};
     if(type==='upload'){
-      const res=await fetch(`https://api.github.com/gists/${gistId}`,{method:'PATCH',headers,body:JSON.stringify({files:{[FN]:{content:JSON.stringify({trades:tradesData,reviews:reviewData,monthlyReviews:monthlyReviewData})}}})});
+      const res=await fetch(`https://api.github.com/gists/${gistId}`,{method:'PATCH',headers,body:JSON.stringify({files:{[FN]:{content:JSON.stringify({trades:tradesData,reviews:reviewData,monthlyReviews:monthlyReviewData,folders:rvFolders})}}})});
       if(!res.ok)throw new Error(res.status);
       const g=await res.json();
       st.innerText=g.public?'上傳成功 ✓（⚠ 此 Gist 是公開的）':'上傳成功 ✓';
@@ -964,7 +1029,7 @@ async function cloudAction(type){
       const res=await fetch(`https://api.github.com/gists/${gistId}?t=${Date.now()}`,{headers});
       if(!res.ok)throw new Error(res.status);
       const gist=await res.json();const c=JSON.parse(gist.files[FN].content);
-      tradesData=c.trades||c;reviewData=c.reviews||{};monthlyReviewData=c.monthlyReviews||{};
+      tradesData=c.trades||c;reviewData=c.reviews||{};monthlyReviewData=c.monthlyReviews||{};if(Array.isArray(c.folders)){rvFolders=c.folders;fdSave();}
       localStorage.setItem(SK,JSON.stringify(tradesData));localStorage.setItem(RK,JSON.stringify(reviewData));localStorage.setItem(MRK,JSON.stringify(monthlyReviewData));
       st.innerText='下載成功 ✓';updateSidebarStats(calCurrentMonth);loadDailyTrades();cal.render();setTimeout(refreshCalendarCells,50);toast('同步成功！');
     }
@@ -1631,6 +1696,7 @@ function getReviewFiltered(){
 }
 
 function setReviewRange(r){
+  if(typeof rvFolder!=='undefined'&&rvFolder){rvFolder=null;fdUpdateBtn();}
   rvRange=r;if(r==='custom'){rvFrom=document.getElementById('rv-from').value;rvTo=document.getElementById('rv-to').value;}
   document.querySelectorAll('.rv-range').forEach(b=>b.classList.remove('active'));
   const map={'1m':0,'3m':1,'6m':2,'all':3,'custom':4};document.querySelectorAll('.rv-range')[map[r]]?.classList.add('active');renderReviewPage();
@@ -1648,13 +1714,11 @@ function renderReviewPage(){
   else if(rvRange==='3m'){const c=new Date();c.setMonth(c.getMonth()-3);allDates=allDates.filter(d=>d>=c.toLocaleDateString('sv'));}
   else if(rvRange==='6m'){const c=new Date();c.setMonth(c.getMonth()-6);allDates=allDates.filter(d=>d>=c.toLocaleDateString('sv'));}
   else if(rvRange==='custom'){allDates=allDates.filter(d=>(!rvFrom||d>=rvFrom)&&(!rvTo||d<=rvTo));}
+  const fdA=fdActive();if(fdA&&!isMonthly)allDates=Object.keys(tradesData).filter(d=>fdA.dates.includes(d));
   allDates.forEach(d=>{let trades=(tradesData[d]||[]);if(rvCommodity!=='all')trades=trades.filter(t=>comOf(t)===rvCommodity);if(rvSide==='long')trades=trades.filter(t=>t.side==='long');if(rvSide==='short')trades=trades.filter(t=>t.side==='short');trades.forEach(t=>{tTotal++;tPnl+=t.totalPnl;if(t.totalPnl>0)tWin++;});});
   const wr=tTotal?(tWin/tTotal*100).toFixed(1):'—';
-  function chip(label,val,col='#e2e8f0'){return `<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:7px 14px;text-align:center;min-width:80px;"><div style="font-size:.6rem;color:#94a3b8;font-family:var(--fm);letter-spacing:.5px;margin-bottom:3px;">${label}</div><div style="font-family:var(--fm);font-size:.9rem;font-weight:700;color:${col};">${val}</div></div>`;}
-  const sideChip=rvSide==='long'?chip('方向篩選','做多 📈','#f87171'):rvSide==='short'?chip('方向篩選','做空 📉','#34d399'):rvSide==='monthly'?chip('類型','月檢討 📅','var(--gold)'):'';
-  const commodityChip=rvCommodity!=='all'?chip('商品',comInfo(rvCommodity).name,comInfo(rvCommodity).color):'';
-  const sortChip=chip('排序方式',rvSort==='pnl'?'損益 💰':'時間 ⏱','#94a3b8');
-  summary.innerHTML=chip('篇數',dates.length,'var(--accent)')+sideChip+commodityChip+sortChip+(isMonthly?'':chip('交易筆數',tTotal)+chip('勝率',tTotal?`${wr}%`:'—',parseFloat(wr)>=50?'var(--success)':'var(--danger)')+chip('累積損益',tTotal?`$${tPnl.toFixed(0)}`:'—',tPnl>=0?'var(--success)':'var(--danger)'));
+  function chip(label,val,col='#e2e8f0'){return `<div class="rv-chip"><span>${label}</span><b style="color:${col}">${val}</b></div>`;}
+  summary.innerHTML=(isMonthly?chip('月數',dates.length,'var(--accent)'):chip('筆數',tTotal)+chip('勝率',tTotal?`${wr}%`:'—',parseFloat(wr)>=50?'var(--success)':'var(--danger)')+chip('損益',tTotal?`${tPnl>=0?'+':'-'}$${Math.abs(tPnl).toFixed(0)}`:'—',tPnl>=0?'var(--success)':'var(--danger)'));
   const content=document.getElementById('rv-content');
   if(isMonthly){
     if(!dates.length){content.innerHTML=`<div style="text-align:center;padding:60px 20px;color:#64748b;"><div style="font-size:2rem;margin-bottom:12px;">📅</div><div style="font-family:var(--fm);font-size:.9rem;">這段時間沒有月檢討</div></div>`;return;}
@@ -1702,6 +1766,7 @@ function renderReviewEntries(dates,container){
   else if(rvRange==='3m'){const c=new Date();c.setMonth(c.getMonth()-3);allTradeDates=allTradeDates.filter(d=>d>=c.toLocaleDateString('sv'));}
   else if(rvRange==='6m'){const c=new Date();c.setMonth(c.getMonth()-6);allTradeDates=allTradeDates.filter(d=>d>=c.toLocaleDateString('sv'));}
   else if(rvRange==='custom'){allTradeDates=allTradeDates.filter(d=>(!rvFrom||d>=rvFrom)&&(!rvTo||d<=rvTo));}
+  const fdA=fdActive();if(fdA)allTradeDates=fdA.dates.filter(d=>(tradesData[d]||[]).length>0);
   if(rvCommodity!=='all')allTradeDates=allTradeDates.filter(d=>(tradesData[d]||[]).some(t=>comOf(t)===rvCommodity));
   if(rvSide==='long')allTradeDates=allTradeDates.filter(d=>(tradesData[d]||[]).some(t=>t.side==='long'));
   if(rvSide==='short')allTradeDates=allTradeDates.filter(d=>(tradesData[d]||[]).some(t=>t.side==='short'));
@@ -1714,10 +1779,12 @@ function renderReviewEntries(dates,container){
   }
   if(rvSort==='pnl'){allTradeDates.sort((a,b)=>getDayTrades(b).reduce((s,t)=>s+t.totalPnl,0)-getDayTrades(a).reduce((s,t)=>s+t.totalPnl,0));}
   else{allTradeDates.sort((a,b)=>b>a?1:-1);}
-  if(!allTradeDates.length){container.innerHTML=`<div style="text-align:center;padding:60px 20px;color:#64748b;"><div style="font-size:2rem;margin-bottom:12px;">📭</div><div style="font-family:var(--fm);font-size:.9rem;">這段時間沒有交易記錄</div></div>`;return;}
-  const dayCard=d=>{const trades=getDayTrades(d);const dayPnl=trades.reduce((s,t)=>s+t.totalPnl,0);const review=reviewData[d]||'';const dow=['日','一','二','三','四','五','六'][new Date(d).getDay()];const hasReview=review.trim().length>0;return buildDayCard(d,dow,trades,dayPnl,hasReview,buildTradesHtml(trades),buildReviewCol(review,hasReview,d));};
+  if(!allTradeDates.length){container.innerHTML=`<div style="text-align:center;padding:60px 20px;color:#64748b;"><div style="font-size:2rem;margin-bottom:12px;">📭</div><div style="font-family:var(--fm);font-size:.9rem;">${fdActive()?`資料夾「${esc(fdActive().name)}」還是空的<br><span style="font-size:.78rem">在每天的標題列按「📁 收藏到…」把那天加進來</span>`:'這段時間沒有交易記錄'}</div></div>`;return;}
+  KC.groups=[];
+  const dayCard=d=>{const trades=getDayTrades(d);const dayPnl=trades.reduce((s,t)=>s+t.totalPnl,0);const review=reviewData[d]||'';const dow=['日','一','二','三','四','五','六'][new Date(d).getDay()];const hasReview=review.trim().length>0;return buildDayCard(d,dow,trades,dayPnl,hasReview,buildTradesHtml(trades),buildReviewCol(review,hasReview,d),kBlock(d,trades));};
   if(rvSort==='pnl'){
     container.innerHTML='<div style="display:flex;flex-direction:column;gap:12px;">'+allTradeDates.map(dayCard).join('')+'</div>';
+    requestAnimationFrame(()=>kRenderAll(true));
   } else {
     const groups={};allTradeDates.forEach(d=>{const m=d.substring(0,7);if(!groups[m])groups[m]=[];groups[m].push(d);});
     let html='<div style="display:flex;flex-direction:column;gap:28px;">';
@@ -1729,32 +1796,263 @@ function renderReviewEntries(dates,container){
     });
     html+='</div>';container.innerHTML=html;
   }
+  requestAnimationFrame(()=>kRenderAll(true));
 }
 
 function buildTradesHtml(trades){
   return trades.map((t,ti)=>{
-    const isLong=t.side==='long';const sideColor=isLong?'var(--danger)':'var(--success)';
-    const isSwing=t.tradeType==='swing';
+    const isLong=t.side==='long',isSwing=t.tradeType==='swing',win=t.totalPnl>=0;
     const entries=t.entries||[{time:t.entryTime||'',sec:'00',qty:t.entryQty||1,price:t.entryPrice||'',reason:t.entryReason||'',isScaling:false}];
-    const exits=t.exits||[];const totalQty=entries.reduce((s,e)=>s+e.qty,0);
-    const flowHtml=entries.map((en,ei)=>`<div style="margin-bottom:8px;"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="font-size:.62rem;padding:2px 7px;border-radius:3px;font-weight:700;font-family:var(--fm);flex-shrink:0;background:${ei===0?(isLong?'rgba(244,63,94,.2)':'rgba(16,185,129,.2)'):'rgba(124,58,237,.2)'};color:${ei===0?sideColor:'#a78bfa'};border:1px solid ${ei===0?(isLong?'rgba(244,63,94,.35)':'rgba(16,185,129,.35)'):'rgba(124,58,237,.35)'};">${ei===0?(isLong?'多 進':'空 進'):'加碼'}</span><span style="font-family:var(--fm);font-size:.85rem;font-weight:700;color:#e2e8f0;">${fmtT(en.time,en.sec)}</span><span style="font-family:var(--fm);font-size:.82rem;color:${sideColor};font-weight:700;">${en.qty}口</span>${en.price?`<span style="font-family:var(--fm);font-size:.78rem;color:#94a3b8;">@&nbsp;<span style="color:#e2e8f0;font-weight:600;">${esc(en.price)}</span></span>`:''}</div>${en.reason?`<div class="rbox ${ei===0?'entry':'scale'}"><span class="rl">${ei===0?'進場理由':'加碼理由'}</span>${esc(en.reason)}</div>`:''}</div>`).join('')+
-    exits.map(ex=>`<div style="margin-bottom:8px;padding-left:14px;"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="font-size:.62rem;padding:2px 7px;border-radius:3px;font-weight:700;font-family:var(--fm);background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.25);">出場</span>${isSwing&&ex.date?`<span style="font-family:var(--fm);font-size:.75rem;color:#fbbf24;">${ex.date}</span>`:''}<span style="font-family:var(--fm);font-size:.85rem;font-weight:700;color:#e2e8f0;">${fmtT(ex.time,ex.sec)}</span><span style="font-family:var(--fm);font-size:.82rem;color:#94a3b8;">${ex.qty}口</span>${ex.price?`<span style="font-family:var(--fm);font-size:.78rem;color:#94a3b8;">@&nbsp;<span style="color:#e2e8f0;font-weight:600;">${esc(ex.price)}</span></span>`:''}${ex.pnl!=null?`<span style="font-family:var(--fm);font-size:.85rem;font-weight:700;color:${ex.pnl>=0?'var(--success)':'var(--danger)'};">${ex.pnl>=0?'+':''}$${ex.pnl}</span>`:''}</div>${ex.reason?`<div class="rbox exit"><span class="rl">出場理由</span>${esc(ex.reason)}</div>`:''}</div>`).join('');
-    const metaHtml=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;padding-top:6px;border-top:1px dashed rgba(255,255,255,.07);">${t.duration?`<span style="font-family:var(--fm);font-size:.68rem;color:#64748b;">⏱ ${t.duration}</span>`:''}${t.mfe!=null?`<span style="font-family:var(--fm);font-size:.68rem;color:var(--success);">MFE +$${t.mfe}</span>`:''}${t.mae!=null?`<span style="font-family:var(--fm);font-size:.68rem;color:var(--danger);">MAE $${t.mae}</span>`:''}${(t.mfe&&t.mfe>0&&t.totalPnl>0)?`<span style="font-family:var(--fm);font-size:.68rem;color:#94a3b8;">回吐率 ${((Math.abs(t.mfe)-t.totalPnl)/Math.abs(t.mfe)*100).toFixed(0)}%</span>`:''}</div>`;
-    return `<div style="background:var(--bg);border:1px solid var(--border);border-left:3px solid ${t.totalPnl>=0?'var(--success)':'var(--danger)'};border-radius:6px;padding:10px 14px;margin-bottom:8px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;"><span style="font-family:var(--fm);font-size:.72rem;font-weight:700;color:#64748b;">#${ti+1}</span>${comBadge(comOf(t))}<span style="font-size:.7rem;padding:2px 8px;border-radius:3px;font-weight:700;background:${isLong?'rgba(244,63,94,.12)':'rgba(16,185,129,.12)'};color:${sideColor};border:1px solid ${isLong?'rgba(244,63,94,.25)':'rgba(16,185,129,.25)'};">${isLong?'做多':'做空'}</span>${typeBadge(t)}<span style="font-family:var(--fm);font-size:.75rem;color:#64748b;">${totalQty}口</span><span style="flex:1;"></span><span style="font-family:var(--fm);font-size:.92rem;font-weight:700;color:${t.totalPnl>=0?'var(--success)':'var(--danger)'};">${t.totalPnl>=0?'+':''}$${t.totalPnl}</span></div>${flowHtml}${(t.duration||t.mfe!=null||t.mae!=null)?metaHtml:''}</div>`;
+    const exits=t.exits||[],totalQty=entries.reduce((s,e)=>s+e.qty,0);
+    const line=(k,bg,fg,date,tm,q,price,pnl)=>`<div class="rvt-l"><span class="k" style="background:${bg};color:${fg};">${k}</span>${date?`<span style="color:#fbbf24">${date.slice(5)}</span>`:''}<b>${tm}</b><span class="mt">${q}口</span>${price?`<span class="mt">@ <span style="color:#e2e8f0">${esc(price)}</span></span>`:''}${pnl!=null?`<span class="${pnl>=0?'money-pos':'money-neg'}">${pnl>=0?'+':''}$${pnl}</span>`:''}</div>`;
+    const rs=r=>r?`<div class="rvt-r">${esc(r)}</div>`:'';
+    const body=entries.map((en,ei)=>line(ei?'加碼':(isLong?'多進':'空進'),ei?'rgba(124,58,237,.3)':(isLong?'rgba(244,63,94,.25)':'rgba(16,185,129,.25)'),ei?'#c4b5fd':(isLong?'#fda4af':'#6ee7b7'),'',fmtT(en.time,en.sec),en.qty,en.price,null)+rs(en.reason)).join('')
+      +exits.map(ex=>line('出場','rgba(251,191,36,.18)','#fde68a',isSwing?ex.date:'',fmtT(ex.time,ex.sec),ex.qty,ex.price,ex.pnl!=null?ex.pnl:null)+rs(ex.reason)).join('')
+      +(exits.length?'':`<div class="rvt-l" style="color:#fbbf24">${isSwing?'⏳ 留倉中':'尚無出場紀錄'}</div>`);
+    const meta=[t.duration?`⏱ ${t.duration}`:'',t.mfe!=null?`<span style="color:var(--success)">MFE $${t.mfe}</span>`:'',t.mae!=null?`<span style="color:var(--danger)">MAE $${t.mae}</span>`:''].filter(Boolean).join('　');
+    return `<div class="rvt ${win?'win':'loss'}" data-no="${ti+1}"><div class="rvt-h"><b style="color:#64748b">#${ti+1}</b>${comBadge(comOf(t))}<span class="badge ${isLong?'badge-long':'badge-short'}">${isLong?'多':'空'}</span>${isSwing?typeBadge(t):''}<span class="mt" style="font-size:.72rem">${totalQty}口</span><b style="margin-left:auto" class="${win?'money-pos':'money-neg'}">${win?'+':''}$${t.totalPnl}</b></div>${body}${meta?`<div style="font-family:var(--fm);font-size:.66rem;color:#64748b;margin-top:5px">${meta}</div>`:''}</div>`;
   }).join('');
 }
 
-function buildReviewCol(review,hasReview,d){return `<div style="width:260px;flex-shrink:0;background:rgba(0,212,255,.03);border:1px solid rgba(0,212,255,.1);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px;"><div style="font-size:.65rem;color:var(--accent);font-family:var(--fm);font-weight:700;letter-spacing:.6px;">📝 今日檢討</div><div style="font-size:.8rem;color:${hasReview?'#cbd5e1':'#475569'};line-height:1.7;white-space:pre-wrap;flex:1;${hasReview?'':'font-style:italic;'}">${hasReview?esc(review):'（尚無檢討）'}</div><button onclick="openReviewCardDetail('${d}')" style="background:rgba(0,212,255,.1);color:var(--accent);border:1px solid rgba(0,212,255,.2);padding:4px 10px;border-radius:5px;cursor:pointer;font-size:.68rem;font-family:var(--fm);margin-top:auto;">✏️ 編輯檢討</button></div>`;}
+function buildReviewCol(review,hasReview,d){return `<div class="rv-rev"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:.7rem;color:var(--accent);font-weight:700;">📝 今日檢討</span><button onclick="openReviewCardDetail('${d}')" class="kc-btn" style="margin-left:auto;padding:2px 9px;">✏️ 編輯</button></div><div style="font-size:.8rem;color:${hasReview?'#cbd5e1':'#475569'};line-height:1.65;white-space:pre-wrap;${hasReview?'':'font-style:italic;'}">${hasReview?esc(review):'（尚無檢討）'}</div></div>`;}
 
-function buildDayCard(d,dow,trades,dayPnl,hasReview,tradesHtml,reviewCol){return `<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;"><div style="display:flex;align-items:center;gap:10px;padding:9px 16px;background:rgba(255,255,255,.025);border-bottom:1px solid var(--border);cursor:pointer;" onclick="toggleEntriesDay(this)"><div style="display:flex;align-items:center;gap:8px;flex:1;"><span style="font-family:var(--fm);font-size:.88rem;font-weight:700;color:var(--text);">${d}</span><span style="font-size:.65rem;color:#64748b;background:var(--bg);padding:1px 6px;border-radius:3px;font-family:var(--fm);">週${dow}</span><span style="font-size:.65rem;color:#64748b;">${trades.length} 筆</span><span style="font-family:var(--fm);font-size:.78rem;font-weight:700;color:${dayPnl>=0?'var(--success)':'var(--danger)'};">${dayPnl>=0?'+':''}$${dayPnl}</span>${hasReview?`<span style="font-size:.6rem;background:rgba(0,212,255,.1);color:var(--accent);border:1px solid rgba(0,212,255,.2);padding:1px 6px;border-radius:3px;font-family:var(--fm);">有檢討</span>`:''}</div><span style="font-size:.72rem;color:#475569;font-family:var(--fm);user-select:none;">▼</span></div><div class="entries-day-body" style="display:flex;gap:14px;padding:14px 16px;align-items:flex-start;"><div style="flex:1;min-width:0;">${tradesHtml}</div>${reviewCol}</div></div>`;}
+function buildDayCard(d,dow,trades,dayPnl,hasReview,tradesHtml,reviewCol,chartHtml){return `<div class="rv-day" data-d="${d}" style="background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;"><div style="display:flex;align-items:center;gap:10px;padding:8px 14px;background:rgba(255,255,255,.025);border-bottom:1px solid var(--border);cursor:pointer;" onclick="toggleEntriesDay(this)"><div style="display:flex;align-items:center;gap:8px;flex:1;"><span style="font-family:var(--fm);font-size:.88rem;font-weight:700;color:var(--text);">${d}</span><span style="font-size:.65rem;color:#64748b;background:var(--bg);padding:1px 6px;border-radius:3px;font-family:var(--fm);">週${dow}</span><span style="font-size:.65rem;color:#64748b;">${trades.length} 筆</span><span style="font-family:var(--fm);font-size:.78rem;font-weight:700;color:${dayPnl>=0?'var(--success)':'var(--danger)'};">${dayPnl>=0?'+':''}$${dayPnl}</span>${hasReview?`<span style="font-size:.6rem;background:rgba(0,212,255,.1);color:var(--accent);border:1px solid rgba(0,212,255,.2);padding:1px 6px;border-radius:3px;font-family:var(--fm);">有檢討</span>`:''}${fdOfDay(d).map(f=>`<span class="rv-fd-tag">📁 ${esc(f.name)}</span>`).join('')}</div><button class="rv-fd-day" onclick="event.stopPropagation();fdMenuDay(event,'${d}')">📁 收藏到…</button><span style="font-size:.72rem;color:#475569;font-family:var(--fm);user-select:none;">▼</span></div><div class="entries-day-body rv-day-grid${chartHtml?'':' nochart'}">${chartHtml?`<div style="min-width:0">${chartHtml}</div>`:''}<div class="rv-aside"><div class="in">${reviewCol}${tradesHtml}</div></div></div></div>`;}
 
-function toggleEntriesDay(header){const body=header.nextElementSibling;const arrow=header.querySelector('span:last-child');if(body.style.display==='none'){body.style.display='flex';arrow.innerText='▼';}else{body.style.display='none';arrow.innerText='▶';}}
+function toggleEntriesDay(header){const body=header.nextElementSibling;const arrow=header.querySelector('span:last-child');if(body.style.display==='none'){body.style.display='';arrow.innerText='▼';requestAnimationFrame(()=>kRenderAll());}else{body.style.display='none';arrow.innerText='▶';}}
 function openReviewCardDetail(date){
   const text=reviewData[date]||'';const trades=tradesData[date]||[];const dayPnl=trades.reduce((s,t)=>s+t.totalPnl,0);
   document.getElementById('overlay-date-label').innerText=`📝 ${date}  ${trades.length?`｜ ${trades.length}筆 ${dayPnl>=0?'+':''}$${dayPnl}`:''}`;
   document.getElementById('overlay-textarea').value=text;document.getElementById('overlay-textarea').style.display='block';document.getElementById('monthly-list-view').style.display='none';
   document.getElementById('overlay-textarea').dataset.targetDate=date;document.getElementById('review-overlay').style.display='flex';
 }
+
+/* ══════════ 檢討整理：資料夾（把不同天收藏在一起）══════════
+   存在 localStorage，也會跟著 Gist 一起上傳／下載。 */
+const FK='nq_rv_folders_v1';
+let rvFolders=(()=>{try{return JSON.parse(localStorage.getItem(FK)||'[]');}catch(e){return [];}})(),rvFolder=null;
+function fdSave(){localStorage.setItem(FK,JSON.stringify(rvFolders));}
+function fdActive(){return rvFolder?rvFolders.find(f=>f.id===rvFolder)||null:null;}
+function fdOfDay(d){return rvFolders.filter(f=>f.dates.includes(d));}
+function fdUpdateBtn(){const b=document.getElementById('rv-fd-btn'),f=fdActive();if(!b)return;b.classList.toggle('on',!!f);b.textContent=f?`📁 ${f.name}（${f.dates.length}）✕`:'📁 資料夾';b.title=f?'點一下：換資料夾或回到全部':'';document.getElementById('rv-bar')?.classList.toggle('fd-on',!!f);}
+function fdPop(e,html){const p=document.getElementById('fd-pop');p.innerHTML=html;p.style.display='block';const r=e.currentTarget.getBoundingClientRect(),w=p.offsetWidth;p.style.left=Math.max(6,Math.min(r.left,innerWidth-w-8))+'px';p.style.top=(r.bottom+4)+'px';}
+function fdClose(){document.getElementById('fd-pop').style.display='none';}
+document.addEventListener('mousedown',e=>{const p=document.getElementById('fd-pop');if(p&&p.style.display==='block'&&!p.contains(e.target)&&!e.target.closest('#rv-fd-btn,.rv-fd-day,#rv-custom-btn'))fdClose();});
+function fdNew(){const n=(prompt('新資料夾名稱（例：開盤追單被洗、攤平、照計畫的好單）')||'').trim();if(!n)return null;const f={id:'f'+Date.now(),name:n,dates:[]};rvFolders.push(f);fdSave();return f;}
+/* 工具列：選要看哪個資料夾 */
+function fdMenuTop(e){
+  const it=(f,c)=>`<div class="it ${rvFolder===f.id?'on':''}" onclick="fdOpen('${f.id}')"><span class="n">📁 ${esc(f.name)}</span><span class="c">${f.dates.length} 天</span><span class="ic" title="改名" onclick="event.stopPropagation();fdRename('${f.id}')">✎</span><span class="ic" title="刪除資料夾" onclick="event.stopPropagation();fdDel('${f.id}')">🗑</span></div>`;
+  fdPop(e,`<div class="hd">點資料夾只看收藏的那幾天（不管上面的時間範圍）</div><div class="it ${rvFolder?'':'on'}" onclick="fdOpen(null)"><span class="n">📋 全部（照時間範圍）</span></div>${rvFolders.map(it).join('')}<div class="it add" onclick="const f=fdNew();if(f)fdOpen(f.id)">＋ 新資料夾</div>`);
+}
+/* 自訂日期範圍（收在小視窗裡，工具列才放得下一排） */
+function rvCustomPop(e){fdPop(e,`<div class="hd">自訂日期範圍</div><div class="rv-cust" style="display:flex;flex-direction:column;gap:8px;padding:6px 8px 8px;"><input type="date" id="rv-from" value="${rvFrom||''}"><input type="date" id="rv-to" value="${rvTo||''}"><button class="kc-btn" style="margin:0;padding:5px" onclick="setReviewRange('custom');fdClose();">套用</button></div>`);}
+function fdOpen(id){rvFolder=id;fdClose();fdUpdateBtn();renderReviewPage();document.getElementById('rv-content').scrollTop=0;}
+function fdRename(id){const f=rvFolders.find(x=>x.id===id);if(!f)return;const n=(prompt('資料夾新名稱',f.name)||'').trim();if(!n)return;f.name=n;fdSave();fdClose();fdUpdateBtn();renderReviewPage();}
+function fdDel(id){const f=rvFolders.find(x=>x.id===id);if(!f||!confirm(`刪除資料夾「${f.name}」？\n（只刪資料夾，交易紀錄不會被刪）`))return;rvFolders=rvFolders.filter(x=>x.id!==id);if(rvFolder===id)rvFolder=null;fdSave();fdClose();fdUpdateBtn();renderReviewPage();}
+/* 每一天：勾選要放進哪些資料夾 */
+function fdMenuDay(e,d){
+  fdPop(e,`<div class="hd">把 <b style="color:#e2e8f0">${d}</b> 收藏到…（可以多選）</div>${rvFolders.map(f=>`<div class="it ${f.dates.includes(d)?'on':''}" onclick="fdToggle('${f.id}','${d}',this)"><span>${f.dates.includes(d)?'☑':'☐'}</span><span class="n">${esc(f.name)}</span><span class="c">${f.dates.length} 天</span></div>`).join('')||'<div class="it" style="color:#64748b;cursor:default">還沒有資料夾</div>'}<div class="it add" onclick="const f=fdNew();if(f){fdToggle(f.id,'${d}');fdClose();}">＋ 新資料夾並加入</div>`);
+}
+function fdToggle(id,d,el){const f=rvFolders.find(x=>x.id===id);if(!f)return;const i=f.dates.indexOf(d);if(i>=0)f.dates.splice(i,1);else{f.dates.push(d);f.dates.sort();}fdSave();
+  if(el){el.classList.toggle('on',i<0);el.firstElementChild.textContent=i<0?'☑':'☐';el.querySelector('.c').textContent=f.dates.length+' 天';}
+  fdUpdateBtn();const keep=document.getElementById('rv-content').scrollTop;renderReviewPage();document.getElementById('rv-content').scrollTop=keep;toast(i<0?`已加入「${f.name}」`:`已從「${f.name}」移除`);}
+document.addEventListener('DOMContentLoaded',()=>fdUpdateBtn());
+
+/* ══════════ K線資料：匯入 app 的 data.bin（只做 MNQ）══════════
+   時間一律換成「台北時間的分鐘數」（把台北牆上時間當 UTC 算，跟 toEpoch 同一套）。
+   交易日期的規則跟記錄頁一樣：日期＝那一盤開始的日子，凌晨 06:00 前的單算隔天。 */
+const KD_REPO='https://raw.githubusercontent.com/sdkoppwdo/nq-replay/main/';
+const KD_MKT={
+  nq:{name:'MNQ',full:'MNQ',file:'data.bin',coms:['MNQ'],dec:2,cut:360}
+};
+const KD={nq:null,tx:null,ready:false,busy:false};
+const KC={groups:[],mode5:localStorage.getItem('kc_mode5')||'trade'};
+document.addEventListener('DOMContentLoaded',()=>kdLoadAll()); // 獨立載入，不受日曆等其他元件影響
+function kdMktOf(c){for(const k in KD_MKT)if(KD_MKT[k].coms.includes(c))return k;return null;}
+function kdDayUTC(ds){const[y,m,d]=ds.split('-').map(Number);return Date.UTC(y,m-1,d)/60000;}
+function kdDateStr(min){return new Date(min*60000).toISOString().slice(0,10);}
+function kdTradeMin(mkt,date,time,sec){
+  if(!time||!date)return null;const[h,mi]=time.split(':').map(Number);if(isNaN(h))return null;
+  const m=h*60+(mi||0);return kdDayUTC(date)+(m<KD_MKT[mkt].cut?1440:0)+m+(parseInt(sec||0)||0)/60;
+}
+/* 最後一根「開始時間 ≤ x」的K棒 */
+function kdAt(S,x){let lo=0,hi=S.t.length;while(lo<hi){const m=(lo+hi)>>1;if(S.t[m]<=x)lo=m+1;else hi=m;}return lo-1;}
+function kdPack(t,o,h,l,c){return{t:Int32Array.from(t),o:Float64Array.from(o),h:Float64Array.from(h),l:Float64Array.from(l),c:Float64Array.from(c)};}
+function kdAgg(t,o,h,l,c,step){
+  const T=[],O=[],Hh=[],L=[],C=[];let cur=null;
+  for(let i=0;i<t.length;i++){const b=Math.floor(t[i]/step)*step;
+    if(b!==cur){cur=b;T.push(b);O.push(o[i]);Hh.push(h[i]);L.push(l[i]);C.push(c[i]);}
+    else{const j=T.length-1;if(h[i]>Hh[j])Hh[j]=h[i];if(l[i]<L[j])L[j]=l[i];C[j]=c[i];}}
+  return kdPack(T,O,Hh,L,C);
+}
+/* NQ 換月修正（跟 app 的 fixNqRollGaps 同一套判斷）：換月週一早盤那段沒量的K棒整段平移掉價差 */
+function kdRollFix(a){
+  if(a.length<120)return null;const lim=Math.min(a.length-60,600);
+  for(let j=30;j<lim;j++){
+    if(a[j].idx!==a[j-1].idx+1)continue;const gap=a[j].o-a[j-1].c;if(Math.abs(gap)<100)continue;
+    let vb=0;for(let k=0;k<j;k++)vb+=(a[k].v||0);let va=0;for(let k=j;k<j+60;k++)va+=(a[k].v||0);
+    if(vb/j>10||va/60<Math.max(15,5*vb/j))continue;return{j,gap};
+  }return null;
+}
+/* NQ（data.bin）：每天 1 分K，第一根是當天日期，跨過午夜就 +1 天；5K／60K 自己用 1K 組 */
+function kdBuildNQ(J){
+  const days=Object.keys(J).filter(k=>/^\d{4}-\d\d-\d\d$/.test(k)&&J[k]&&Array.isArray(J[k]['1k'])).sort();
+  if(!days.length)return null;
+  const t=[],o=[],h=[],l=[],c=[];
+  days.forEach(d=>{const a=J[d]['1k'];if(!a.length)return;const fx=kdRollFix(a),base=kdDayUTC(d);let off=0,prev=-1;
+    a.forEach((b,i)=>{const p=b.ts.split(':'),m=(+p[0])*60+(+p[1]);if(prev>=0&&m<prev)off+=1440;prev=m;
+      const tt=base+off+m;if(t.length&&tt<=t[t.length-1])return;const s=(fx&&i<fx.j)?fx.gap:0;
+      t.push(tt);o.push(b.o+s);h.push(b.h+s);l.push(b.l+s);c.push(b.c+s);});});
+  return{mkt:'nq',from:days[0],to:days[days.length-1],b5:kdAgg(t,o,h,l,c,5),b60:kdAgg(t,o,h,l,c,60)};
+}
+/* IndexedDB（資料太大，localStorage 放不下） */
+function kdbReq(mode,fn){return new Promise((res,rej)=>{const r=indexedDB.open('nq_kbars_db',1);
+  r.onupgradeneeded=()=>r.result.createObjectStore('mkt');r.onerror=()=>rej(r.error);
+  r.onsuccess=()=>{const db=r.result,tx=db.transaction('mkt',mode),q=fn(tx.objectStore('mkt'));tx.oncomplete=()=>{db.close();res(q&&q.result);};tx.onerror=()=>{db.close();rej(tx.error);};};});}
+async function kdLoadAll(){
+  try{for(const m of Object.keys(KD_MKT))KD[m]=(await kdbReq('readonly',st=>st.get(m)))||null;}catch(e){console.warn('[K線] 讀取失敗',e);}
+  KD.ready=true;kdUpdateState();
+  if(document.getElementById('page-review').classList.contains('active'))renderReviewPage();
+}
+function kdUpdateState(){
+  const el=document.getElementById('kd-state');if(!el)return;
+  el.innerHTML=KD.nq?'<span style="color:var(--success)">✓</span>':'<span style="color:#64748b">未匯入</span>';
+}
+async function kdReadBlob(blob){
+  const hd=new Uint8Array(await blob.slice(0,2).arrayBuffer());
+  const txt=(hd[0]===0x1f&&hd[1]===0x8b)?await new Response(blob.stream().pipeThrough(new DecompressionStream('gzip'))).text():await blob.text();
+  return JSON.parse(txt);
+}
+const kdTick=()=>new Promise(r=>setTimeout(r,30));
+function kdProg(msg,cls=''){const el=document.getElementById('kd-prog');if(el){el.className=cls;el.innerHTML=msg;}}
+async function kdImport(getBlob,src){
+  if(KD.busy)return;KD.busy=true;kdRenderModal();
+  try{
+    const blob=await getBlob();
+    kdProg(`解壓縮、讀取中…（${(blob.size/1048576).toFixed(1)} MB，NQ 檔很大，可能要 10～30 秒）`);await kdTick();
+    let J=await kdReadBlob(blob);kdProg('整理成 5 分K／60 分K…');await kdTick();
+    if(J&&J.format==='tx-v1')throw new Error('這是台指的 tx.bin，這裡只收 MNQ 的 data.bin');
+    const r=kdBuildNQ(J);J=null;
+    if(!r||!r.b5.t.length)throw new Error('看不懂這個檔案，請確認是 app 的 data.bin');
+    r.src=src;r.updated=Date.now();
+    await kdbReq('readwrite',st=>st.put(r,r.mkt));KD[r.mkt]=r;
+    kdProg(`✓ ${KD_MKT[r.mkt].full} 匯入完成：${r.from} ～ ${r.to}，5分K ${r.b5.t.length.toLocaleString()} 根、60分K ${r.b60.t.length.toLocaleString()} 根`,'ok');
+    toast(`${KD_MKT[r.mkt].name} K線資料已匯入`);kdUpdateState();
+    if(document.getElementById('page-review').classList.contains('active'))renderReviewPage();
+  }catch(e){console.error(e);kdProg('✗ '+esc(e.message||e),'err');}
+  finally{KD.busy=false;kdRenderModal();}
+}
+function kdPickFile(){document.getElementById('kd-file').click();}
+function kdOnFile(inp){const f=inp.files[0];inp.value='';if(f)kdImport(async()=>f,'檔案 '+f.name);}
+function kdFetch(m){kdImport(async()=>{kdProg(`從 GitHub 下載 ${KD_MKT[m].file} 中…（NQ 約 75 MB）`);const r=await fetch(KD_REPO+KD_MKT[m].file,{cache:'no-store'});if(!r.ok)throw new Error('下載失敗：HTTP '+r.status);return r.blob();},'GitHub');}
+async function kdClear(m){if(!confirm(`清除這台裝置上的 ${KD_MKT[m].full} K線資料？`))return;await kdbReq('readwrite',st=>st.delete(m));KD[m]=null;kdUpdateState();kdRenderModal();kdProg('已清除','ok');if(document.getElementById('page-review').classList.contains('active'))renderReviewPage();}
+function kdRenderModal(){
+  const el=document.getElementById('kd-rows');if(!el)return;const dis=KD.busy?'disabled':'';
+  el.innerHTML=Object.keys(KD_MKT).map(m=>{const r=KD[m],M=KD_MKT[m];
+    return `<div class="kd-row"><div class="nm">${comBadge(M.coms[0])}${M.full}${r?'<span class="up" style="font-size:.74rem">已載入</span>':'<span class="mt" style="font-size:.74rem">未載入</span>'}</div>
+    <div class="st">${r?`資料範圍 <b style="color:#e2e8f0">${r.from} ～ ${r.to}</b>・5分K ${r.b5.t.length.toLocaleString()} 根・60分K ${r.b60.t.length.toLocaleString()} 根<br>匯入於 ${new Date(r.updated).toLocaleString('zh-TW',{hour12:false})}（來源：${esc(r.src||'')}）`:`還沒有資料。檔名：${M.file}`}</div>
+    <div class="bt"><button class="pri" ${dis} onclick="kdFetch('${m}')">☁ 從 GitHub 抓最新</button><button ${dis} onclick="kdPickFile()">📂 選檔案（${M.file}）</button>${r?`<button ${dis} onclick="kdClear('${m}')" style="color:var(--danger)">清除</button>`:''}</div></div>`;}).join('');
+}
+function kdOpenModal(){kdRenderModal();document.getElementById('kd-modal').style.display='flex';}
+function kdCloseModal(){document.getElementById('kd-modal').style.display='none';}
+
+/* ══════════ 檢討整理：每天的 5K／60K 進出場圖 ══════════ */
+function kBlock(d,trades){
+  const items=[];trades.forEach((t,i)=>{if(kdMktOf(comOf(t)))items.push({t,no:i+1,date:d});});
+  if(!items.length)return '';
+  const gid=KC.groups.push({m:'nq',d,items})-1;
+  const pane=(tf,lbl)=>`<div class="kc-pane"><div class="kc-title">${lbl}<span class="kc-info" id="kci${gid}_${tf}"></span></div><div class="kc-slot" data-kg="${gid}" data-tf="${tf}"></div></div>`;
+  return `<div class="kc-wrap">${pane(5,'5 分 K')}${pane(60,'60 分 K')}</div>`;
+}
+function kMarks(items,mkt){
+  const out=[];
+  items.forEach(({t,no,date})=>{
+    const ents=(t.entries&&t.entries.length)?t.entries:[{time:t.entryTime,sec:t.entrySec,qty:t.entryQty,price:t.entryPrice,reason:t.entryReason}];
+    const tr={no,side:t.side,win:t.totalPnl>=0,pnl:t.totalPnl,pts:[],raw:t};
+    ents.forEach((e,i)=>{const m=kdTradeMin(mkt,date,e.time,e.sec);if(m!=null)tr.pts.push({k:i?'add':'in',m,p:aNum(e.price),q:e.qty,tm:fmtT(e.time,e.sec),why:e.reason});});
+    (t.exits||[]).forEach(e=>{const m=kdTradeMin(mkt,e.date||date,e.time,e.sec);if(m!=null)tr.pts.push({k:'out',m,p:aNum(e.price),q:e.qty,tm:(e.date?e.date.slice(5)+' ':'')+fmtT(e.time,e.sec),why:e.reason});});
+    if(tr.pts.length)out.push(tr);
+  });
+  return out;
+}
+const kFmtP=(v,mkt)=>KD_MKT[mkt].dec?String(+v.toFixed(2)):String(Math.round(v));
+function kFmtT(m,withDate){const D=new Date(m*60000);return (withDate?`${D.getUTCMonth()+1}/${D.getUTCDate()} `:'')+`${String(D.getUTCHours()).padStart(2,'0')}:${String(D.getUTCMinutes()).padStart(2,'0')}`;}
+function kTxtW(s,fs){let w=0;for(const ch of s)w+=ch.charCodeAt(0)>255?fs:fs*.6;return w;}
+let kUid=0;
+/* 滑到線上顯示的整筆資料 */
+function kTradeTip(tr,mkt){
+  const t=tr.raw,q=((t.entries&&t.entries.length)?t.entries:[]).reduce((s,e)=>s+(e.qty||0),0);
+  return `#${tr.no}　${q} 口　${t.totalPnl>=0?'+':'-'}$${Math.abs(t.totalPnl).toLocaleString('en-US')}`;
+}
+const K_CU='#ff3030',K_CD='#00e676',K_WIN='#3dff95',K_LOSS='#ff4d6d'; // K棒紅綠 / 賺賠連線
+/* 只畫：K棒、進出場圓點（買＝紅、賣＝綠）、進場到出場的連線（賺＝綠、賠＝紅） */
+function kSvg(W,S,mkt,TR,o){
+  const {i0,i1,h:H,small}=o,n=i1-i0+1,P={l:4,r:58,t:6,b:20},room=small?16:24,cw=(W-P.l-P.r)/n,X=i=>P.l+(i-i0+.5)*cw,R=W-P.r,uid='kc'+(++kUid);
+  TR.forEach(tr=>tr.pts.forEach(p=>{const i=kdAt(S,p.m);p.i=i<0?null:i;if(p.i==null)return;p.est=p.p==null;p.y0=p.est?S.c[p.i]:p.p;}));
+  let lo=Infinity,hi=-Infinity;for(let i=i0;i<=i1;i++){if(S.l[i]<lo)lo=S.l[i];if(S.h[i]>hi)hi=S.h[i];}
+  TR.forEach(tr=>tr.pts.forEach(p=>{if(p.i!=null&&p.i>=i0&&p.i<=i1){lo=Math.min(lo,p.y0);hi=Math.max(hi,p.y0);}}));
+  if(hi-lo<1e-9){hi+=1;lo-=1;}
+  const top=P.t+room,bot=H-P.b-room,Y=v=>top+(hi-v)/(hi-lo)*(bot-top);
+  let g=`<defs><clipPath id="${uid}"><rect x="${P.l}" y="${P.t}" width="${R-P.l}" height="${H-P.b-P.t}"/></clipPath></defs>`;
+  aScale(lo,hi,small?5:7).t.filter(v=>v>=lo&&v<=hi).forEach(v=>{g+=`<line x1="${P.l}" x2="${R}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" stroke="rgba(255,255,255,.05)"/><text x="${R+5}" y="${Y(v)+4}" class="ana-ax">${kFmtP(v,mkt)}</text>`;});
+  const every=Math.max(1,Math.ceil(82/cw));let lastD=null,lastR=-1e9;
+  for(let i=i0;i<=i1;i++){if((i-i0)%every)continue;const d=Math.floor(S.t[i]/1440),lb=kFmtT(S.t[i],d!==lastD),lw=kTxtW(lb,11),cx=Math.max(X(i),P.l+lw/2);
+    if(cx+lw/2<=R+2&&cx-lw/2>lastR+8){g+=`<text x="${cx}" y="${H-5}" text-anchor="middle" class="ana-ax">${lb}</text>`;lastR=cx+lw/2;lastD=d;}}
+  // K棒
+  const bw=Math.max(1,Math.min(cw*.66,12));let uW='',uB='',dW='',dB='';
+  for(let i=i0;i<=i1;i++){const x=X(i),up=S.c[i]>=S.o[i],yt=Y(Math.max(S.o[i],S.c[i])),yb=Y(Math.min(S.o[i],S.c[i])),w=`M${x.toFixed(1)} ${Y(S.h[i]).toFixed(1)}V${Y(S.l[i]).toFixed(1)}`,b=`M${(x-bw/2).toFixed(1)} ${yt.toFixed(1)}h${bw.toFixed(1)}v${Math.max(1,yb-yt).toFixed(1)}h${(-bw).toFixed(1)}Z`;
+    if(up){uW+=w;uB+=b;}else{dW+=w;dB+=b;}}
+  g+=`<g><path d="${uW}" stroke="${K_CU}" stroke-width="1.2"/><path d="${uB}" fill="${K_CU}"/><path d="${dW}" stroke="${K_CD}" stroke-width="1.2"/><path d="${dB}" fill="${K_CD}"/></g>`;
+  // 每筆交易一組（右邊滑過那筆會亮起來）
+  TR.forEach(tr=>{
+    const col=tr.win?K_WIN:K_LOSS,ins=tr.pts.filter(p=>p.k!=='out'&&p.i!=null),outs=tr.pts.filter(p=>p.k==='out'&&p.i!=null),f=ins[0],tip=aAttr(kTradeTip(tr,mkt));let t='';
+    if(f)outs.forEach(q=>{const c=`x1="${X(f.i)}" y1="${Y(f.y0)}" x2="${X(q.i)}" y2="${Y(q.y0)}"`;
+      t+=`<line ${c} stroke="#fff" stroke-opacity=".9" stroke-width="2.6" stroke-linecap="round" clip-path="url(#${uid})"/><line class="kl" ${c} stroke="${col}" stroke-width="1.3" stroke-linecap="round" clip-path="url(#${uid})"/><line ${c} stroke="transparent" stroke-width="16" stroke-linecap="round" pointer-events="stroke" style="cursor:pointer" data-tip="${tip}"/>`;});
+    g+=`<g class="kt" data-no="${tr.no}">${t}</g>`;
+  });
+  g+=`<line class="kc-v" x1="0" x2="0" y1="${P.t}" y2="${H-P.b}" stroke="rgba(255,255,255,.4)" stroke-dasharray="3,3" visibility="hidden" pointer-events="none"/>`;
+  return{svg:`<svg viewBox="0 0 ${W} ${H}" height="${H}">${g}</svg>`,L:{S,mkt,i0,i1,cw,l:P.l,W}};
+}
+/* 5K：前一天 21:00（昨天美股盤）→ 隔天 03:00（今天整個盤）；60K：含當天在內往前 4 個交易日。交易超出範圍會自動拉長，點不會被切掉 */
+function kRenderSlot(el,W){
+  const g=KC.groups[+el.dataset.kg],tf=+el.dataset.tf;el._k=null;if(!g)return '';
+  const M=KD_MKT[g.m],R=KD[g.m],inf=document.getElementById(`kci${el.dataset.kg}_${tf}`);if(inf)inf.textContent='';
+  if(!R)return `<div class="kc-empty">${KD.ready?`還沒匯入 ${M.full} 的K線資料<button class="kc-btn" onclick="kdOpenModal()">📈 匯入</button>`:'讀取K線資料中…'}</div>`;
+  const S=tf===5?R.b5:R.b60,TR=kMarks(g.items,g.m),all=TR.flatMap(t=>t.pts),n=S.t.length,D0=kdDayUTC(g.d);
+  const tmin=all.length?Math.min(...all.map(p=>p.m)):D0+1260,tmax=all.length?Math.max(...all.map(p=>p.m)):D0+1260;
+  let i0,i1;
+  if(tf===5){const st=Math.min(D0-1440+1260,tmin-30),en=Math.max(D0+1440+180,tmax+30);i0=kdAt(S,st-1)+1;i1=kdAt(S,en-1);}
+  else{const sk=t=>Math.floor((t-M.cut)/1440),dk=sk(D0+M.cut);i1=kdAt(S,D0+1440+M.cut-1);const xi=kdAt(S,tmax);if(xi>i1)i1=xi;
+    i0=i1;const seen=new Set();for(let i=i1;i>=0;i--){const k=sk(S.t[i]);if(!seen.has(k)){if(seen.size===4)break;seen.add(k);}i0=i;}
+    const ni=kdAt(S,tmin);if(ni>=0&&ni<i0)i0=ni;if(i1>=0&&sk(S.t[i1])<dk-7)i1=-1;}
+  if(!n||i1<0||i0>i1||i0>=n)return `<div class="kc-empty">${g.d} 不在K線資料範圍內（${M.name}：${R.from} ～ ${R.to}）<button class="kc-btn" onclick="kdOpenModal()">更新資料</button></div>`;
+  const r=kSvg(W,S,g.m,TR,{i0,i1,h:500,small:tf===60});
+  el._k=r.L;el._rng=`${kFmtT(S.t[i0],true)} ～ ${kFmtT(S.t[i1]+tf,true)}`;if(inf)inf.textContent=el._rng;
+  return r.svg;
+}
+function kRenderAll(force){
+  document.querySelectorAll('#rv-content .kc-slot').forEach(el=>{
+    const w=Math.floor(el.clientWidth);if(w<80)return;
+    if(!force&&el._w===w)return;el._w=w;el.innerHTML=kRenderSlot(el,w);});
+}
+document.addEventListener('mousemove',e=>{
+  const sv=e.target.closest&&e.target.closest('.kc-slot svg');
+  if(KC.hot&&KC.hot!==sv){KC.hot.querySelector('.kc-v')?.setAttribute('visibility','hidden');const o=KC.hot.parentNode,inf=document.getElementById(`kci${o.dataset.kg}_${o.dataset.tf}`);if(inf&&o._rng)inf.textContent=o._rng;KC.hot=null;}
+  if(!sv)return;const el=sv.parentNode,L=el._k;if(!L)return;KC.hot=sv;
+  const rc=sv.getBoundingClientRect(),x=(e.clientX-rc.left)*L.W/rc.width,i=Math.max(L.i0,Math.min(L.i1,L.i0+Math.floor((x-L.l)/L.cw))),S=L.S,cx=L.l+(i-L.i0+.5)*L.cw;
+  const v=sv.querySelector('.kc-v');v.setAttribute('x1',cx);v.setAttribute('x2',cx);v.setAttribute('visibility','visible');
+  const f=v=>kFmtP(v,L.mkt),chg=S.c[i]-S.o[i],inf=document.getElementById(`kci${el.dataset.kg}_${el.dataset.tf}`);
+  if(inf)inf.innerHTML=`<b style="color:#facc15">${kFmtT(S.t[i],true)}</b>　開 <b>${f(S.o[i])}</b> 高 <b>${f(S.h[i])}</b> 低 <b>${f(S.l[i])}</b> 收 <b style="color:${chg>=0?'#ef4444':'#22c55e'}">${f(S.c[i])}</b>`;
+});
+/* 右邊滑過某一筆、或圖上滑過某條線 → 兩邊都只亮那一筆 */
+function kHL(day,no){if(!day)return;
+  day.querySelectorAll('.kc-slot svg').forEach(sv=>{sv.classList.toggle('kc-dim',!!no);sv.querySelectorAll('.kt').forEach(g=>g.classList.toggle('on',!!no&&g.dataset.no===no));});
+  day.querySelectorAll('.rvt').forEach(r=>{const on=!!no&&r.dataset.no===no;r.classList.toggle('hl',on);});}
+document.addEventListener('mouseover',e=>{
+  if(!e.target.closest)return;const fromLine=e.target.closest('#rv-content .kt'),it=e.target.closest('#rv-content .rvt')||fromLine,day=it&&it.closest('.rv-day'),key=it&&day?day.dataset.d+'|'+it.dataset.no:null;
+  if(KC.hlKey===key)return;if(KC.hlDay)kHL(KC.hlDay,null);KC.hlKey=key;KC.hlDay=day||null;
+  if(it&&day){kHL(day,it.dataset.no);if(fromLine){const r=day.querySelector(`.rvt[data-no="${it.dataset.no}"]`),box=r&&r.closest('.in');if(box&&getComputedStyle(box).position==='absolute'){const top=r.offsetTop-box.offsetTop;if(top<box.scrollTop||top+r.offsetHeight>box.scrollTop+box.clientHeight)box.scrollTo({top:top-8,behavior:'smooth'});}}}
+});
+window.addEventListener('resize',()=>{if(document.getElementById('page-review')?.classList.contains('active')){clearTimeout(window._kRT);window._kRT=setTimeout(()=>kRenderAll(),150);}});
 </script>
 </body>
 </html>
