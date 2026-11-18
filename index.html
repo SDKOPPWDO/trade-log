@@ -402,6 +402,10 @@ input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1;}
 .rv-fd-tag{font-size:.6rem;padding:1px 6px;border-radius:3px;background:rgba(245,158,11,.12);color:#fbbf24;border:1px solid rgba(245,158,11,.3);white-space:nowrap;}
 .rv-fd-day{background:none;border:1px solid transparent;color:#94a3b8;border-radius:4px;padding:1px 6px;cursor:pointer;font-size:.72rem;}
 .rv-fd-day:hover{border-color:rgba(245,158,11,.5);color:var(--gold);}
+.kc-tools{display:flex;gap:4px;align-items:center;flex-shrink:0;}
+.kc-tools .kc-tog{margin-left:0;}
+.kc-slot svg{touch-action:pan-y;user-select:none;-webkit-user-select:none;}
+.kc-hint{font-size:.64rem;color:#475569;margin-top:2px;}
 </style>
 </head>
 <body>
@@ -1960,8 +1964,11 @@ function kBlock(d,trades){
   const items=[];trades.forEach((t,i)=>{if(kdMktOf(comOf(t)))items.push({t,no:i+1,date:d});});
   if(!items.length)return '';
   const gid=KC.groups.push({m:'nq',d,items})-1;
-  const pane=(tf,lbl)=>`<div class="kc-pane"><div class="kc-title">${lbl}<span class="kc-info" id="kci${gid}_${tf}"></span></div><div class="kc-slot" data-kg="${gid}" data-tf="${tf}"></div></div>`;
-  return `<div class="kc-wrap">${pane(5,'5 分 K')}${pane(60,'60 分 K')}</div>`;
+  const zoom=`<span class="kc-tog"><button title="放大" onclick="kZoom(this,1/1.4)">＋</button><button title="縮小" onclick="kZoom(this,1.4)">－</button></span>`;
+  const pre5=`<span class="kc-tog"><button data-p="all" class="on" onclick="kPreset(this,'all')">全部</button><button data-p="y" onclick="kPreset(this,'y')">昨晚美股</button><button data-p="pre" onclick="kPreset(this,'pre')">今天盤前</button><button data-p="us" onclick="kPreset(this,'us')">今天美股</button></span>`;
+  const pre60=`<span class="kc-tog"><button data-p="all" class="on" onclick="kPreset(this,'all')">重設</button></span>`;
+  const pane=(tf,lbl)=>`<div class="kc-pane"><div class="kc-title">${lbl}<span class="kc-info" id="kci${gid}_${tf}"></span><span class="kc-tools">${tf===5?pre5:pre60}${zoom}</span></div><div class="kc-slot" data-kg="${gid}" data-tf="${tf}" title=""></div></div>`;
+  return `<div class="kc-wrap">${pane(5,'5 分 K')}${pane(60,'60 分 K')}</div><div class="kc-hint">拖曳圖表＝左右移動・Ctrl＋滾輪（或觸控板捏合）＝縮放・價格軸只依畫面上的K棒自動縮放</div>`;
 }
 function kMarks(items,mkt){
   const out=[];
@@ -1981,10 +1988,10 @@ let kUid=0;
 /* 滑到線上顯示的整筆資料 */
 function kTradeTip(tr,mkt){
   const t=tr.raw,q=((t.entries&&t.entries.length)?t.entries:[]).reduce((s,e)=>s+(e.qty||0),0);
-  return `#${tr.no}　${q} 口　${t.totalPnl>=0?'+':'-'}$${Math.abs(t.totalPnl).toLocaleString('en-US')}`;
+  return `#${tr.no}　${t.side==='long'?'多':'空'} ${q}口　${t.totalPnl>=0?'+':'-'}$${Math.abs(t.totalPnl).toLocaleString('en-US')}`;
 }
 const K_CU='#ff3030',K_CD='#00e676',K_WIN='#3dff95',K_LOSS='#ff4d6d'; // K棒紅綠 / 賺賠連線
-/* 只畫：K棒、進出場圓點（買＝紅、賣＝綠）、進場到出場的連線（賺＝綠、賠＝紅） */
+/* 畫：K棒、進場→出場連線（賺綠賠紅）。價格軸只依「畫面上看得到的K棒」自動縮放 */
 function kSvg(W,S,mkt,TR,o){
   const {i0,i1,h:H,small}=o,n=i1-i0+1,P={l:4,r:58,t:6,b:20},room=small?16:24,cw=(W-P.l-P.r)/n,X=i=>P.l+(i-i0+.5)*cw,R=W-P.r,uid='kc'+(++kUid);
   TR.forEach(tr=>tr.pts.forEach(p=>{const i=kdAt(S,p.m);p.i=i<0?null:i;if(p.i==null)return;p.est=p.p==null;p.y0=p.est?S.c[p.i]:p.p;}));
@@ -1992,27 +1999,34 @@ function kSvg(W,S,mkt,TR,o){
   TR.forEach(tr=>tr.pts.forEach(p=>{if(p.i!=null&&p.i>=i0&&p.i<=i1){lo=Math.min(lo,p.y0);hi=Math.max(hi,p.y0);}}));
   if(hi-lo<1e-9){hi+=1;lo-=1;}
   const top=P.t+room,bot=H-P.b-room,Y=v=>top+(hi-v)/(hi-lo)*(bot-top);
-  let g=`<defs><clipPath id="${uid}"><rect x="${P.l}" y="${P.t}" width="${R-P.l}" height="${H-P.b-P.t}"/></clipPath></defs>`;
-  aScale(lo,hi,small?5:7).t.filter(v=>v>=lo&&v<=hi).forEach(v=>{g+=`<line x1="${P.l}" x2="${R}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" stroke="rgba(255,255,255,.05)"/><text x="${R+5}" y="${Y(v)+4}" class="ana-ax">${kFmtP(v,mkt)}</text>`;});
+  let g=`<defs><clipPath id="${uid}"><rect x="${P.l}" y="${P.t}" width="${R-P.l}" height="${H-P.b-P.t}"/></clipPath></defs><rect x="0" y="0" width="${W}" height="${H}" fill="transparent"/>`;
+  aScale(lo,hi,small?6:9).t.filter(v=>v>=lo&&v<=hi).forEach(v=>{g+=`<line x1="${P.l}" x2="${R}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" stroke="rgba(255,255,255,.05)"/><text x="${R+5}" y="${Y(v)+4}" class="ana-ax">${kFmtP(v,mkt)}</text>`;});
   const every=Math.max(1,Math.ceil(82/cw));let lastD=null,lastR=-1e9;
   for(let i=i0;i<=i1;i++){if((i-i0)%every)continue;const d=Math.floor(S.t[i]/1440),lb=kFmtT(S.t[i],d!==lastD),lw=kTxtW(lb,11),cx=Math.max(X(i),P.l+lw/2);
     if(cx+lw/2<=R+2&&cx-lw/2>lastR+8){g+=`<text x="${cx}" y="${H-5}" text-anchor="middle" class="ana-ax">${lb}</text>`;lastR=cx+lw/2;lastD=d;}}
-  // K棒
-  const bw=Math.max(1,Math.min(cw*.66,12));let uW='',uB='',dW='',dB='';
+  // 美股正規盤框：夏令 21:30–04:00／冬令 22:30–05:00（台北），框的上下＝該時段最高／最低（用 5 分K 算）
+  if(o.b5){const B=o.b5,d0=Math.floor(S.t[i0]/1440)-1,d1=Math.floor(S.t[i1]/1440);
+    for(let dd=d0;dd<=d1;dd++){const ds=kdDateStr(dd*1440),op=dd*1440+(kIsDST(ds)?1290:1350),cl=op+390;
+      const a5=kdAt(B,op-1)+1,b5=kdAt(B,cl-1);if(b5<a5||B.t[a5]>=cl)continue;
+      let H=-Infinity,Lo=Infinity;for(let k=a5;k<=b5;k++){if(B.h[k]>H)H=B.h[k];if(B.l[k]<Lo)Lo=B.l[k];}
+      const step=small?60:5,a=Math.max(0,kdAt(S,op+step-1)),b=kdAt(S,cl-1);if(b<i0||a>i1||b<a)continue;
+      const x1=X(a)-cw/2,x2=X(b)+cw/2,yt=Y(H),yb=Y(Lo);
+      g+=`<g clip-path="url(#${uid})" pointer-events="none"><rect x="${x1}" y="${yt}" width="${x2-x1}" height="${Math.max(1,yb-yt)}" fill="rgba(255,255,255,.035)" stroke="rgba(255,255,255,.55)" stroke-width="1" stroke-dasharray="5 3"/><text x="${Math.max(x1,P.l)+4}" y="${yt-4}" font-size="10" fill="rgba(255,255,255,.75)" font-family="var(--fm)">美股 H ${kFmtP(H,mkt)}</text><text x="${Math.max(x1,P.l)+4}" y="${yb+12}" font-size="10" fill="rgba(255,255,255,.75)" font-family="var(--fm)">L ${kFmtP(Lo,mkt)}</text></g>`;}}
+  const bw=Math.max(1,Math.min(cw*.66,14));let uW='',uB='',dW='',dB='';
   for(let i=i0;i<=i1;i++){const x=X(i),up=S.c[i]>=S.o[i],yt=Y(Math.max(S.o[i],S.c[i])),yb=Y(Math.min(S.o[i],S.c[i])),w=`M${x.toFixed(1)} ${Y(S.h[i]).toFixed(1)}V${Y(S.l[i]).toFixed(1)}`,b=`M${(x-bw/2).toFixed(1)} ${yt.toFixed(1)}h${bw.toFixed(1)}v${Math.max(1,yb-yt).toFixed(1)}h${(-bw).toFixed(1)}Z`;
     if(up){uW+=w;uB+=b;}else{dW+=w;dB+=b;}}
-  g+=`<g><path d="${uW}" stroke="${K_CU}" stroke-width="1.2"/><path d="${uB}" fill="${K_CU}"/><path d="${dW}" stroke="${K_CD}" stroke-width="1.2"/><path d="${dB}" fill="${K_CD}"/></g>`;
-  // 每筆交易一組（右邊滑過那筆會亮起來）
+  g+=`<g pointer-events="none"><path d="${uW}" stroke="${K_CU}" stroke-width="1.2"/><path d="${uB}" fill="${K_CU}"/><path d="${dW}" stroke="${K_CD}" stroke-width="1.2"/><path d="${dB}" fill="${K_CD}"/></g>`;
   TR.forEach(tr=>{
     const col=tr.win?K_WIN:K_LOSS,ins=tr.pts.filter(p=>p.k!=='out'&&p.i!=null),outs=tr.pts.filter(p=>p.k==='out'&&p.i!=null),f=ins[0],tip=aAttr(kTradeTip(tr,mkt));let t='';
     if(f)outs.forEach(q=>{const c=`x1="${X(f.i)}" y1="${Y(f.y0)}" x2="${X(q.i)}" y2="${Y(q.y0)}"`;
-      t+=`<line ${c} stroke="#fff" stroke-opacity=".9" stroke-width="2.6" stroke-linecap="round" clip-path="url(#${uid})"/><line class="kl" ${c} stroke="${col}" stroke-width="1.3" stroke-linecap="round" clip-path="url(#${uid})"/><line ${c} stroke="transparent" stroke-width="16" stroke-linecap="round" pointer-events="stroke" style="cursor:pointer" data-tip="${tip}"/>`;});
+      t+=`<line ${c} stroke="#fff" stroke-opacity=".9" stroke-width="2.6" stroke-linecap="round" clip-path="url(#${uid})" pointer-events="none"/><line class="kl" ${c} stroke="${col}" stroke-width="1.3" stroke-linecap="round" clip-path="url(#${uid})" pointer-events="none"/><line ${c} stroke="transparent" stroke-width="16" stroke-linecap="round" pointer-events="stroke" clip-path="url(#${uid})" style="cursor:pointer" data-tip="${tip}"/>`;});
     g+=`<g class="kt" data-no="${tr.no}">${t}</g>`;
   });
-  g+=`<line class="kc-v" x1="0" x2="0" y1="${P.t}" y2="${H-P.b}" stroke="rgba(255,255,255,.4)" stroke-dasharray="3,3" visibility="hidden" pointer-events="none"/>`;
-  return{svg:`<svg viewBox="0 0 ${W} ${H}" height="${H}">${g}</svg>`,L:{S,mkt,i0,i1,cw,l:P.l,W}};
+  // 十字線：垂直跟著K棒、水平跟著滑鼠（不吸附收盤價），右邊顯示滑鼠位置的價格
+  g+=`<g class="kc-x" visibility="hidden" pointer-events="none"><line class="kc-v" x1="0" x2="0" y1="${P.t}" y2="${H-P.b}" stroke="rgba(255,255,255,.45)" stroke-dasharray="3,3"/><line class="kc-h" x1="${P.l}" x2="${R}" y1="0" y2="0" stroke="rgba(255,255,255,.45)" stroke-dasharray="3,3"/><g class="kc-hl"><rect x="${R+1}" y="-8" width="${P.r-2}" height="16" rx="3" fill="#e2e8f0"/><text x="${R+P.r/2}" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#000" font-family="var(--fm)"></text></g></g>`;
+  return{svg:`<svg viewBox="0 0 ${W} ${H}" height="${H}">${g}</svg>`,L:{S,mkt,i0,i1,n:S.t.length,cw,l:P.l,W,H,top,bot,lo,hi}};
 }
-/* 5K：前一天 21:00（昨天美股盤）→ 隔天 03:00（今天整個盤）；60K：含當天在內往前 4 個交易日。交易超出範圍會自動拉長，點不會被切掉 */
+/* 預設範圍 5K：前一天 21:00 → 隔天 03:00；60K：含當天往前 4 個交易日。可以拖曳／縮放／切換時段 */
 function kRenderSlot(el,W){
   const g=KC.groups[+el.dataset.kg],tf=+el.dataset.tf;el._k=null;if(!g)return '';
   const M=KD_MKT[g.m],R=KD[g.m],inf=document.getElementById(`kci${el.dataset.kg}_${tf}`);if(inf)inf.textContent='';
@@ -2025,21 +2039,63 @@ function kRenderSlot(el,W){
     i0=i1;const seen=new Set();for(let i=i1;i>=0;i--){const k=sk(S.t[i]);if(!seen.has(k)){if(seen.size===4)break;seen.add(k);}i0=i;}
     const ni=kdAt(S,tmin);if(ni>=0&&ni<i0)i0=ni;if(i1>=0&&sk(S.t[i1])<dk-7)i1=-1;}
   if(!n||i1<0||i0>i1||i0>=n)return `<div class="kc-empty">${g.d} 不在K線資料範圍內（${M.name}：${R.from} ～ ${R.to}）<button class="kc-btn" onclick="kdOpenModal()">更新資料</button></div>`;
-  const r=kSvg(W,S,g.m,TR,{i0,i1,h:500,small:tf===60});
+  el._base=[i0,i1];el._d=g.d;
+  if(el._view){const w=el._view[1]-el._view[0];let a=Math.max(0,Math.min(n-1-w,el._view[0]));i0=a;i1=Math.min(n-1,a+w);}
+  const r=kSvg(W,S,g.m,TR,{i0,i1,h:650,small:tf===60,b5:R.b5});
   el._k=r.L;el._rng=`${kFmtT(S.t[i0],true)} ～ ${kFmtT(S.t[i1]+tf,true)}`;if(inf)inf.textContent=el._rng;
   return r.svg;
 }
+function kRedraw(el){if(el&&el._w)el.innerHTML=kRenderSlot(el,el._w);}
+function kRedrawDay(d){document.querySelectorAll('#rv-content .kc-slot').forEach(el=>{if(el._d===d)kRedraw(el);});}
 function kRenderAll(force){
   document.querySelectorAll('#rv-content .kc-slot').forEach(el=>{
     const w=Math.floor(el.clientWidth);if(w<80)return;
     if(!force&&el._w===w)return;el._w=w;el.innerHTML=kRenderSlot(el,w);});
 }
+/* ── 時段快捷（5K）、縮放、重設、加水平線 ── */
+function kIsDST(ds){const d=new Date(ds+'T12:00:00'),y=d.getFullYear(),mar=new Date(y,2,1),st=new Date(y,2,8+((7-mar.getDay())%7)),nov=new Date(y,10,1),en=new Date(y,10,(7-nov.getDay())%7+1);return d>=st&&d<en;}
+const kSlotOf=btn=>btn.closest('.kc-pane').querySelector('.kc-slot');
+function kMarkTog(btn,on){btn.closest('.kc-pane').querySelectorAll('[data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p===on));}
+function kPreset(btn,w){
+  const el=kSlotOf(btn),L=el._k;if(!L){return;}kMarkTog(btn,w);
+  if(w==='all'){el._view=null;kRedraw(el);return;}
+  const D0=kdDayUTC(el._d),op=kIsDST(el._d)?1290:1350,rg={y:[D0-180,D0+300],pre:[D0+360,D0+op],us:[D0+op-30,D0+1440+180]}[w];
+  const S=L.S,a=kdAt(S,rg[0]-1)+1,b=kdAt(S,rg[1]-1);if(b-a<3){toast('這段時間沒有K棒','err');return;}
+  el._view=[a,b];kRedraw(el);
+}
+function kZoom(btn,f){const el=kSlotOf(btn),L=el._k;if(!L)return;kMarkTog(btn,'');kZoomAt(el,(L.i0+L.i1)/2,f);}
+function kZoomAt(el,c,f){const L=el._k,span=L.i1-L.i0+1,ns=Math.round(Math.max(12,Math.min(Math.min(L.n,2500),span*f))),fr=(c-L.i0)/span;let a=Math.round(c-fr*ns);a=Math.max(0,Math.min(L.n-ns,a));el._view=[a,a+ns-1];kRedraw(el);}
+/* ── 滑鼠：拖曳平移、Ctrl＋滾輪縮放、十字線 ── */
+function kPt(sv,e,L){const rc=sv.getBoundingClientRect();return{x:(e.clientX-rc.left)*L.W/rc.width,y:(e.clientY-rc.top)*L.H/rc.height};}
+const kPriceAt=(L,y)=>L.hi-(Math.max(L.top-20,Math.min(L.bot+20,y))-L.top)/(L.bot-L.top)*(L.hi-L.lo);
+let KDRAG=null,kRAF=0;
+document.addEventListener('pointerdown',e=>{
+  const sv=e.target.closest&&e.target.closest('#rv-content .kc-slot svg');if(!sv||e.button>0)return;
+  const el=sv.parentNode,L=el._k;if(!L)return;const pt=kPt(sv,e,L);
+  KDRAG={el,x0:pt.x,v0:[L.i0,L.i1],moved:false};
+  e.preventDefault();
+});
+document.addEventListener('pointermove',e=>{
+  if(!KDRAG)return;const {el}=KDRAG,L=el._k,sv=el.querySelector('svg');if(!L||!sv)return;const pt=kPt(sv,e,L);
+  {const sh=Math.round((KDRAG.x0-pt.x)/L.cw);if(!sh&&!KDRAG.moved)return;KDRAG.moved=true;const w=KDRAG.v0[1]-KDRAG.v0[0];let a=Math.max(0,Math.min(L.n-1-w,KDRAG.v0[0]+sh));if(el._view&&el._view[0]===a)return;el._view=[a,a+w];
+    el.closest('.kc-pane').querySelectorAll('[data-p]').forEach(b=>b.classList.remove('on'));}
+  if(!kRAF)kRAF=requestAnimationFrame(()=>{kRAF=0;if(KDRAG)kRedraw(KDRAG.el);});
+});
+document.addEventListener('pointerup',()=>{KDRAG=null;});
+document.addEventListener('wheel',e=>{
+  if(!(e.ctrlKey||e.metaKey))return;const sv=e.target.closest&&e.target.closest('#rv-content .kc-slot svg');if(!sv)return;
+  const el=sv.parentNode,L=el._k;if(!L)return;e.preventDefault();const pt=kPt(sv,e,L);
+  el.closest('.kc-pane').querySelectorAll('[data-p]').forEach(b=>b.classList.remove('on'));
+  kZoomAt(el,L.i0+(pt.x-L.l)/L.cw,e.deltaY>0?1.18:1/1.18);
+},{passive:false});
 document.addEventListener('mousemove',e=>{
   const sv=e.target.closest&&e.target.closest('.kc-slot svg');
-  if(KC.hot&&KC.hot!==sv){KC.hot.querySelector('.kc-v')?.setAttribute('visibility','hidden');const o=KC.hot.parentNode,inf=document.getElementById(`kci${o.dataset.kg}_${o.dataset.tf}`);if(inf&&o._rng)inf.textContent=o._rng;KC.hot=null;}
+  if(KC.hot&&KC.hot!==sv){KC.hot.querySelector('.kc-x')?.setAttribute('visibility','hidden');const o=KC.hot.parentNode,inf=o&&o.dataset?document.getElementById(`kci${o.dataset.kg}_${o.dataset.tf}`):null;if(inf&&o._rng)inf.textContent=o._rng;KC.hot=null;}
   if(!sv)return;const el=sv.parentNode,L=el._k;if(!L)return;KC.hot=sv;
   const rc=sv.getBoundingClientRect(),x=(e.clientX-rc.left)*L.W/rc.width,i=Math.max(L.i0,Math.min(L.i1,L.i0+Math.floor((x-L.l)/L.cw))),S=L.S,cx=L.l+(i-L.i0+.5)*L.cw;
-  const v=sv.querySelector('.kc-v');v.setAttribute('x1',cx);v.setAttribute('x2',cx);v.setAttribute('visibility','visible');
+  const v=sv.querySelector('.kc-v');v.setAttribute('x1',cx);v.setAttribute('x2',cx);sv.querySelector('.kc-x').setAttribute('visibility','visible');
+  const yy=Math.max(4,Math.min(L.H-24,(e.clientY-rc.top)*L.H/rc.height)),hz=sv.querySelector('.kc-h'),hl=sv.querySelector('.kc-hl');
+  hz.setAttribute('y1',yy);hz.setAttribute('y2',yy);hl.setAttribute('transform',`translate(0,${yy})`);hl.querySelector('text').textContent=kFmtP(kPriceAt(L,yy),L.mkt);
   const f=v=>kFmtP(v,L.mkt),chg=S.c[i]-S.o[i],inf=document.getElementById(`kci${el.dataset.kg}_${el.dataset.tf}`);
   if(inf)inf.innerHTML=`<b style="color:#facc15">${kFmtT(S.t[i],true)}</b>　開 <b>${f(S.o[i])}</b> 高 <b>${f(S.h[i])}</b> 低 <b>${f(S.l[i])}</b> 收 <b style="color:${chg>=0?'#ef4444':'#22c55e'}">${f(S.c[i])}</b>`;
 });
