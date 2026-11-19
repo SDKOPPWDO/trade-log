@@ -325,7 +325,7 @@ input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1;}
 .ana-tog button{white-space:nowrap;}
 @media(max-width:900px){.dg-bar{position:static;}}
 /* ══ K線進出場圖（檢討整理）══ */
-.kc-wrap{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:12px;}
+.kc-wrap{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:18px;}
 @media(max-width:1100px){.kc-wrap{grid-template-columns:minmax(0,1fr);}}
 .kc-com{border:1px solid var(--border);border-radius:8px;background:rgba(0,0,0,.2);padding:8px 10px 6px;}
 .kc-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.74rem;color:#cbd5e1;font-weight:700;margin-bottom:4px;}
@@ -406,6 +406,24 @@ input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1;}
 .kc-tools .kc-tog{margin-left:0;}
 .kc-slot svg{touch-action:pan-y;user-select:none;-webkit-user-select:none;}
 .kc-hint{font-size:.64rem;color:#475569;margin-top:2px;}
+.t24{display:flex;align-items:center;gap:3px;}
+.t24 select{flex:1;min-width:0;padding:7px 4px;font-family:var(--fm);font-size:.9rem;text-align:center;}
+.t24 b{color:var(--muted);}
+.kc-pane{border:1px solid #2b3d5c;border-radius:9px;background:#070b12;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.35);}
+.kc-pane .kc-title{height:auto;padding:6px 10px;border-bottom:1px solid #2b3d5c;flex-wrap:wrap;row-gap:5px;}
+.kc-pane .kc-title .kc-tools{margin-left:auto;}
+.kc-pane .kc-info{order:3;flex-basis:100%;font-size:.7rem;}
+.kc-pane[data-tf="5"] .kc-title{background:linear-gradient(90deg,rgba(0,212,255,.16),rgba(0,212,255,.03));}
+.kc-pane[data-tf="60"] .kc-title{background:linear-gradient(90deg,rgba(245,158,11,.18),rgba(245,158,11,.03));}
+.kc-lbl{font-size:.8rem;font-weight:800;padding:2px 9px;border-radius:5px;white-space:nowrap;}
+.kc-pane[data-tf="5"] .kc-lbl{background:rgba(0,212,255,.2);color:var(--accent);}
+.kc-pane[data-tf="60"] .kc-lbl{background:rgba(245,158,11,.22);color:var(--gold);}
+.kc-pane .kc-slot{padding:4px 2px 0;}
+@keyframes kglow{from{stroke-opacity:.12}to{stroke-opacity:.6}}
+@keyframes kring{from{opacity:.35}to{opacity:1}}
+.kt .kg{stroke-opacity:0;}.kt .kr{opacity:0;}
+.kc-dim .kt.on .kg{animation:kglow .7s ease-in-out infinite alternate;}
+.kc-dim .kt.on .kr{animation:kring .7s ease-in-out infinite alternate;}
 </style>
 </head>
 <body>
@@ -480,7 +498,7 @@ input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1;}
         <div class="form-top">
           <div class="field">
             <span class="flabel">商品<span class="req">*</span></span>
-            <select id="tf-commodity" style="min-width:100px;font-weight:700;"></select>
+            <select id="tf-commodity" style="min-width:100px;font-weight:700;" onchange="tGuard()"></select>
           </div>
           <div class="field">
             <span class="flabel">方向<span class="req">*</span></span>
@@ -737,7 +755,7 @@ function toggleInputBox(){
   else{box.classList.add('collapsed');document.getElementById('ibh-hint').innerText='展開 ▼';}
 }
 function openInputBox(){document.getElementById('input-box').classList.remove('collapsed');document.getElementById('ibh-hint').innerText='收合 ▲';}
-function onTypeChange(){
+function onTypeChange(){setTimeout(()=>{if(typeof tGuard==='function')tGuard();});
   const swing=document.getElementById('tf-type-swing').checked;
   document.getElementById('input-box').classList.toggle('is-swing',swing);
 }
@@ -749,17 +767,46 @@ function splitTime(v){
 function joinTime(time,sec){return time?`${time}:${sec||'00'}`:'';}
 function fmtT(time,sec){return time?`${time}:${sec||'00'}`:'--:--';}
 
+/* ── 24 小時制時間選單（取代瀏覽器的上午／下午時間框）──
+   值存在隱藏的 .entry-time／.exit-time，格式 HH:MM:SS，其他程式照舊讀 .value */
+function t24Html(cls){const o=n=>Array.from({length:n},(_,i)=>{const v=String(i).padStart(2,'0');return `<option value="${v}">${v}</option>`;}).join('');
+  return `<div class="t24"><select class="t-h"><option value="">時</option>${o(24)}</select><b>:</b><select class="t-m"><option value="">分</option>${o(60)}</select><b>:</b><select class="t-s">${o(60)}</select><input type="hidden" class="${cls}"></div>`;}
+function t24Sync(w){const h=w.querySelector('.t-h').value,m=w.querySelector('.t-m').value,sc=w.querySelector('.t-s').value||'00';w.querySelector('input[type=hidden]').value=(h&&m)?`${h}:${m}:${sc}`:'';}
+function t24Set(w,v){const p=(v||'').split(':');w.querySelector('.t-h').value=v?p[0].padStart(2,'0'):'';w.querySelector('.t-m').value=v?(p[1]||'00').padStart(2,'0'):'';w.querySelector('.t-s').value=v?(p[2]||'00').padStart(2,'0'):'00';t24Sync(w);}
+function t24Bind(w){w.querySelectorAll('select').forEach(sel=>sel.addEventListener('change',()=>{if(sel.classList.contains('t-h')&&sel.value&&!w.querySelector('.t-m').value)w.querySelector('.t-m').value='00';t24Sync(w);tGuard();}));}
+/* 交易時段順序：凌晨（台指 08:00 前、其他 06:00 前）算同一盤的後半段 */
+const tCut=()=>document.getElementById('tf-commodity')?.value==='TX'?8:6;
+const tSess=(h,m,sc)=>((+h<tCut()?24:0)+ +h)*3600+(+m)*60+(+sc||0);
+function tGuard(){
+  const first=document.querySelector('#entry-container .first-entry .entry-time')?.value,swing=document.querySelector('input[name=tf-type]:checked')?.value==='swing';
+  const eS=first?tSess(...first.split(':')):null,cut=tCut();
+  document.querySelectorAll('#exit-area .exit-row').forEach(r=>{
+    const w=r.querySelector('.t24'),H=w.querySelector('.t-h'),M=w.querySelector('.t-m'),S=w.querySelector('.t-s');
+    const dd=r.querySelector('.exit-date')?.value,free=eS==null||(swing&&dd&&dd>selDate);
+    // 時：照交易時段排序（例：21,22,23,0,1…），早於進場的不出現
+    const opts=[...H.options].filter(o=>o.value!=='');opts.sort((a,b)=>((+a.value<cut?24:0)+ +a.value)-((+b.value<cut?24:0)+ +b.value)).forEach(o=>H.appendChild(o));
+    const ok=(el,f)=>[...el.options].forEach(o=>{if(o.value==='')return;const bad=!free&&!f(o.value);o.hidden=bad;o.disabled=bad;});
+    ok(H,v=>tSess(v,59,59)>=eS);
+    if(!free&&H.value&&H.options[H.selectedIndex].disabled){H.value='';M.value='';}
+    ok(M,v=>!H.value||tSess(H.value,v,59)>=eS);
+    if(!free&&M.value&&M.options[M.selectedIndex].disabled)M.value='';
+    ok(S,v=>!H.value||!M.value||tSess(H.value,M.value,v)>=eS);
+    if(!free&&S.options[S.selectedIndex]?.disabled){const f=[...S.options].find(o=>!o.disabled);if(f)S.value=f.value;}
+    t24Sync(w);
+  });
+}
+
 function makeEntryRow(en,isFirst){
   const div=document.createElement('div');
   div.className='row-card entry-row'+(isFirst?' first-entry':' scaling');
   div.innerHTML=`
     <div class="row-tag"><span style="color:${isFirst?'var(--accent)':'#a78bfa'};">${isFirst?'① 初始進場':'＋ 加碼進場'}</span>${isFirst?'':'<button type="button" class="btn-del-mini row-del" title="刪除">×</button>'}</div>
     <div class="field"><span class="flabel">口數<span class="req">*</span></span><input type="number" class="entry-qty" min="0" step="1"></div>
-    <div class="field"><span class="flabel">進場時間<span class="req">*</span></span><input type="time" step="1" class="entry-time"></div>
+    <div class="field"><span class="flabel">進場時間<span class="req">*</span><span class="hint">24小時制</span></span>${t24Html('entry-time')}</div>
     <div class="field"><span class="flabel">進場價格</span><input type="text" inputmode="decimal" class="entry-price" placeholder="例：21500"></div>
     <div class="field full"><span class="flabel">${isFirst?'進場理由':'加碼理由'}</span><textarea class="reason-input entry-reason" rows="5" placeholder="${isFirst?'為什麼進場？看到什麼訊號？':'為什麼加碼？'}"></textarea></div>`;
   div.querySelector('.entry-qty').value=en?.qty??1;
-  div.querySelector('.entry-time').value=en?joinTime(en.time,en.sec):'';
+  t24Bind(div.querySelector('.t24'));t24Set(div.querySelector('.t24'),en?joinTime(en.time,en.sec):'');
   div.querySelector('.entry-price').value=en?.price||'';
   div.querySelector('.entry-reason').value=en?.reason||'';
   div.querySelector('.row-del')?.addEventListener('click',()=>div.remove());
@@ -772,11 +819,11 @@ function makeExitRow(ex){
     <div class="row-tag"><span style="color:#fbbf24;">➡ 出場</span><button type="button" class="btn-del-mini row-del" title="刪除">×</button></div>
     <div class="field full exit-date-field"><span class="flabel">出場日期<span class="req">*</span><span class="hint">留倉單必填</span></span><input type="date" class="exit-date"></div>
     <div class="field"><span class="flabel">口數<span class="req">*</span></span><input type="number" class="exit-qty" min="0" step="1"></div>
-    <div class="field"><span class="flabel">出場時間<span class="req">*</span></span><input type="time" step="1" class="exit-time"></div>
+    <div class="field"><span class="flabel">出場時間<span class="req">*</span><span class="hint">只能選進場之後</span></span>${t24Html('exit-time')}</div>
     <div class="field"><span class="flabel">出場價格</span><input type="text" inputmode="decimal" class="exit-price" placeholder="例：21550"></div>
     <div class="field full"><span class="flabel">出場理由</span><textarea class="reason-input exit-reason" rows="5" placeholder="為什麼出場？停利 / 停損 / 訊號反轉…"></textarea></div>`;
   div.querySelector('.exit-qty').value=ex?.qty??1;
-  div.querySelector('.exit-time').value=ex?joinTime(ex.time,ex.sec):'';
+  t24Bind(div.querySelector('.t24'));t24Set(div.querySelector('.t24'),ex?joinTime(ex.time,ex.sec):'');div.querySelector('.exit-date').addEventListener('change',tGuard);
   div.querySelector('.exit-price').value=ex?.price||'';
   div.querySelector('.exit-reason').value=ex?.reason||'';
   div.querySelector('.exit-date').value=ex?.date||'';
@@ -784,7 +831,7 @@ function makeExitRow(ex){
   return div;
 }
 function addScalingEntry(){document.getElementById('entry-container').appendChild(makeEntryRow(null,false));}
-function addExitRow(){document.getElementById('exit-area').appendChild(makeExitRow(null));}
+function addExitRow(){document.getElementById('exit-area').appendChild(makeExitRow(null));tGuard();}
 
 function fillCommoditySelect(selected){
   const sel=document.getElementById('tf-commodity');
@@ -826,6 +873,9 @@ function saveTrade(){
     }
     exitsData.push(ex);
   }
+  {const eS=tSess(...joinTime(entries[0].time,entries[0].sec).split(':'));
+   for(const e of exitsData){if(!e.time)continue;if(tradeType==='swing'&&e.date&&e.date>selDate)continue;
+     if(tSess(...joinTime(e.time,e.sec).split(':'))<eS)return toast(`出場時間 ${fmtT(e.time,e.sec)} 早於進場時間 ${fmtT(entries[0].time,entries[0].sec)}`,'err');}}
   let dur='',durSec=null;
   const first=entries[0];
   const timed=exitsData.filter(e=>e.time);
@@ -866,7 +916,7 @@ function editTrade(id){
   container.innerHTML='';exitArea.innerHTML='';
   const entries=t.entries&&t.entries.length?t.entries:[{time:t.entryTime||'',sec:t.entrySec||'00',qty:t.entryQty||1,price:t.entryPrice||'',reason:t.entryReason||'',isScaling:false}];
   entries.forEach((en,i)=>container.appendChild(makeEntryRow(en,i===0)));
-  (t.exits||[]).forEach(ex=>exitArea.appendChild(makeExitRow(ex)));
+  (t.exits||[]).forEach(ex=>exitArea.appendChild(makeExitRow(ex)));tGuard();
   document.getElementById('input-pnl').value=t.totalPnl??'';
   document.getElementById('input-mfe').value=t.mfe!=null?t.mfe:'';
   document.getElementById('input-mae').value=t.mae!=null?t.mae:'';
@@ -881,7 +931,7 @@ function resetInput(){
   document.getElementById('tf-type-day').checked=true;
   onTypeChange();
   const container=document.getElementById('entry-container');container.innerHTML='';container.appendChild(makeEntryRow(null,true));
-  const exitArea=document.getElementById('exit-area');exitArea.innerHTML='';exitArea.appendChild(makeExitRow(null));
+  const exitArea=document.getElementById('exit-area');exitArea.innerHTML='';exitArea.appendChild(makeExitRow(null));tGuard();
   document.getElementById('input-pnl').value='';
   document.getElementById('input-mfe').value='';
   document.getElementById('input-mae').value='';
@@ -890,6 +940,9 @@ function resetInput(){
 }
 
 /* ══════════ 當日交易列表（依商品分開） ══════════ */
+/* 一筆交易的「時段內時間」：凌晨的單排在當晚之後 */
+function tradeSortKey(t){const e=(t.entries&&t.entries[0])||{time:t.entryTime,sec:t.entrySec};if(!e.time)return 1e9;const[h,m]=e.time.split(':').map(Number),cut=comOf(t)==='TX'?8:6;return((h<cut?24:0)+h)*3600+m*60+(parseInt(e.sec)||0);}
+const byEntryTime=a=>a.slice().sort((x,y)=>tradeSortKey(x)-tradeSortKey(y));
 function tradeCardHtml(t){
   const isLong=t.side==='long';
   const entries=t.entries||[{time:t.entryTime,qty:t.entryQty,price:'',reason:t.entryReason,isScaling:false}];
@@ -919,7 +972,7 @@ function tradeCardHtml(t){
 }
 function loadDailyTrades(){
   const container=document.getElementById('trades-list');
-  const trades=tradesData[selDate]||[];
+  const trades=byEntryTime(tradesData[selDate]||[]);
   document.getElementById('review-text').value=reviewData[selDate]||'';
   loadMonthlyReviewForDate(selDate);
   let html=`<div style="font-size:.75rem;color:var(--muted);margin-bottom:8px;font-family:var(--fm);">${selDate} — ${trades.length} 筆</div>`;
@@ -1775,7 +1828,7 @@ function renderReviewEntries(dates,container){
   if(rvSide==='long')allTradeDates=allTradeDates.filter(d=>(tradesData[d]||[]).some(t=>t.side==='long'));
   if(rvSide==='short')allTradeDates=allTradeDates.filter(d=>(tradesData[d]||[]).some(t=>t.side==='short'));
   function getDayTrades(d){
-    const all=tradesData[d]||[];
+    const all=byEntryTime(tradesData[d]||[]);
     let filtered=rvCommodity==='all'?all:all.filter(t=>comOf(t)===rvCommodity);
     if(rvSide==='long')return filtered.filter(t=>t.side==='long');
     if(rvSide==='short')return filtered.filter(t=>t.side==='short');
@@ -1967,7 +2020,7 @@ function kBlock(d,trades){
   const zoom=`<span class="kc-tog"><button title="放大" onclick="kZoom(this,1/1.4)">＋</button><button title="縮小" onclick="kZoom(this,1.4)">－</button></span>`;
   const pre5=`<span class="kc-tog"><button data-p="all" class="on" onclick="kPreset(this,'all')">全部</button><button data-p="y" onclick="kPreset(this,'y')">昨晚美股</button><button data-p="pre" onclick="kPreset(this,'pre')">今天盤前</button><button data-p="us" onclick="kPreset(this,'us')">今天美股</button></span>`;
   const pre60=`<span class="kc-tog"><button data-p="all" class="on" onclick="kPreset(this,'all')">重設</button></span>`;
-  const pane=(tf,lbl)=>`<div class="kc-pane"><div class="kc-title">${lbl}<span class="kc-info" id="kci${gid}_${tf}"></span><span class="kc-tools">${tf===5?pre5:pre60}${zoom}</span></div><div class="kc-slot" data-kg="${gid}" data-tf="${tf}" title=""></div></div>`;
+  const pane=(tf,lbl)=>`<div class="kc-pane" data-tf="${tf}"><div class="kc-title"><span class="kc-lbl">${lbl}</span><span class="kc-info" id="kci${gid}_${tf}"></span><span class="kc-tools">${tf===5?pre5:pre60}${zoom}</span></div><div class="kc-slot" data-kg="${gid}" data-tf="${tf}" title=""></div></div>`;
   return `<div class="kc-wrap">${pane(5,'5 分 K')}${pane(60,'60 分 K')}</div><div class="kc-hint">拖曳圖表＝左右移動・Ctrl＋滾輪（或觸控板捏合）＝縮放・價格軸只依畫面上的K棒自動縮放</div>`;
 }
 function kMarks(items,mkt){
@@ -2019,7 +2072,7 @@ function kSvg(W,S,mkt,TR,o){
   TR.forEach(tr=>{
     const col=tr.win?K_WIN:K_LOSS,ins=tr.pts.filter(p=>p.k!=='out'&&p.i!=null),outs=tr.pts.filter(p=>p.k==='out'&&p.i!=null),f=ins[0],tip=aAttr(kTradeTip(tr,mkt));let t='';
     if(f)outs.forEach(q=>{const c=`x1="${X(f.i)}" y1="${Y(f.y0)}" x2="${X(q.i)}" y2="${Y(q.y0)}"`;
-      t+=`<line ${c} stroke="#fff" stroke-opacity=".9" stroke-width="2.6" stroke-linecap="round" clip-path="url(#${uid})" pointer-events="none"/><line class="kl" ${c} stroke="${col}" stroke-width="1.3" stroke-linecap="round" clip-path="url(#${uid})" pointer-events="none"/><line ${c} stroke="transparent" stroke-width="16" stroke-linecap="round" pointer-events="stroke" clip-path="url(#${uid})" style="cursor:pointer" data-tip="${tip}"/>`;});
+      t+=`<line class="kg" ${c} stroke="${col}" stroke-width="13" stroke-linecap="round" clip-path="url(#${uid})" pointer-events="none"/><circle class="kr" cx="${X(f.i)}" cy="${Y(f.y0)}" r="8" fill="none" stroke="${col}" stroke-width="2" pointer-events="none"/><circle class="kr" cx="${X(q.i)}" cy="${Y(q.y0)}" r="8" fill="none" stroke="${col}" stroke-width="2" pointer-events="none"/><line ${c} stroke="#fff" stroke-opacity=".9" stroke-width="2.6" stroke-linecap="round" clip-path="url(#${uid})" pointer-events="none"/><line class="kl" ${c} stroke="${col}" stroke-width="1.3" stroke-linecap="round" clip-path="url(#${uid})" pointer-events="none"/><line ${c} stroke="transparent" stroke-width="16" stroke-linecap="round" pointer-events="stroke" clip-path="url(#${uid})" style="cursor:pointer" data-tip="${tip}"/>`;});
     g+=`<g class="kt" data-no="${tr.no}">${t}</g>`;
   });
   // 十字線：垂直跟著K棒、水平跟著滑鼠（不吸附收盤價），右邊顯示滑鼠位置的價格
@@ -2041,7 +2094,7 @@ function kRenderSlot(el,W){
   if(!n||i1<0||i0>i1||i0>=n)return `<div class="kc-empty">${g.d} 不在K線資料範圍內（${M.name}：${R.from} ～ ${R.to}）<button class="kc-btn" onclick="kdOpenModal()">更新資料</button></div>`;
   el._base=[i0,i1];el._d=g.d;
   if(el._view){const w=el._view[1]-el._view[0];let a=Math.max(0,Math.min(n-1-w,el._view[0]));i0=a;i1=Math.min(n-1,a+w);}
-  const r=kSvg(W,S,g.m,TR,{i0,i1,h:650,small:tf===60,b5:R.b5});
+  const r=kSvg(W,S,g.m,TR,{i0,i1,h:700,small:tf===60,b5:R.b5});
   el._k=r.L;el._rng=`${kFmtT(S.t[i0],true)} ～ ${kFmtT(S.t[i1]+tf,true)}`;if(inf)inf.textContent=el._rng;
   return r.svg;
 }
@@ -2088,16 +2141,29 @@ document.addEventListener('wheel',e=>{
   el.closest('.kc-pane').querySelectorAll('[data-p]').forEach(b=>b.classList.remove('on'));
   kZoomAt(el,L.i0+(pt.x-L.l)/L.cw,e.deltaY>0?1.18:1/1.18);
 },{passive:false});
+/* 十字線：5K／60K 同步（同一天兩張圖一起出現），資訊列含漲跌（收盤－前一根收盤） */
+function kCross(el,i,price){
+  const sv=el&&el.querySelector('svg'),L=el&&el._k;if(!sv||!L)return;
+  const x=sv.querySelector('.kc-x'),inf=document.getElementById(`kci${el.dataset.kg}_${el.dataset.tf}`);
+  if(i==null){x?.setAttribute('visibility','hidden');if(inf&&el._rng)inf.textContent=el._rng;return;}
+  const S=L.S,inView=i>=L.i0&&i<=L.i1,cx=L.l+(i-L.i0+.5)*L.cw,v=sv.querySelector('.kc-v'),hz=sv.querySelector('.kc-h'),hl=sv.querySelector('.kc-hl');
+  x.setAttribute('visibility','visible');v.setAttribute('visibility',inView?'visible':'hidden');v.setAttribute('x1',cx);v.setAttribute('x2',cx);
+  const yy=L.top+(L.hi-price)/(L.hi-L.lo)*(L.bot-L.top),inY=yy>=2&&yy<=L.H-22;
+  hz.setAttribute('visibility',inY?'visible':'hidden');hl.setAttribute('visibility',inY?'visible':'hidden');
+  if(inY){hz.setAttribute('y1',yy);hz.setAttribute('y2',yy);hl.setAttribute('transform',`translate(0,${yy})`);hl.querySelector('text').textContent=kFmtP(price,L.mkt);}
+  if(inf&&i>=0&&i<S.t.length){const f=v=>kFmtP(v,L.mkt),pc=i>0?S.c[i-1]:S.o[i],ch=S.c[i]-pc,cc=ch>=0?'#ef4444':'#22c55e';
+    inf.innerHTML=`<b style="color:#facc15">${kFmtT(S.t[i],true)}</b>　開 <b>${f(S.o[i])}</b> 高 <b>${f(S.h[i])}</b> 低 <b>${f(S.l[i])}</b> 收 <b style="color:${cc}">${f(S.c[i])}</b>　漲跌 <b style="color:${cc}">${ch>0?'+':''}${f(ch)}</b>`;}
+}
 document.addEventListener('mousemove',e=>{
-  const sv=e.target.closest&&e.target.closest('.kc-slot svg');
-  if(KC.hot&&KC.hot!==sv){KC.hot.querySelector('.kc-x')?.setAttribute('visibility','hidden');const o=KC.hot.parentNode,inf=o&&o.dataset?document.getElementById(`kci${o.dataset.kg}_${o.dataset.tf}`):null;if(inf&&o._rng)inf.textContent=o._rng;KC.hot=null;}
-  if(!sv)return;const el=sv.parentNode,L=el._k;if(!L)return;KC.hot=sv;
-  const rc=sv.getBoundingClientRect(),x=(e.clientX-rc.left)*L.W/rc.width,i=Math.max(L.i0,Math.min(L.i1,L.i0+Math.floor((x-L.l)/L.cw))),S=L.S,cx=L.l+(i-L.i0+.5)*L.cw;
-  const v=sv.querySelector('.kc-v');v.setAttribute('x1',cx);v.setAttribute('x2',cx);sv.querySelector('.kc-x').setAttribute('visibility','visible');
-  const yy=Math.max(4,Math.min(L.H-24,(e.clientY-rc.top)*L.H/rc.height)),hz=sv.querySelector('.kc-h'),hl=sv.querySelector('.kc-hl');
-  hz.setAttribute('y1',yy);hz.setAttribute('y2',yy);hl.setAttribute('transform',`translate(0,${yy})`);hl.querySelector('text').textContent=kFmtP(kPriceAt(L,yy),L.mkt);
-  const f=v=>kFmtP(v,L.mkt),chg=S.c[i]-S.o[i],inf=document.getElementById(`kci${el.dataset.kg}_${el.dataset.tf}`);
-  if(inf)inf.innerHTML=`<b style="color:#facc15">${kFmtT(S.t[i],true)}</b>　開 <b>${f(S.o[i])}</b> 高 <b>${f(S.h[i])}</b> 低 <b>${f(S.l[i])}</b> 收 <b style="color:${chg>=0?'#ef4444':'#22c55e'}">${f(S.c[i])}</b>`;
+  const sv=e.target.closest&&e.target.closest('.kc-slot svg'),el=sv&&sv.parentNode,L=el&&el._k;
+  if(KC.hotEls&&(!L||KC.hotEls[0]!==el)){KC.hotEls.forEach(x=>kCross(x,null));KC.hotEls=null;}
+  if(!L)return;
+  const rc=sv.getBoundingClientRect(),x=(e.clientX-rc.left)*L.W/rc.width,i=Math.max(L.i0,Math.min(L.i1,L.i0+Math.floor((x-L.l)/L.cw)));
+  const yy=Math.max(4,Math.min(L.H-24,(e.clientY-rc.top)*L.H/rc.height)),price=kPriceAt(L,yy);
+  kCross(el,i,price);
+  const day=el.closest('.rv-day'),sib=day&&[...day.querySelectorAll('.kc-slot')].find(o=>o!==el&&o._k);
+  if(sib){const S2=sib._k.S,t=L.S.t[i];kCross(sib,Math.max(0,kdAt(S2,t)),price);}
+  KC.hotEls=sib?[el,sib]:[el];
 });
 /* 右邊滑過某一筆、或圖上滑過某條線 → 兩邊都只亮那一筆 */
 function kHL(day,no){if(!day)return;
