@@ -420,6 +420,16 @@ input[type=date]::-webkit-calendar-picker-indicator:hover{opacity:1;}
 .kc-tfsel option{background:#0d1420;color:#e2e8f0;}
 .kc-pane[data-pi="0"] .kc-tfsel{background:rgba(0,212,255,.2);color:var(--accent);}
 .kc-pane[data-pi="1"] .kc-tfsel{background:rgba(245,158,11,.22);color:var(--gold);}
+.kc-ma-btn{display:inline-flex;align-items:center;gap:2px;background:transparent;border:1px solid var(--border);color:#94a3b8;border-radius:5px;padding:2px 6px;font-size:.66rem;font-weight:700;cursor:pointer;font-family:var(--fm);height:22px;}
+.kc-ma-btn:hover{color:var(--text);border-color:var(--muted);}
+.kc-ma-btn i{display:inline-block;width:5px;height:5px;border-radius:50%;margin-left:1px;}
+#fd-pop .kma-row{display:flex;align-items:center;gap:7px;padding:4px 8px;border-radius:6px;font-family:var(--fm);font-size:.76rem;}
+#fd-pop .kma-row:hover{background:rgba(255,255,255,.04);}
+#fd-pop .kma-row input[type=number]{width:54px;padding:2px 4px;font-size:.76rem;font-family:var(--fm);}
+#fd-pop .kma-row input[type=color]{width:20px;height:20px;padding:0;border:1px solid var(--border);border-radius:4px;background:none;cursor:pointer;}
+#fd-pop .kma-row input[type=color]::-webkit-color-swatch-wrapper{padding:0;}#fd-pop .kma-row input[type=color]::-webkit-color-swatch{border:none;border-radius:3px;}
+#fd-pop .kma-foot{border-top:1px solid var(--border);margin-top:4px;padding:6px 8px 2px;text-align:right;}
+#fd-pop .kma-foot button{background:transparent;border:1px solid var(--border);color:#94a3b8;border-radius:5px;padding:2px 9px;font-size:.7rem;cursor:pointer;}
 .kc-sess{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 3px 0 8px;vertical-align:-1px;}
 .kc-pane .kc-slot{padding:4px 2px 0;}
 @keyframes kglow{from{stroke-opacity:.12}to{stroke-opacity:.6}}
@@ -1896,7 +1906,7 @@ function fdOfDay(d){return rvFolders.filter(f=>f.dates.includes(d));}
 function fdUpdateBtn(){const b=document.getElementById('rv-fd-btn'),f=fdActive();if(!b)return;b.classList.toggle('on',!!f);b.textContent=f?`📁 ${f.name}（${f.dates.length}）✕`:'📁 資料夾';b.title=f?'點一下：換資料夾或回到全部':'';document.getElementById('rv-bar')?.classList.toggle('fd-on',!!f);}
 function fdPop(e,html){const p=document.getElementById('fd-pop');p.innerHTML=html;p.style.display='block';const r=e.currentTarget.getBoundingClientRect(),w=p.offsetWidth;p.style.left=Math.max(6,Math.min(r.left,innerWidth-w-8))+'px';p.style.top=(r.bottom+4)+'px';}
 function fdClose(){document.getElementById('fd-pop').style.display='none';}
-document.addEventListener('mousedown',e=>{const p=document.getElementById('fd-pop');if(p&&p.style.display==='block'&&!p.contains(e.target)&&!e.target.closest('#rv-fd-btn,.rv-fd-day,#rv-custom-btn'))fdClose();});
+document.addEventListener('mousedown',e=>{const p=document.getElementById('fd-pop');if(p&&p.style.display==='block'&&!p.contains(e.target)&&!e.target.closest('#rv-fd-btn,.rv-fd-day,#rv-custom-btn,.kc-ma-btn'))fdClose();});
 function fdNew(){const n=(prompt('新資料夾名稱（例：開盤追單被洗、攤平、照計畫的好單）')||'').trim();if(!n)return null;const f={id:'f'+Date.now(),name:n,dates:[]};rvFolders.push(f);fdSave();return f;}
 /* 工具列：選要看哪個資料夾 */
 function fdMenuTop(e){
@@ -1928,6 +1938,18 @@ const KD={nq:null,tx:null,ready:false,busy:false};
 const K_TFS=[1,5,15,60];
 const KC={groups:[],mode5:localStorage.getItem('kc_mode5')||'trade',
   tfs:(()=>{try{const a=JSON.parse(localStorage.getItem('kc_tfs'));if(Array.isArray(a)&&a.length===2&&a.every(v=>K_TFS.includes(v)))return a;}catch(e){}return [1,5];})()};
+/* 均線：預設跟 app 一樣（MA5 橘、MA10 藍、MA20 粉、MA60 黃），所有圖共用、會記住 */
+const K_MA_DEF=[{p:5,c:'#f97316',on:true},{p:10,c:'#00bfff',on:true},{p:20,c:'#ff69b4',on:true},{p:60,c:'#ffff00',on:true}];
+KC.ma=(()=>{try{const a=JSON.parse(localStorage.getItem('kc_ma'));if(Array.isArray(a)&&a.length===4&&a.every(m=>m&&m.p>=2&&/^#[0-9a-f]{6}$/i.test(m.c)))return a;}catch(e){}return K_MA_DEF.map(m=>({...m}));})();
+const kMaBtnHtml=()=>`<button class="kc-ma-btn" onclick="kMaPop(event)" title="均線設定">MA${KC.ma.map(m=>`<i style="background:${m.on?m.c:'#334155'}"></i>`).join('')}</button>`;
+function kMaPop(e){fdPop(e,`<div class="hd">均線（所有圖一起套用）</div>${KC.ma.map((m,i)=>`<label class="kma-row"><input type="checkbox"${m.on?' checked':''} onchange="kMaSet(${i},'on',this.checked)"><input type="color" value="${m.c}" title="換顏色" onchange="kMaSet(${i},'c',this.value)"><span style="color:${m.c}">MA</span><input type="number" min="2" max="500" value="${m.p}" title="週期" onchange="kMaSet(${i},'p',this.value)"></label>`).join('')}<div class="kma-foot"><button onclick="kMaReset()">恢復預設</button></div>`);}
+function kMaSet(i,k,v){if(k==='p'){v=Math.round(+v);if(!(v>=2))v=2;if(v>500)v=500;}KC.ma[i][k]=v;kMaApply();}
+function kMaReset(){KC.ma=K_MA_DEF.map(m=>({...m}));fdClose();kMaApply();}
+function kMaApply(){try{localStorage.setItem('kc_ma',JSON.stringify(KC.ma));}catch(e){}
+  document.querySelectorAll('.kc-ma-btn').forEach(b=>b.outerHTML=kMaBtnHtml());
+  document.querySelectorAll('#fd-pop .kma-row span').forEach((sp,i)=>sp.style.color=KC.ma[i].c);
+  kRenderAll(true);}
+function kSma(S,i,p){if(i<p-1)return null;let s=0;for(let j=i-p+1;j<=i;j++)s+=S.c[j];return s/p;}
 /* 依週期取K棒：1K 要有新版匯入；15K 用 5K 組（不存，第一次用到才算） */
 function kSeries(R,tf){
   if(tf===1)return R.b1||null;
@@ -2030,7 +2052,7 @@ function kTools(tf){
   const zoom=`<span class="kc-tog"><button title="放大" onclick="kZoom(this,1/1.4)">＋</button><button title="縮小" onclick="kZoom(this,1.4)">－</button></span>`;
   const pre=tf<60?`<span class="kc-tog"><button data-p="all" class="on" onclick="kPreset(this,'all')">全部</button><button data-p="y" onclick="kPreset(this,'y')">昨晚美股</button><button data-p="pre" onclick="kPreset(this,'pre')">今天盤前</button><button data-p="us" onclick="kPreset(this,'us')">今天美股</button></span>`
     :`<span class="kc-tog"><button data-p="all" class="on" onclick="kPreset(this,'all')">重設</button></span>`;
-  return pre+zoom;
+  return kMaBtnHtml()+pre+zoom;
 }
 const kTfSel=(pi,tf)=>`<select class="kc-tfsel" title="換K棒週期（每一天的這一格一起換，會記住）" onchange="kSetTf(${pi},+this.value)">${K_TFS.map(v=>`<option value="${v}"${v===tf?' selected':''}>${v} 分 K</option>`).join('')}</select>`;
 function kBlock(d,trades){
@@ -2099,6 +2121,10 @@ function kSvg(W,S,mkt,TR,o){
   for(let i=i0;i<=i1;i++){const x=X(i),up=S.c[i]>=S.o[i],yt=Y(Math.max(S.o[i],S.c[i])),yb=Y(Math.min(S.o[i],S.c[i])),w=`M${x.toFixed(1)} ${Y(S.h[i]).toFixed(1)}V${Y(S.l[i]).toFixed(1)}`,b=`M${(x-bw/2).toFixed(1)} ${yt.toFixed(1)}h${bw.toFixed(1)}v${Math.max(1,yb-yt).toFixed(1)}h${(-bw).toFixed(1)}Z`;
     if(up){uW+=w;uB+=b;}else{dW+=w;dB+=b;}}
   g+=`<g pointer-events="none"><path d="${uW}" stroke="${K_CU}" stroke-width="1.2"/><path d="${uB}" fill="${K_CU}"/><path d="${dW}" stroke="${K_CD}" stroke-width="1.2"/><path d="${dB}" fill="${K_CD}"/></g>`;
+  {let mg='';KC.ma.forEach((m,mi)=>{if(!m.on)return;const p=m.p,st=Math.max(0,i0-p+1);let sum=0,d='';
+    for(let j=st;j<=i1;j++){sum+=S.c[j];if(j-p>=st)sum-=S.c[j-p];if(j>=i0&&j>=p-1&&j-st+1>=p)d+=(d?'L':'M')+X(j).toFixed(1)+' '+Y(sum/p).toFixed(1);}
+    if(d)mg+=`<path d="${d}" fill="none" stroke="${m.c}" stroke-width="${mi===3?1.7:1.2}" stroke-linejoin="round"/>`;});
+   if(mg)g+=`<g clip-path="url(#${uid})" pointer-events="none">${mg}</g>`;}
   TR.forEach(tr=>{
     const col=tr.win?K_WIN:K_LOSS,ins=tr.pts.filter(p=>p.k!=='out'&&p.i!=null),outs=tr.pts.filter(p=>p.k==='out'&&p.i!=null),f=ins[0],tip=aAttr(kTradeTip(tr,mkt));let t='';
     if(f)outs.forEach(q=>{const c=`x1="${X(f.i)}" y1="${Y(f.y0)}" x2="${X(q.i)}" y2="${Y(q.y0)}"`;
@@ -2184,7 +2210,7 @@ function kCross(el,i,price){
   hz.setAttribute('visibility',inY?'visible':'hidden');hl.setAttribute('visibility',inY?'visible':'hidden');
   if(inY){hz.setAttribute('y1',yy);hz.setAttribute('y2',yy);hl.setAttribute('transform',`translate(0,${yy})`);hl.querySelector('text').textContent=kFmtP(price,L.mkt);}
   if(inf&&i>=0&&i<S.t.length){const f=v=>kFmtP(v,L.mkt),pc=i>0?S.c[i-1]:S.o[i],ch=S.c[i]-pc,cc=ch>=0?'#ef4444':'#22c55e';
-    inf.innerHTML=`<b style="color:#facc15">${kFmtT(S.t[i],true)}</b>　開 <b>${f(S.o[i])}</b> 高 <b>${f(S.h[i])}</b> 低 <b>${f(S.l[i])}</b> 收 <b style="color:${cc}">${f(S.c[i])}</b>　漲跌 <b style="color:${cc}">${ch>0?'+':''}${f(ch)}</b>`;}
+    inf.innerHTML=`<b style="color:#facc15">${kFmtT(S.t[i],true)}</b>　開 <b>${f(S.o[i])}</b> 高 <b>${f(S.h[i])}</b> 低 <b>${f(S.l[i])}</b> 收 <b style="color:${cc}">${f(S.c[i])}</b>　漲跌 <b style="color:${cc}">${ch>0?'+':''}${f(ch)}</b>`+KC.ma.filter(m=>m.on).map(m=>{const v=kSma(S,i,m.p);return v==null?'':`　<span style="color:${m.c}">MA${m.p} ${f(v)}</span>`;}).join('');}
 }
 document.addEventListener('mousemove',e=>{
   const sv=e.target.closest&&e.target.closest('.kc-slot svg'),el=sv&&sv.parentNode,L=el&&el._k;
